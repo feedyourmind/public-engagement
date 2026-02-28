@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git config -l --local)",
+      "Bash(git -C /Users/bitlitup1/dev/vibe-coding/public-engagement log --oneline -10)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --no-import-alias --use-npm)",
+      "Read(//private/tmp/**)",
+      "Bash(npm init -y)",
+      "Bash(npm install next@latest react@latest react-dom@latest framer-motion)",
+      "Bash(npm install -D typescript @types/react @types/node tailwindcss @tailwindcss/postcss postcss eslint eslint-config-next)",
+      "Bash(npm run build)",
+      "Bash(curl -s http://localhost:3001)",
+      "Bash(lsof -ti:3333)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3333)",
+      "Bash(vercel --version)",
+      "Bash(vercel --yes)"
+    ]
+  }
+}

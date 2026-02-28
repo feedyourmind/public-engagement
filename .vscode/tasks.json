@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "rebuild",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: rebuild",
+      "detail": "lsof -ti:3000 | xargs kill -9 2>/dev/null; next build && next start",
+      "runOptions": {
+        "instanceLimit": 2
+      },
+      "options": {
+        "statusbar": {
+          "label": "                    dev $(play)   "
+        }
+      }
+    }
+  ]
+}

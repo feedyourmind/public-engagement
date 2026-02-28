@@ -1,0 +1,57 @@
+import type { Metadata } from "next";
+import { Playfair_Display, DM_Sans, DM_Mono } from "next/font/google";
+import { DistributionProvider } from "@/context/DistributionContext";
+import TopNav from "@/components/TopNav";
+import "./globals.css";
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["700", "800"],
+  variable: "--font-playfair",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const dmMono = DM_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-dm-mono",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "The AI X-Risk Spectrum — Eversell",
+  description:
+    "An interactive scrollytelling visualization of how people perceive AI risk, from full dismissal to existential alarm.",
+  openGraph: {
+    title: "The AI X-Risk Spectrum",
+    description:
+      "Explore the spectrum of AI risk perception through an interactive distribution visualization.",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${playfair.variable} ${dmSans.variable} ${dmMono.variable}`}
+    >
+      <body className="bg-bg text-text font-body pt-12">
+        <DistributionProvider>
+          <TopNav />
+          {children}
+        </DistributionProvider>
+      </body>
+    </html>
+  );
+}
