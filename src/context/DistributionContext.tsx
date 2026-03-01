@@ -12,7 +12,10 @@ import {
 } from "react";
 import { genCurve, integrate } from "@/utils/math";
 import { SEGMENTS } from "@/utils/segments";
-import defaultPreset from "@/presets/reality.json";
+import {
+  FALLBACK_PRESET_VALUES,
+  SYSTEM_PRESET_KEYS,
+} from "@/presets/systemPresetKeys";
 import type { CurvePoint, Segment, PresetParams } from "@/types";
 
 interface DistributionState {
@@ -48,14 +51,8 @@ const MATH_MAX = 5;
 const VIEW_HALF = (MATH_MAX - MATH_MIN) / 2;
 const DEFAULT_ZOOM = 1.0;
 
-const FALLBACK_DEFAULTS: PresetParams = {
-  loc: defaultPreset.loc,
-  sc: defaultPreset.sc,
-  sh: defaultPreset.sh,
-  boundaries: defaultPreset.boundaries,
-  zoom: 1.0,
-  pan: 0,
-};
+const FALLBACK_DEFAULTS: PresetParams =
+  FALLBACK_PRESET_VALUES[SYSTEM_PRESET_KEYS.REALITY];
 
 interface DistributionProviderProps {
   children: ReactNode;

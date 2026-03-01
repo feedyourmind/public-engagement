@@ -8,9 +8,16 @@ import Section02_Spectrum from "@/sections/Section02_Spectrum";
 import Section03_ZoomedSegments from "@/sections/Section03_ZoomedSegments";
 import Section03b_Funnel from "@/sections/Section03b_Funnel";
 import Section03c_Goals from "@/sections/Section03c_Goals";
+import Section03d_Goal2 from "@/sections/Section03d_Goal2";
+import Section03e_Grassroots from "@/sections/Section03e_Grassroots";
 import Section04_Comparisons from "@/sections/Section04_Comparisons";
+import Section04a_Strategies from "@/sections/Section04a_Strategies";
+import Section04b_Distribution from "@/sections/Section04b_Distribution";
 import Section05_ConcernedSplit from "@/sections/Section05_ConcernedSplit";
 import Section06_Conclusion from "@/sections/Section06_Conclusion";
+import Section07_TheHub from "@/sections/Section07_TheHub";
+import Section08_AIEndsPub from "@/sections/Section08_AIEndsPub";
+import Section09_Takedowns from "@/sections/Section09_Takedowns";
 import type { VariationWithPresets } from "@/types";
 
 interface MainPageClientProps {
@@ -37,14 +44,21 @@ export default function MainPageClient({
         onParamsChange={handleParamsChange}
       >
         <SectionNav />
-        <main>
+        <main className="overflow-x-clip">
           <Section02_Spectrum />
           <Section03_ZoomedSegments />
           <Section03b_Funnel />
           <Section03c_Goals />
+          <Section03d_Goal2 />
+          <Section03e_Grassroots />
           <Section04_Comparisons />
+          <Section04a_Strategies />
+          <Section04b_Distribution />
           <Section05_ConcernedSplit />
           <Section06_Conclusion />
+          <Section07_TheHub />
+          <Section08_AIEndsPub />
+          <Section09_Takedowns />
         </main>
       </DistributionProvider>
     </VariationProvider>

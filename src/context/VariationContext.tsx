@@ -17,7 +17,11 @@ import type {
   EffectivePreset,
 } from "@/types";
 import { computeEffectivePresets } from "@/utils/presetMerge";
-import { GOAL_PRESET } from "@/presets/systemPresets";
+import {
+  SYSTEM_PRESET_KEYS,
+  FALLBACK_PRESET_VALUES,
+  type SystemPresetKey,
+} from "@/presets/systemPresetKeys";
 
 /* ── Playground localStorage helpers ── */
 
@@ -67,12 +71,12 @@ function goalStorageKey(slug: string | undefined, playground: boolean) {
   return playground ? "goal_preset_playground" : `goal_preset_${slug ?? "default"}`;
 }
 
-function loadGoalPreset(slug: string | undefined, playground: boolean): PresetParams {
+function loadGoalPreset(slug: string | undefined, playground: boolean): PresetParams | null {
   try {
     const raw = localStorage.getItem(goalStorageKey(slug, playground));
     if (raw) return JSON.parse(raw) as PresetParams;
   } catch {}
-  return { ...GOAL_PRESET };
+  return null;
 }
 
 function saveGoalPreset(slug: string | undefined, playground: boolean, params: PresetParams) {
@@ -108,7 +112,11 @@ interface VariationState {
   renamePreset: (id: number, label: string) => Promise<void>;
   deletePreset: (id: number) => Promise<void>;
   resetPresetToBase: (id: number) => Promise<void>;
+  resetAllPresets: () => Promise<void>;
   savePresetParams: (id: number, params: PresetParams) => void;
+
+  /* Preset lookup by system key */
+  getPresetByKey: (key: SystemPresetKey) => EffectivePreset | null;
 
   /* Goal preset (system preset, per-variation) */
   goalParams: PresetParams;
@@ -155,16 +163,16 @@ export function VariationProvider({
     basePresetsProp ?? [],
   );
 
-  // Variation's own presets: overrides + extras (empty for Michael, loaded from LS for playground)
+  // Variation's own presets: overrides + extras (empty for Michael on settings page, loaded from LS for playground)
   const [rawPresets, setRawPresets] = useState<PresetRecord[]>(() => {
     if (isPlayground) return []; // loaded from localStorage later
-    if (isDefaultVariation) return []; // Michael's presets come from basePresetsState
-    if (!hasBasePresets) return initialVariation?.presets ?? []; // read-only pages (no merge)
+    if (isDefaultVariation && hasBasePresets) return []; // Michael on settings page: presets come from basePresetsState
+    if (!hasBasePresets) return initialVariation?.presets ?? []; // read-only pages (main page, no merge needed)
     return initialVariation?.presets ?? [];
   });
 
-  // Compute effective presets from base + raw
-  const effectivePresets = useMemo<EffectivePreset[]>(() => {
+  // Compute ALL effective presets from base + raw (includes Goal)
+  const allEffectivePresets = useMemo<EffectivePreset[]>(() => {
     if (!hasBasePresets) {
       // No base presets provided (read-only page) — use raw presets directly
       return rawPresets.map((p) => ({
@@ -184,6 +192,12 @@ export function VariationProvider({
     return computeEffectivePresets(basePresetsState, rawPresets);
   }, [hasBasePresets, isDefaultVariation, basePresetsState, rawPresets]);
 
+  // Public presets (excludes Goal — it has its own separate state/UI)
+  const effectivePresets = useMemo(
+    () => allEffectivePresets.filter((p) => p.label !== SYSTEM_PRESET_KEYS.GOAL),
+    [allEffectivePresets],
+  );
+
   const [activePresetId, setActivePresetId] = useState<number | null>(() => {
     if (isPlayground) return null; // set after localStorage load
     return effectivePresets[0]?.id ?? null;
@@ -200,12 +214,22 @@ export function VariationProvider({
   const slug = variation?.slug;
 
   /* ── Goal preset state ── */
-  const [goalParams, setGoalParams] = useState<PresetParams>({ ...GOAL_PRESET });
+  // Initialize from DB-loaded Goal preset, with fallback
+  const goalDbPreset = allEffectivePresets.find(
+    (p) => p.label === SYSTEM_PRESET_KEYS.GOAL,
+  );
+  const goalFallback: PresetParams = goalDbPreset
+    ? { loc: goalDbPreset.loc, sc: goalDbPreset.sc, sh: goalDbPreset.sh,
+        boundaries: goalDbPreset.boundaries, zoom: goalDbPreset.zoom, pan: goalDbPreset.pan }
+    : FALLBACK_PRESET_VALUES[SYSTEM_PRESET_KEYS.GOAL];
+
+  const [goalParams, setGoalParams] = useState<PresetParams>(goalFallback);
   const [isGoalActive, setIsGoalActive] = useState(false);
 
-  // Load goal preset from localStorage on mount
+  // Load goal preset from localStorage on mount (overrides DB value if present)
   useEffect(() => {
-    setGoalParams(loadGoalPreset(slug, isPlayground));
+    const stored = loadGoalPreset(slug, isPlayground);
+    if (stored) setGoalParams(stored);
   }, [slug, isPlayground]);
 
   const selectGoal = useCallback(() => {
@@ -220,6 +244,14 @@ export function VariationProvider({
       saveGoalPreset(slug, isPlayground, params);
     },
     [slug, isPlayground],
+  );
+
+  /* ── Preset lookup by system key ── */
+  const getPresetByKey = useCallback(
+    (key: SystemPresetKey): EffectivePreset | null => {
+      return allEffectivePresets.find((p) => p.label === key) ?? null;
+    },
+    [allEffectivePresets],
   );
 
   /* ── Playground: load from localStorage on mount ── */
@@ -535,6 +567,30 @@ export function VariationProvider({
     [effectivePresets, isPlayground, slug, sessionPasscode],
   );
 
+  const resetAllPresets = useCallback(async () => {
+    if (isPlayground) {
+      setRawPresets([]);
+      setActivePresetId(basePresetsState[0]?.id ?? null);
+      return;
+    }
+
+    if (isDefaultVariation) return; // Michael can't reset to self
+
+    // DB variation: delete all overrides and extras
+    if (!slug || !sessionPasscode) return;
+    const toDelete = rawPresets.filter((p) => true); // all rawPresets are overrides or extras
+    await Promise.all(
+      toDelete.map((p) =>
+        fetch(`/api/variations/${slug}/presets/${p.id}`, {
+          method: "DELETE",
+          headers: { "X-Passcode": sessionPasscode },
+        }).catch(() => {}),
+      ),
+    );
+    setRawPresets([]);
+    setActivePresetId(basePresetsState[0]?.id ?? null);
+  }, [isPlayground, isDefaultVariation, rawPresets, basePresetsState, slug, sessionPasscode]);
+
   const savePresetParams = useCallback(
     (id: number, params: PresetParams) => {
       const eff = effectivePresets.find((p) => p.id === id);
@@ -706,7 +762,9 @@ export function VariationProvider({
     renamePreset,
     deletePreset,
     resetPresetToBase,
+    resetAllPresets,
     savePresetParams,
+    getPresetByKey,
     goalParams,
     isGoalActive,
     selectGoal,

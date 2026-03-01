@@ -3,6 +3,8 @@ import { variations, presets } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
 import MainPageClient from "./MainPageClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   let defaultVariation = null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

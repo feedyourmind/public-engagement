@@ -1,23 +1,56 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
 
 const SECTIONS = [
-  { id: "intro", label: "Intro" },
   { id: "spectrum", label: "Spectrum" },
   { id: "segments", label: "Segments" },
   { id: "funnel", label: "Funnel" },
   { id: "goals", label: "Goals" },
-  { id: "comparisons", label: "Comparisons" },
+  { id: "grassroots", label: "Grassroots" },
+  { id: "comparisons", label: "Perceptions" },
+  { id: "strategies", label: "Strategies" },
+  { id: "distribution", label: "Distribution" },
   { id: "concerned", label: "Concerned" },
   { id: "conclusion", label: "Conclusion" },
+  { id: "the-hub", label: "The Hub" },
+  { id: "ai-ends-pub", label: "The Pub" },
+  { id: "takedowns", label: "Takedowns" },
 ];
 
 export default function SectionNav() {
   const { scrollYProgress } = useScroll();
+  const [activeId, setActiveId] = useState<string>(SECTIONS[0].id);
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+
+    SECTIONS.forEach((section) => {
+      const el = document.getElementById(section.id);
+      if (!el) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setActiveId(section.id);
+          }
+        },
+        { rootMargin: "-40% 0px -55% 0px" }
+      );
+
+      observer.observe(el);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
 
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById(id);
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 56;
+    window.scrollTo({ top: y, behavior: "smooth" });
   };
 
   return (
@@ -29,20 +62,35 @@ export default function SectionNav() {
       />
 
       {/* Side nav — desktop only */}
-      <nav className="fixed left-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-3">
-        {SECTIONS.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => scrollTo(s.id)}
-            className="group flex items-center gap-3 bg-transparent border-none cursor-pointer"
-            aria-label={`Scroll to ${s.label}`}
-          >
-            <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-cautious transition-colors" />
-            <span className="text-[10px] uppercase tracking-widest text-white/0 group-hover:text-white/60 transition-colors font-body">
-              {s.label}
-            </span>
-          </button>
-        ))}
+      <nav className="fixed left-0 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col">
+        {SECTIONS.map((s) => {
+          const isActive = activeId === s.id;
+          return (
+            <button
+              key={s.id}
+              onClick={() => scrollTo(s.id)}
+              className="group flex items-center gap-3 bg-transparent border-none cursor-pointer py-1.5 pl-6 pr-8"
+              aria-label={`Scroll to ${s.label}`}
+            >
+              <div
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  isActive
+                    ? "bg-cautious"
+                    : "bg-white/20 group-hover:bg-cautious"
+                }`}
+              />
+              <span
+                className={`text-[10px] uppercase tracking-widest transition-colors font-body ${
+                  isActive
+                    ? "text-white/70"
+                    : "text-white/0 group-hover:text-white/60"
+                }`}
+              >
+                {s.label}
+              </span>
+            </button>
+          );
+        })}
       </nav>
     </>
   );

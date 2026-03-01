@@ -82,7 +82,7 @@ function simulatePacking(
  */
 function findOptimalCellSize(funnel: FunnelDimensions): number {
   let lo = 2;
-  let hi = 30;
+  let hi = 50;
 
   for (let i = 0; i < 40; i++) {
     const mid = (lo + hi) / 2;

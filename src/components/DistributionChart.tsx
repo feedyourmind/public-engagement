@@ -171,8 +171,8 @@ export default function DistributionChart({
                 height={sy(0) - PAD.top}
                 fill="transparent"
                 style={{ cursor: interactive ? "pointer" : "default" }}
-                onMouseEnter={() => !highlightSegments && setHovered(f.id)}
-                onMouseLeave={() => !highlightSegments && setHovered(null)}
+                onMouseEnter={() => interactive && !highlightSegments && setHovered(f.id)}
+                onMouseLeave={() => interactive && !highlightSegments && setHovered(null)}
               />
             )
         )}

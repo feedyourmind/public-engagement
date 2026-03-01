@@ -14,6 +14,7 @@ export default function PresetButtons() {
     renamePreset,
     deletePreset,
     resetPresetToBase,
+    resetAllPresets,
     isAuthenticated,
     isDefaultVariation,
     goalParams,
@@ -93,8 +94,41 @@ export default function PresetButtons() {
   };
 
   const handleReset = async (id: number) => {
+    const eff = presets.find((p) => p.id === id);
     await resetPresetToBase(id);
     setMenuId(null);
+    // After reset, apply the base preset values if available
+    if (eff?.basePresetId) {
+      const base = presets.find(
+        (p) => p.inheritanceKind === "base" && p.basePresetId === eff.basePresetId,
+      );
+      if (base) {
+        applyPreset({
+          loc: base.loc,
+          sc: base.sc,
+          sh: base.sh,
+          boundaries: base.boundaries,
+          zoom: base.zoom ?? 1.0,
+          pan: base.pan ?? 0,
+        });
+      }
+    }
+  };
+
+  const handleResetAll = async () => {
+    await resetAllPresets();
+    // Apply first base preset values
+    const firstBase = presets.find((p) => p.inheritanceKind === "base");
+    if (firstBase) {
+      applyPreset({
+        loc: firstBase.loc,
+        sc: firstBase.sc,
+        sh: firstBase.sh,
+        boundaries: firstBase.boundaries,
+        zoom: firstBase.zoom ?? 1.0,
+        pan: firstBase.pan ?? 0,
+      });
+    }
   };
 
   const handleSelectGoal = () => {
@@ -102,8 +136,27 @@ export default function PresetButtons() {
     applyPreset(goalParams);
   };
 
+  // Show reset buttons in playground (or non-default variations) when there are overrides or extras
+  const hasOverrides = !isDefaultVariation && presets.some(
+    (p) => p.inheritanceKind === "override" || p.inheritanceKind === "extra",
+  );
+
   return (
     <div className="flex gap-2 flex-wrap mb-5 items-center">
+      {/* Reset All button */}
+      {hasOverrides && (
+        <>
+          <button
+            onClick={handleResetAll}
+            className="px-3 py-1.5 rounded-full border border-cautious/20 text-cautious/60 text-xs font-body cursor-pointer transition-all hover:border-cautious/40 hover:text-cautious hover:bg-cautious/10"
+            title="Reset all presets to default values"
+          >
+            Reset All
+          </button>
+          <div className="w-px h-5 bg-white/10 mx-1" />
+        </>
+      )}
+
       {presets.map((p) =>
         editingId === p.id ? (
           <form
@@ -150,6 +203,20 @@ export default function PresetButtons() {
               )}
               {p.label}
             </button>
+
+            {/* Inline reset button for overridden presets */}
+            {p.inheritanceKind === "override" && !isDefaultVariation && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleReset(p.id);
+                }}
+                className="-ml-1 px-1.5 py-1.5 text-cautious/50 hover:text-cautious text-xs cursor-pointer transition-colors"
+                title="Reset to default"
+              >
+                &#8635;
+              </button>
+            )}
 
             {/* Context menu */}
             {menuId === p.id && isAuthenticated && (

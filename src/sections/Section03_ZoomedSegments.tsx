@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { useRef, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
 import { useState } from "react";
 import DistributionChart from "@/components/DistributionChart";
 import DistributionGrid from "@/components/DistributionGrid";
@@ -42,18 +42,40 @@ const SEGMENT_NARRATIVES = [
 
 export default function Section03_ZoomedSegments() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const titleRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
+  const setTitleRef = useCallback(
+    (el: HTMLDivElement | null, i: number) => {
+      titleRefs.current[i] = el;
+    },
+    []
+  );
 
-  const rawIndex = useTransform(scrollYProgress, [0.25, 0.95], [0, 5.99]);
+  useEffect(() => {
+    const handleScroll = () => {
+      const gridEl = gridRef.current;
+      if (!gridEl) return;
 
-  useMotionValueEvent(rawIndex, "change", (v) => {
-    setActiveIndex(Math.min(Math.floor(v), 5));
-  });
+      // Threshold = top of the distribution grid
+      const threshold = gridEl.getBoundingClientRect().top;
+
+      let newIndex = 0;
+      for (let i = 0; i < titleRefs.current.length; i++) {
+        const el = titleRefs.current[i];
+        if (!el) continue;
+        if (el.getBoundingClientRect().top < threshold) {
+          newIndex = i;
+        }
+      }
+      setActiveIndex(newIndex);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // run once on mount
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const activeSegment = SEGMENTS[Math.max(0, Math.min(activeIndex, 5))];
 
@@ -83,10 +105,12 @@ export default function Section03_ZoomedSegments() {
             showLabels={true}
             interactive={false}
           />
-          <DistributionGrid
-            highlightSegmentId={activeSegment.id}
-            interactive={false}
-          />
+          <div ref={gridRef}>
+            <DistributionGrid
+              highlightSegmentId={activeSegment.id}
+              interactive={false}
+            />
+          </div>
           <div className="mt-4 flex gap-1.5 justify-center">
             {SEGMENTS.map((seg, i) => (
               <div
@@ -114,7 +138,10 @@ export default function Section03_ZoomedSegments() {
               transition={{ duration: 0.5 }}
             >
               <div className="py-4">
-                <div className="flex items-center gap-3 mb-4">
+                <div
+                  ref={(el) => setTitleRef(el, i)}
+                  className="flex items-center gap-3 mb-4"
+                >
                   <div
                     className="w-4 h-4 rounded"
                     style={{ background: SEGMENTS[i].color }}

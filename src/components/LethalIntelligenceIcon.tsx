@@ -11,11 +11,17 @@ export default function LethalIntelligenceIcon({
 }: LethalIntelligenceIconProps) {
   const outerRotate = useTransform(morphProgress, [0, 1], [0, 540]);
   const innerRotate = useTransform(morphProgress, [0, 1], [0, -360]);
-  const glowOpacity = useTransform(morphProgress, [0, 0.3, 0.7, 1], [0.15, 0.6, 0.8, 0.5]);
-  const glowScale = useTransform(morphProgress, [0, 0.5, 1], [0.8, 1.2, 1.0]);
+  const iconScale = useTransform(morphProgress, [0, 0.5, 1], [1, 1.3, 1.7]);
+  const iconX = useTransform(morphProgress, [0, 0.5, 1], [0, 40, 90]);
+  const iconY = useTransform(morphProgress, [0, 0.5, 1], [0, 25, 50]);
+  const glowOpacity = useTransform(morphProgress, [0, 0.3, 0.7, 1], [0.2, 0.5, 0.7, 0.6]);
+  const glowScale = useTransform(morphProgress, [0, 0.5, 1], [0.8, 1.1, 1.0]);
 
   return (
-    <div className="absolute top-2 left-2 z-10" style={{ width: 72, height: 72 }}>
+    <motion.div
+      className="absolute top-4 left-4 z-10"
+      style={{ width: 72, height: 72, scale: iconScale, x: iconX, y: iconY, transformOrigin: "center center" }}
+    >
       {/* Golden glow — large soft bloom behind everything */}
       <motion.div
         className="absolute rounded-full"
@@ -26,8 +32,8 @@ export default function LethalIntelligenceIcon({
           height: 88,
           opacity: glowOpacity,
           scale: glowScale,
-          background: "radial-gradient(circle, #f4a261 0%, #e6994a 30%, transparent 70%)",
-          filter: "blur(12px)",
+          background: "radial-gradient(circle, rgba(255,250,210,0.9) 0%, rgba(255,245,180,0.5) 30%, transparent 70%)",
+          filter: "blur(10px)",
         }}
       />
 
@@ -58,10 +64,10 @@ export default function LethalIntelligenceIcon({
         />
         {Array.from({ length: 12 }).map((_, i) => {
           const angle = (i * 30 * Math.PI) / 180;
-          const x1 = 36 + 30 * Math.cos(angle);
-          const y1 = 36 + 30 * Math.sin(angle);
-          const x2 = 36 + 34 * Math.cos(angle);
-          const y2 = 36 + 34 * Math.sin(angle);
+          const x1 = Math.round((36 + 30 * Math.cos(angle)) * 100) / 100;
+          const y1 = Math.round((36 + 30 * Math.sin(angle)) * 100) / 100;
+          const x2 = Math.round((36 + 34 * Math.cos(angle)) * 100) / 100;
+          const y2 = Math.round((36 + 34 * Math.sin(angle)) * 100) / 100;
           return (
             <line
               key={i}
@@ -107,7 +113,7 @@ export default function LethalIntelligenceIcon({
           width: 56,
           height: 56,
           opacity: glowOpacity,
-          boxShadow: "0 0 12px 4px rgba(244,162,97,0.4), inset 0 0 8px 2px rgba(244,162,97,0.2)",
+          boxShadow: "0 0 12px 4px rgba(255,250,210,0.4), inset 0 0 8px 2px rgba(255,245,180,0.2)",
           pointerEvents: "none",
         }}
       />
@@ -122,6 +128,6 @@ export default function LethalIntelligenceIcon({
         className="rounded-full absolute"
         style={{ top: 12, left: 12 }}
       />
-    </div>
+    </motion.div>
   );
 }

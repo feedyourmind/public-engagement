@@ -28,11 +28,13 @@ export default function VariationTabs() {
   const handleTabClick = (slug: string) => {
     if (slug === activeSlug && !playgroundMode) return;
     router.push(`/settings?v=${slug}`);
+    router.refresh();
   };
 
   const handlePlaygroundClick = () => {
     if (playgroundMode) return;
     router.push("/settings");
+    router.refresh();
   };
 
   const handleCreateSubmit = async () => {
@@ -52,6 +54,7 @@ export default function VariationTabs() {
       setNewName("");
       setNewPasscode("");
       router.push(`/settings?v=${result.slug}`);
+      router.refresh();
     } else {
       setCreateError("A variation with this name may already exist");
     }

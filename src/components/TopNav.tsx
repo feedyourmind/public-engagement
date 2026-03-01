@@ -80,15 +80,28 @@ export default function TopNav() {
           Back
         </Link>
       ) : (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-6">
           <span className="text-xs uppercase tracking-widest text-text-muted font-body">
             AI X-Risk Spectrum
           </span>
-          {variationSlug && (
-            <span className="text-xs text-text/50 font-body">
-              / {variationSlug}
-            </span>
-          )}
+          {[
+            { id: "spectrum", label: "Spectrum", offset: 56 },
+            { id: "goals", label: "Mission", offset: 350 },
+            { id: "strategies", label: "Strategies", offset: 56 },
+          ].map((link) => (
+            <button
+              key={link.id}
+              onClick={() => {
+                const el = document.getElementById(link.id);
+                if (!el) return;
+                const y = el.getBoundingClientRect().top + window.scrollY - link.offset;
+                window.scrollTo({ top: y, behavior: "smooth" });
+              }}
+              className="text-xs text-text/50 hover:text-text transition-colors font-body cursor-pointer bg-transparent border-none"
+            >
+              {link.label}
+            </button>
+          ))}
         </div>
       )}
 
