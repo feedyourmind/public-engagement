@@ -1,18 +1,68 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import type { VariationWithPresets } from "@/types";
 
 export default function TopNav() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isSettings = pathname === "/settings";
+
+  // Derive variation slug from the current URL
+  // - On /settings?v=oliver → slug is "oliver"
+  // - On /oliver → slug is "oliver"
+  // - On / → no slug
+  let variationSlug: string | null = null;
+  if (isSettings) {
+    variationSlug = searchParams.get("v");
+  } else if (pathname !== "/" && !pathname.startsWith("/api")) {
+    variationSlug = pathname.slice(1); // Remove leading "/"
+  }
+
+  const settingsHref = variationSlug
+    ? `/settings?v=${variationSlug}`
+    : "/settings";
+
+  const backHref = variationSlug ? `/${variationSlug}` : "/";
+
+  // Variation dropdown state
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [variationsList, setVariationsList] = useState<VariationWithPresets[]>([]);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!showDropdown) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showDropdown]);
+
+  const handleUserIconClick = async () => {
+    if (!showDropdown) {
+      try {
+        const res = await fetch("/api/variations");
+        if (res.ok) {
+          const data: VariationWithPresets[] = await res.json();
+          setVariationsList(data);
+        }
+      } catch {}
+    }
+    setShowDropdown(!showDropdown);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-4 sm:px-8 bg-bg/80 backdrop-blur-md border-b border-white/[0.06]">
       {/* Left: title or back link */}
       {isSettings ? (
         <Link
-          href="/"
+          href={backHref}
           className="flex items-center gap-2 text-sm text-text-muted hover:text-text transition-colors"
         >
           <svg
@@ -30,32 +80,105 @@ export default function TopNav() {
           Back
         </Link>
       ) : (
-        <span className="text-xs uppercase tracking-widest text-text-muted font-body">
-          AI X-Risk Spectrum
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs uppercase tracking-widest text-text-muted font-body">
+            AI X-Risk Spectrum
+          </span>
+          {variationSlug && (
+            <span className="text-xs text-text/50 font-body">
+              / {variationSlug}
+            </span>
+          )}
+        </div>
       )}
 
-      {/* Right: settings gear */}
+      {/* Right: user icon + settings gear */}
       {!isSettings && (
-        <Link
-          href="/settings"
-          className="p-2 rounded-lg text-text-muted hover:text-text hover:bg-white/[0.06] transition-colors"
-          aria-label="Settings"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <div className="flex items-center gap-1">
+          {/* User / Variations dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={handleUserIconClick}
+              className="p-2 rounded-lg text-text-muted hover:text-text hover:bg-white/[0.06] transition-colors cursor-pointer"
+              aria-label="Switch variation"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </button>
+
+            {showDropdown && (
+              <div className="absolute top-full right-0 mt-1 z-50 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl py-1 min-w-44">
+                <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-text/30 font-body">
+                  Variations
+                </div>
+
+                {variationsList.map((v) => {
+                  const href = v.isDefault ? "/" : `/${v.slug}`;
+                  const isActive = v.isDefault
+                    ? !variationSlug
+                    : variationSlug === v.slug;
+                  return (
+                    <Link
+                      key={v.slug}
+                      href={href}
+                      onClick={() => setShowDropdown(false)}
+                      className={`block px-3 py-2 text-xs font-body transition-colors ${
+                        isActive
+                          ? "text-white bg-white/10"
+                          : "text-text/60 hover:bg-white/[0.06] hover:text-white"
+                      }`}
+                    >
+                      {v.name}
+                      {v.isDefault && (
+                        <span className="ml-1.5 text-[10px] text-text/30">
+                          default
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+
+                {variationsList.length === 0 && (
+                  <div className="px-3 py-2 text-xs text-text/30">
+                    Loading...
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Settings gear */}
+          <Link
+            href={settingsHref}
+            className="p-2 rounded-lg text-text-muted hover:text-text hover:bg-white/[0.06] transition-colors"
+            aria-label="Settings"
           >
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-          </svg>
-        </Link>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </Link>
+        </div>
       )}
     </nav>
   );

@@ -3,6 +3,7 @@
 import ScrollSection from "@/components/ScrollSection";
 import DistributionChart from "@/components/DistributionChart";
 import SegmentLegend from "@/components/SegmentLegend";
+import DistributionGrid from "@/components/DistributionGrid";
 
 export default function Section02_Spectrum() {
   return (
@@ -29,6 +30,8 @@ export default function Section02_Spectrum() {
         showBoundaries={true}
         showLabels={true}
       />
+
+      <DistributionGrid />
 
       <div className="mt-8">
         <SegmentLegend />

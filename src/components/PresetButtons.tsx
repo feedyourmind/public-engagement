@@ -1,22 +1,265 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { useDistribution } from "@/context/DistributionContext";
-import { PRESETS } from "@/utils/presets";
+import { useVariation } from "@/context/VariationContext";
 
 export default function PresetButtons() {
-  const { applyPreset } = useDistribution();
+  const { applyPreset, location, scale, shape, boundaries, zoom, pan } = useDistribution();
+  const {
+    presets,
+    activePresetId,
+    selectPreset,
+    createPreset,
+    renamePreset,
+    deletePreset,
+    resetPresetToBase,
+    isAuthenticated,
+    isDefaultVariation,
+    goalParams,
+    isGoalActive,
+    selectGoal,
+  } = useVariation();
+
+  const [showAdd, setShowAdd] = useState(false);
+  const [addLabel, setAddLabel] = useState("");
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editLabel, setEditLabel] = useState("");
+  const [menuId, setMenuId] = useState<number | null>(null);
+  const addInputRef = useRef<HTMLInputElement>(null);
+  const editInputRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu on outside click
+  useEffect(() => {
+    if (!menuId) return;
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuId(null);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [menuId]);
+
+  // Focus add input
+  useEffect(() => {
+    if (showAdd) addInputRef.current?.focus();
+  }, [showAdd]);
+
+  // Focus edit input
+  useEffect(() => {
+    if (editingId) editInputRef.current?.focus();
+  }, [editingId]);
+
+  const handleSelect = (preset: (typeof presets)[0]) => {
+    selectPreset(preset.id);
+    applyPreset({
+      loc: preset.loc,
+      sc: preset.sc,
+      sh: preset.sh,
+      boundaries: preset.boundaries,
+      zoom: preset.zoom ?? 1.0,
+      pan: preset.pan ?? 0,
+    });
+  };
+
+  const handleAdd = async () => {
+    if (!addLabel.trim()) return;
+    await createPreset(addLabel.trim(), {
+      loc: location,
+      sc: scale,
+      sh: shape,
+      boundaries,
+      zoom,
+      pan,
+    });
+    setAddLabel("");
+    setShowAdd(false);
+  };
+
+  const handleRename = async (id: number) => {
+    if (!editLabel.trim()) {
+      setEditingId(null);
+      return;
+    }
+    await renamePreset(id, editLabel.trim());
+    setEditingId(null);
+  };
+
+  const handleDelete = async (id: number) => {
+    await deletePreset(id);
+    setMenuId(null);
+  };
+
+  const handleReset = async (id: number) => {
+    await resetPresetToBase(id);
+    setMenuId(null);
+  };
+
+  const handleSelectGoal = () => {
+    selectGoal();
+    applyPreset(goalParams);
+  };
 
   return (
-    <div className="flex gap-2 flex-wrap mb-5">
-      {PRESETS.map((p) => (
-        <button
-          key={p.label}
-          onClick={() => applyPreset(p)}
-          className="px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] text-text/80 text-xs font-body cursor-pointer transition-all hover:bg-white/10 hover:text-white"
-        >
-          {p.label}
-        </button>
-      ))}
+    <div className="flex gap-2 flex-wrap mb-5 items-center">
+      {presets.map((p) =>
+        editingId === p.id ? (
+          <form
+            key={p.id}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleRename(p.id);
+            }}
+            className="inline-flex"
+          >
+            <input
+              ref={editInputRef}
+              type="text"
+              value={editLabel}
+              onChange={(e) => setEditLabel(e.target.value)}
+              onBlur={() => handleRename(p.id)}
+              className="px-3 py-1 rounded-full border border-[#f4a261]/40 bg-white/[0.06] text-text text-xs font-body outline-none w-32"
+            />
+          </form>
+        ) : (
+          <div key={p.id} className="relative">
+            <button
+              onClick={() => handleSelect(p)}
+              onContextMenu={(e) => {
+                if (!isAuthenticated) return;
+                e.preventDefault();
+                setMenuId(menuId === p.id ? null : p.id);
+              }}
+              className={`px-4 py-1.5 rounded-full border text-xs font-body cursor-pointer transition-all ${
+                p.id === activePresetId
+                  ? "bg-white/15 text-white border-white/25"
+                  : "bg-white/[0.04] text-text/80 border-white/10 hover:bg-white/10 hover:text-white"
+              }`}
+              title={
+                p.inheritanceKind === "base"
+                  ? "Inherited from default"
+                  : p.inheritanceKind === "override"
+                    ? "Overridden"
+                    : undefined
+              }
+            >
+              {p.inheritanceKind === "base" && !isDefaultVariation && (
+                <span className="opacity-40 mr-1">&#8593;</span>
+              )}
+              {p.label}
+            </button>
+
+            {/* Context menu */}
+            {menuId === p.id && isAuthenticated && (
+              <div
+                ref={menuRef}
+                className="absolute top-full left-0 mt-1 z-50 bg-[#222] border border-white/10 rounded-lg shadow-xl py-1 min-w-28"
+              >
+                <button
+                  onClick={() => {
+                    setEditLabel(p.label);
+                    setEditingId(p.id);
+                    setMenuId(null);
+                  }}
+                  className="w-full px-3 py-1.5 text-left text-xs text-text/70 hover:bg-white/10 hover:text-text transition-colors cursor-pointer"
+                >
+                  Rename
+                </button>
+                {/* Override: show Reset to Default */}
+                {p.inheritanceKind === "override" && (
+                  <button
+                    onClick={() => handleReset(p.id)}
+                    className="w-full px-3 py-1.5 text-left text-xs text-cautious/70 hover:bg-cautious/10 hover:text-cautious transition-colors cursor-pointer"
+                  >
+                    Reset to Default
+                  </button>
+                )}
+                {/* Extra presets: show Delete */}
+                {p.inheritanceKind === "extra" && (
+                  <button
+                    onClick={() => handleDelete(p.id)}
+                    className="w-full px-3 py-1.5 text-left text-xs text-red-400/70 hover:bg-red-500/10 hover:text-red-400 transition-colors cursor-pointer"
+                  >
+                    Delete
+                  </button>
+                )}
+                {/* Default variation (Michael): can delete any preset */}
+                {isDefaultVariation && p.inheritanceKind === "base" && (
+                  <button
+                    onClick={() => handleDelete(p.id)}
+                    className="w-full px-3 py-1.5 text-left text-xs text-red-400/70 hover:bg-red-500/10 hover:text-red-400 transition-colors cursor-pointer"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      )}
+
+      {/* Goal system preset — always visible */}
+      <div className="w-px h-5 bg-white/10 mx-1" />
+      <button
+        onClick={handleSelectGoal}
+        className={`px-4 py-1.5 rounded-full border text-xs font-body cursor-pointer transition-all ${
+          isGoalActive
+            ? "bg-[#52b788]/20 text-[#52b788] border-[#52b788]/40"
+            : "bg-white/[0.04] text-[#52b788]/70 border-[#52b788]/20 hover:bg-[#52b788]/10 hover:text-[#52b788]"
+        }`}
+        title="Goal preset — the target distribution shape"
+      >
+        Goal
+      </button>
+
+      {/* Add preset */}
+      {isAuthenticated &&
+        (showAdd ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAdd();
+            }}
+            className="inline-flex gap-1.5"
+          >
+            <input
+              ref={addInputRef}
+              type="text"
+              value={addLabel}
+              onChange={(e) => setAddLabel(e.target.value)}
+              onBlur={() => {
+                if (!addLabel.trim()) setShowAdd(false);
+              }}
+              placeholder="Preset name..."
+              className="px-3 py-1 rounded-full border border-[#f4a261]/30 bg-white/[0.04] text-text text-xs font-body outline-none w-32 placeholder:text-text/30"
+            />
+            <button
+              type="submit"
+              className="px-3 py-1 rounded-full bg-[#f4a261] text-black text-xs font-medium cursor-pointer hover:bg-[#f4a261]/90 transition-colors"
+            >
+              Save
+            </button>
+          </form>
+        ) : (
+          <button
+            onClick={() => setShowAdd(true)}
+            className="px-3 py-1.5 rounded-full border border-dashed border-white/15 text-text/40 text-xs font-body cursor-pointer transition-all hover:border-white/30 hover:text-text/70"
+            title="Add preset with current settings"
+          >
+            + Preset
+          </button>
+        ))}
+
+      {presets.length === 0 && (
+        <span className="text-xs text-text/30 font-body">
+          No presets yet.{" "}
+          {isAuthenticated
+            ? "Click + to create one."
+            : "Unlock to add presets."}
+        </span>
+      )}
     </div>
   );
 }

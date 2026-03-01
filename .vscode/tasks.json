@@ -16,6 +16,30 @@
           "label": "                    dev $(play)   "
         }
       }
+    },
+    {
+      "type": "npm",
+      "script": "db:push",
+      "problemMatcher": [],
+      "label": "npm: db:push",
+      "detail": "drizzle-kit push",
+      "options": {
+        "statusbar": {
+          "label": "          $(database)$(repo-push)           "
+        }
+      }
+    },
+    {
+      "type": "npm",
+      "script": "deploy",
+      "problemMatcher": [],
+      "label": "npm: deploy",
+      "detail": "vercel --prod",
+      "options": {
+        "statusbar": {
+          "label": "          $(cloud-upload)           "
+        }
+      }
     }
   ]
 }

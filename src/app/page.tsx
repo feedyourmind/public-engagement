@@ -1,23 +1,43 @@
-import SectionNav from "@/components/SectionNav";
-import Section01_Intro from "@/sections/Section01_Intro";
-import Section02_Spectrum from "@/sections/Section02_Spectrum";
-import Section03_ZoomedSegments from "@/sections/Section03_ZoomedSegments";
-import Section04_Comparisons from "@/sections/Section04_Comparisons";
-import Section05_ConcernedSplit from "@/sections/Section05_ConcernedSplit";
-import Section06_Conclusion from "@/sections/Section06_Conclusion";
+import { db } from "@/db";
+import { variations, presets } from "@/db/schema";
+import { eq, asc } from "drizzle-orm";
+import MainPageClient from "./MainPageClient";
 
-export default function Home() {
+export default async function Home() {
+  let defaultVariation = null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let allVariations: any[] = [];
+
+  try {
+    defaultVariation = await db.query.variations.findFirst({
+      where: eq(variations.isDefault, true),
+      columns: { passcodeHash: false },
+      with: {
+        presets: {
+          orderBy: [asc(presets.sortOrder)],
+        },
+      },
+    });
+
+    allVariations = await db.query.variations.findMany({
+      orderBy: [asc(variations.createdAt)],
+      columns: { passcodeHash: false },
+      with: {
+        presets: {
+          orderBy: [asc(presets.sortOrder)],
+        },
+      },
+    });
+  } catch {
+    // DB not available — fall back to null (uses hardcoded defaults)
+  }
+
+  const serialized = defaultVariation
+    ? JSON.parse(JSON.stringify(defaultVariation))
+    : null;
+  const allSerialized = JSON.parse(JSON.stringify(allVariations));
+
   return (
-    <>
-      <SectionNav />
-      <main>
-        <Section01_Intro />
-        <Section02_Spectrum />
-        <Section03_ZoomedSegments />
-        <Section04_Comparisons />
-        <Section05_ConcernedSplit />
-        <Section06_Conclusion />
-      </main>
-    </>
+    <MainPageClient variation={serialized} allVariations={allSerialized} />
   );
 }

@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { motion, useInView } from "framer-motion";
 import { useDistribution } from "@/context/DistributionContext";
 import { genCurve } from "@/utils/math";
 import type { DistributionChartProps } from "@/types";
 
 const W = 900;
-const H = 380;
-const PAD = { top: 30, right: 30, bottom: 50, left: 20 };
+const H = 310;
+const PAD = { top: 10, right: 30, bottom: 40, left: 20 };
 const CW = W - PAD.left - PAD.right;
 const CH = H - PAD.top - PAD.bottom;
 
@@ -36,7 +36,18 @@ export default function DistributionChart({
   } = useDistribution();
 
   const ref = useRef<SVGSVGElement>(null);
+  const inViewRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(inViewRef, { once: true, margin: "-50px" });
   const [drag, setDrag] = useState<number | null>(null);
+  const [initialAnimDone, setInitialAnimDone] = useState(false);
+
+  // After the initial reveal animation completes, switch to fast transitions
+  useEffect(() => {
+    if (isInView && !initialAnimDone) {
+      const timer = setTimeout(() => setInitialAnimDone(true), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [isInView, initialAnimDone]);
 
   const sx = useCallback(
     (x: number) => PAD.left + ((x - xMin) / (xMax - xMin)) * CW,
@@ -134,8 +145,9 @@ export default function DistributionChart({
 
   return (
     <div
-      className={`bg-chart-bg rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.35)] ${className}`}
-      style={{ padding: "24px 16px 12px" }}
+      ref={inViewRef}
+      className={`bg-chart-bg rounded-t-xl shadow-[0_8px_40px_rgba(0,0,0,0.35)] ${className}`}
+      style={{ padding: "12px 16px 0" }}
     >
       <svg
         ref={ref}
@@ -175,8 +187,8 @@ export default function DistributionChart({
                 fill={getSegmentFill(f.id, f.color, f.colorLight)}
                 stroke="none"
                 initial={{ opacity: 0 }}
-                animate={{ opacity: getSegmentOpacity(f.id) }}
-                transition={{ duration: 0.4 }}
+                animate={isInView ? { opacity: getSegmentOpacity(f.id) } : { opacity: 0 }}
+                transition={initialAnimDone ? { duration: 0.08 } : { duration: 0.4, delay: isInView ? 1.0 : 0 }}
                 style={{ cursor: interactive ? "pointer" : "default", pointerEvents: "none" }}
               />
             )
@@ -190,7 +202,7 @@ export default function DistributionChart({
           strokeWidth="2.5"
           strokeLinejoin="round"
           initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
+          animate={isInView ? { pathLength: 1 } : { pathLength: 0 }}
           transition={{ duration: 1.5, ease: "easeInOut" }}
         />
 
@@ -204,7 +216,7 @@ export default function DistributionChart({
             strokeLinejoin="round"
             strokeDasharray={comparisonCurve.dashed ? "8,6" : undefined}
             initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
+            animate={isInView ? { pathLength: 1 } : { pathLength: 0 }}
             transition={{ duration: 1.5, ease: "easeInOut", delay: 0.3 }}
           />
         )}

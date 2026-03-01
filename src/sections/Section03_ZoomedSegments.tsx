@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import DistributionChart from "@/components/DistributionChart";
+import DistributionGrid from "@/components/DistributionGrid";
 import { SEGMENTS } from "@/utils/segments";
 
 const SEGMENT_NARRATIVES = [
@@ -48,7 +49,7 @@ export default function Section03_ZoomedSegments() {
     offset: ["start end", "end start"],
   });
 
-  const rawIndex = useTransform(scrollYProgress, [0.15, 0.85], [0, 5.99]);
+  const rawIndex = useTransform(scrollYProgress, [0.25, 0.95], [0, 5.99]);
 
   useMotionValueEvent(rawIndex, "change", (v) => {
     setActiveIndex(Math.min(Math.floor(v), 5));
@@ -82,6 +83,10 @@ export default function Section03_ZoomedSegments() {
             showLabels={true}
             interactive={false}
           />
+          <DistributionGrid
+            highlightSegmentId={activeSegment.id}
+            interactive={false}
+          />
           <div className="mt-4 flex gap-1.5 justify-center">
             {SEGMENTS.map((seg, i) => (
               <div
@@ -102,13 +107,13 @@ export default function Section03_ZoomedSegments() {
           {SEGMENT_NARRATIVES.map((item, i) => (
             <motion.div
               key={item.id}
-              className="min-h-[60vh] flex items-center"
+              className="min-h-[25vh] flex items-center"
               initial={{ opacity: 0.3 }}
               whileInView={{ opacity: 1 }}
               viewport={{ margin: "-40%" }}
               transition={{ duration: 0.5 }}
             >
-              <div className="py-12">
+              <div className="py-4">
                 <div className="flex items-center gap-3 mb-4">
                   <div
                     className="w-4 h-4 rounded"

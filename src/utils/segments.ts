@@ -46,7 +46,7 @@ export const SEGMENTS: readonly Segment[] = [
     label: "Alarmed / Doomer",
     description:
       "AI poses a genuine existential threat — current trajectory leads to catastrophe or human extinction.",
-    color: "#9b2226",
-    colorLight: "rgba(155,34,38,0.25)",
+    color: "#6b1114",
+    colorLight: "rgba(107,17,20,0.30)",
   },
 ] as const;

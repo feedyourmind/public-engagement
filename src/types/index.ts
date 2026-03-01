@@ -45,3 +45,51 @@ export interface DistributionChartProps {
   height?: number;
   className?: string;
 }
+
+/* ── Variation / Preset DB records ── */
+
+export interface VariationRecord {
+  id: number;
+  name: string;
+  slug: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PresetRecord {
+  id: number;
+  variationId: number;
+  parentPresetId: number | null;
+  label: string;
+  sortOrder: number;
+  loc: number;
+  sc: number;
+  sh: number;
+  boundaries: number[];
+  zoom: number;
+  pan: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type InheritanceKind = "base" | "override" | "extra";
+
+export interface EffectivePreset extends PresetRecord {
+  inheritanceKind: InheritanceKind;
+  basePresetId: number | null;
+}
+
+/** The set of parameters that get saved per preset (used in onParamsChange, savePresetParams, etc.) */
+export interface PresetParams {
+  loc: number;
+  sc: number;
+  sh: number;
+  boundaries: number[];
+  zoom: number;
+  pan: number;
+}
+
+export interface VariationWithPresets extends VariationRecord {
+  presets: PresetRecord[];
+}

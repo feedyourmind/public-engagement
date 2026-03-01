@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Playfair_Display, DM_Sans, DM_Mono } from "next/font/google";
-import { DistributionProvider } from "@/context/DistributionContext";
 import TopNav from "@/components/TopNav";
 import "./globals.css";
 
@@ -47,10 +47,10 @@ export default function RootLayout({
       className={`${playfair.variable} ${dmSans.variable} ${dmMono.variable}`}
     >
       <body className="bg-bg text-text font-body pt-12">
-        <DistributionProvider>
+        <Suspense>
           <TopNav />
-          {children}
-        </DistributionProvider>
+        </Suspense>
+        {children}
       </body>
     </html>
   );

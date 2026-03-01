@@ -13,7 +13,7 @@ import {
 import { genCurve, integrate } from "@/utils/math";
 import { SEGMENTS } from "@/utils/segments";
 import defaultPreset from "@/presets/reality.json";
-import type { CurvePoint, Segment } from "@/types";
+import type { CurvePoint, Segment, PresetParams } from "@/types";
 
 interface DistributionState {
   location: number;
@@ -30,12 +30,7 @@ interface DistributionState {
   setScale: (v: number) => void;
   setShape: (v: number) => void;
   setBoundary: (index: number, value: number) => void;
-  applyPreset: (preset: {
-    loc: number;
-    sc: number;
-    sh: number;
-    boundaries: number[];
-  }) => void;
+  applyPreset: (preset: PresetParams) => void;
   zoom: number;
   setZoom: (v: number) => void;
   pan: number;
@@ -52,42 +47,48 @@ const MATH_MAX = 5;
 // Default half-width at zoom=1
 const VIEW_HALF = (MATH_MAX - MATH_MIN) / 2;
 const DEFAULT_ZOOM = 1.0;
-const STORAGE_KEY = "xrisk-chart-settings";
 
-const DEFAULTS = {
-  location: defaultPreset.loc,
-  scale: defaultPreset.sc,
-  shape: defaultPreset.sh,
+const FALLBACK_DEFAULTS: PresetParams = {
+  loc: defaultPreset.loc,
+  sc: defaultPreset.sc,
+  sh: defaultPreset.sh,
   boundaries: defaultPreset.boundaries,
+  zoom: 1.0,
+  pan: 0,
 };
 
-function loadSettings() {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (
-      typeof parsed.location === "number" &&
-      typeof parsed.scale === "number" &&
-      typeof parsed.shape === "number" &&
-      Array.isArray(parsed.boundaries)
-    ) {
-      return parsed as typeof DEFAULTS & { zoom?: number; pan?: number };
-    }
-  } catch {}
-  return null;
+interface DistributionProviderProps {
+  children: ReactNode;
+  initialPreset?: PresetParams | null;
+  onParamsChange?: (params: PresetParams) => void;
 }
 
-export function DistributionProvider({ children }: { children: ReactNode }) {
-  const [location, setLocation] = useState(DEFAULTS.location);
-  const [scale, setScale] = useState(DEFAULTS.scale);
-  const [shape, setShape] = useState(DEFAULTS.shape);
-  const [boundaries, setBoundaries] = useState([...DEFAULTS.boundaries]);
-  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
-  const [pan, setPan] = useState(0);
+export function DistributionProvider({
+  children,
+  initialPreset,
+  onParamsChange,
+}: DistributionProviderProps) {
+  const init = initialPreset ?? FALLBACK_DEFAULTS;
+
+  const [location, setLocation] = useState(init.loc);
+  const [scale, setScale] = useState(init.sc);
+  const [shape, setShape] = useState(init.sh);
+  const [boundaries, setBoundaries] = useState([...init.boundaries]);
+  const [zoom, setZoom] = useState(init.zoom ?? DEFAULT_ZOOM);
+  const [pan, setPan] = useState(init.pan ?? 0);
   const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
-  const hydrated = useRef(false);
+
+  // Track whether this is the first render to avoid triggering onParamsChange
+  const isFirstRender = useRef(true);
+
+  // Notify parent (VariationContext) when curve params change, for debounced DB save
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    onParamsChange?.({ loc: location, sc: scale, sh: shape, boundaries, zoom, pan });
+  }, [location, scale, shape, boundaries, zoom, pan]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Compute the centroid (center of mass) of the curve to center zoom on it
   const baseCurve = useMemo(
@@ -107,31 +108,6 @@ export function DistributionProvider({ children }: { children: ReactNode }) {
   const viewCenter = centroid + pan;
   const xMin = viewCenter - VIEW_HALF * zoom;
   const xMax = viewCenter + VIEW_HALF * zoom;
-
-  // Restore from localStorage after hydration (avoids SSR mismatch)
-  useEffect(() => {
-    const saved = loadSettings();
-    if (saved) {
-      setLocation(saved.location);
-      setScale(saved.scale);
-      setShape(saved.shape);
-      setBoundaries([...saved.boundaries]);
-      if (typeof saved.zoom === "number") setZoom(saved.zoom);
-      if (typeof saved.pan === "number") setPan(saved.pan);
-    }
-    hydrated.current = true;
-  }, []);
-
-  // Persist to localStorage on change (skip the initial hydration restore)
-  useEffect(() => {
-    if (!hydrated.current) return;
-    try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ location, scale, shape, boundaries, zoom, pan })
-      );
-    } catch {}
-  }, [location, scale, shape, boundaries, zoom, pan]);
 
   // Generate curve data covering visible range (may be wider than math range when zoomed out)
   const dataMin = Math.min(MATH_MIN, xMin);
@@ -171,11 +147,13 @@ export function DistributionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const applyPreset = useCallback(
-    (p: { loc: number; sc: number; sh: number; boundaries: number[] }) => {
+    (p: PresetParams) => {
       setLocation(p.loc);
       setScale(p.sc);
       setShape(p.sh);
       setBoundaries([...p.boundaries]);
+      if (p.zoom != null) setZoom(p.zoom);
+      if (p.pan != null) setPan(p.pan);
     },
     []
   );

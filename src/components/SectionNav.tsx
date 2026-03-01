@@ -6,6 +6,8 @@ const SECTIONS = [
   { id: "intro", label: "Intro" },
   { id: "spectrum", label: "Spectrum" },
   { id: "segments", label: "Segments" },
+  { id: "funnel", label: "Funnel" },
+  { id: "goals", label: "Goals" },
   { id: "comparisons", label: "Comparisons" },
   { id: "concerned", label: "Concerned" },
   { id: "conclusion", label: "Conclusion" },
