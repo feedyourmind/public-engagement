@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { SEGMENTS } from "@/utils/segments";
 
@@ -98,6 +98,16 @@ const NARRATIVE_RANGES = [
   [0.62, 0.68],
 ];
 
+/* ── Bright keyword text colors — readable on dark background ── */
+const KEYWORD_COLORS = [
+  "#4db88a", // band 0: brightened #2d6a4f
+  "#72d7a8", // band 1: brightened #52b788
+  "#f4a261", // band 2: already bright
+  "#f0947f", // band 3: brightened #e07a5f
+  "#e8593a", // band 4: brightened #b5280f
+  "#d44a4a", // band 5: brightened #6b1114
+];
+
 /* ── Keyword group sub-component ── */
 
 function KeywordGroup({
@@ -110,10 +120,11 @@ function KeywordGroup({
   scrollYProgress: MotionValue<number>;
 }) {
   const [rangeStart, rangeEnd] = BAND_RANGES[bandIndex];
+  const kwColor = KEYWORD_COLORS[bandIndex];
   const opacity = useTransform(
     scrollYProgress,
     [rangeStart - 0.03, rangeStart, rangeEnd, rangeEnd + 0.03],
-    [0.2, 1, 1, 0.2]
+    [0.3, 1, 1, 0.3]
   );
 
   const bandY = FUNNEL_TOP_Y + bandIndex * BAND_H;
@@ -129,7 +140,7 @@ function KeywordGroup({
           key={j}
           x={kw_x}
           y={groupStartY + j * lineH}
-          fill={band.color}
+          fill={kwColor}
           fontSize={17}
           fontFamily="var(--font-dm-sans)"
           textAnchor="start"
@@ -143,7 +154,7 @@ function KeywordGroup({
         y1={bandMidY}
         x2={kw_x - 8}
         y2={bandMidY}
-        stroke={band.color}
+        stroke={kwColor}
         strokeWidth={1}
         strokeDasharray="3 3"
         opacity={0.4}
@@ -248,80 +259,50 @@ const POSE_RANGES: [number, number][] = [
   [0.65, 0.74],
 ];
 
-/* ── Common viewBox for both poses — ensures seamless cross-fade ── */
-const POSE_VIEWBOX = "-34 -52 96 108";
+/* ── Common viewBox for both poses — matches SVG assets (250×400) ── */
+const POSE_VIEWBOX = "0 0 250 400";
 
-/* ── Arrived figure — standing upright, right arm extended, palm holding light ── */
+/* ── Arrived figure — from Hold.svg asset (Illustrator export) ── */
 
 function ArrivedFigureSVG() {
+  const S = 22.8; // stroke width from original asset
   return (
     <>
       {/* Head */}
-      <circle cx={0} cy={-30} r={9} fill={FIG_COLOR} />
+      <path d="M135.38,67.79c-6.38-6.54-14.21-9.8-23.48-9.8-9.27,0-17.1,3.27-23.48,9.8-6.54,6.54-9.8,14.36-9.8,23.48s3.27,17.1,9.8,23.48c6.38,6.54,14.21,9.8,23.48,9.8,9.27,0,17.1-3.27,23.48-9.8,6.54-6.38,9.8-14.21,9.8-23.48s-3.27-16.95-9.8-23.48Z" fill={FIG_COLOR} />
       {/* Torso */}
-      <line x1={0} y1={-21} x2={0} y2={8}
-        stroke={FIG_COLOR} strokeWidth={7} strokeLinecap="round" />
-      {/* Left arm — naturally at side, slight bend */}
-      <line x1={-1} y1={-16} x2={-10} y2={-2}
-        stroke={FIG_COLOR} strokeWidth={5.5} strokeLinecap="round" />
-      <line x1={-10} y1={-2} x2={-11} y2={10}
-        stroke={FIG_COLOR} strokeWidth={5} strokeLinecap="round" />
-      {/* Right arm — extended upward */}
-      <line x1={1} y1={-16} x2={18} y2={-24}
-        stroke={FIG_COLOR} strokeWidth={5.5} strokeLinecap="round" />
-      <line x1={18} y1={-24} x2={32} y2={-34}
-        stroke={FIG_COLOR} strokeWidth={5} strokeLinecap="round" />
-      {/* Palm */}
-      <circle cx={35} cy={-36} r={4.5} fill={FIG_COLOR} />
-      {/* Left leg — straight */}
-      <line x1={-2} y1={8} x2={-5} y2={26}
-        stroke={FIG_COLOR} strokeWidth={5.5} strokeLinecap="round" />
-      <line x1={-5} y1={26} x2={-5} y2={38}
-        stroke={FIG_COLOR} strokeWidth={5} strokeLinecap="round" />
-      {/* Right leg — straight */}
-      <line x1={2} y1={8} x2={5} y2={26}
-        stroke={FIG_COLOR} strokeWidth={5.5} strokeLinecap="round" />
-      <line x1={5} y1={26} x2={5} y2={38}
-        stroke={FIG_COLOR} strokeWidth={5} strokeLinecap="round" />
+      <path d="M113.04,118.4l-.68,97.57" stroke={FIG_COLOR} strokeWidth={S} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Left leg */}
+      <path d="M96.17,303.51l16.41-90.96" stroke={FIG_COLOR} strokeWidth={S} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Right leg */}
+      <path d="M126.95,303.51l-14.36-90.96" stroke={FIG_COLOR} strokeWidth={S} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Left arm */}
+      <path d="M107.11,134.58l-33.51,77.97" stroke={FIG_COLOR} strokeWidth={S} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Right arm — extended to upper right */}
+      <path d="M116.91,134.58l41.26.68,45.59-15.27" stroke={FIG_COLOR} strokeWidth={S} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Palm dot removed — glow effect replaces it */}
     </>
   );
 }
 
-/* ── Flying figure — bold pictogram superhero lunge ──
-   All coordinates computed to look correct AFTER -35° CSS rotation.
-   Key insight: "right" in SVG → "upper-right" on screen after rotation. */
+/* ── Flying figure — from Fly.svg asset (Illustrator export) ── */
 
 function FlyingPoseSVG() {
+  const S = 22.8; // stroke width from original asset
   return (
     <>
-      {/* Head — positioned ahead of torso in flight direction */}
-      <circle cx={8} cy={-24} r={12} fill={FIG_COLOR} />
-      {/* Torso — thick, straight vertical (rotation provides the lean) */}
-      <line x1={0} y1={-14} x2={0} y2={14}
-        stroke={FIG_COLOR} strokeWidth={14} strokeLinecap="round" />
-      {/* Right arm — goes RIGHT in SVG → appears upper-right on screen */}
-      <line x1={4} y1={-10} x2={18} y2={-14}
-        stroke={FIG_COLOR} strokeWidth={10} strokeLinecap="round" />
-      <line x1={18} y1={-14} x2={32} y2={-18}
-        stroke={FIG_COLOR} strokeWidth={9} strokeLinecap="round" />
-      {/* Left arm — upper: goes upper-left in SVG → appears left on screen */}
-      <line x1={-4} y1={-10} x2={-12} y2={-20}
-        stroke={FIG_COLOR} strokeWidth={10} strokeLinecap="round" />
-      {/* Left arm — forearm: drops lower-left in SVG → appears down on screen */}
-      <line x1={-12} y1={-20} x2={-20} y2={-8}
-        stroke={FIG_COLOR} strokeWidth={9} strokeLinecap="round" />
-      {/* Right leg — thigh: goes down-right in SVG → appears forward on screen */}
-      <line x1={2} y1={14} x2={16} y2={26}
-        stroke={FIG_COLOR} strokeWidth={10} strokeLinecap="round" />
-      {/* Right leg — shin: goes down-left in SVG → appears dropping down on screen */}
-      <line x1={16} y1={26} x2={9} y2={40}
-        stroke={FIG_COLOR} strokeWidth={9} strokeLinecap="round" />
-      {/* Left leg — thigh: goes LEFT+slightly UP in SVG → appears back on screen */}
-      <line x1={-2} y1={14} x2={-19} y2={9}
-        stroke={FIG_COLOR} strokeWidth={10} strokeLinecap="round" />
-      {/* Left leg — shin: continues left in SVG → appears back-down on screen */}
-      <line x1={-19} y1={9} x2={-28} y2={12}
-        stroke={FIG_COLOR} strokeWidth={9} strokeLinecap="round" />
+      {/* Head */}
+      <path d="M174.57,104.92c-3.95-8.21-10.26-13.83-18.92-16.87-8.66-3.04-17.1-2.58-25.3,1.37-8.36,3.95-14.06,10.26-17.1,18.92-3.04,8.66-2.58,17.1,1.37,25.3,3.95,8.36,10.26,14.06,18.92,17.1,8.66,3.04,17.1,2.58,25.3-1.37,8.36-3.95,14.06-10.26,17.1-18.92s2.58-17.17-1.37-25.53Z" fill={FIG_COLOR} />
+      {/* Torso */}
+      <path d="M149.72,142.31l-37.62,90.28" stroke={FIG_COLOR} strokeWidth={S} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Left leg */}
+      <path d="M29.35,285.25l44.91-24.39,39.21-31.69" stroke={FIG_COLOR} strokeWidth={S} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Right leg */}
+      <path d="M94.32,288.21l46.96-15.27-27.81-43.77" stroke={FIG_COLOR} strokeWidth={S} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Left arm */}
+      <path d="M143.79,158.95l-43.31,4.33-32.6,25.53" stroke={FIG_COLOR} strokeWidth={S} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Right arm — extended forward */}
+      <path d="M143.79,162.14l39.21-8.21,29.41-32.14" stroke={FIG_COLOR} strokeWidth={S} strokeLinecap="round" strokeLinejoin="round" fill="none" />
     </>
   );
 }
@@ -418,13 +399,16 @@ function FallingPerson({
 
 function NewMemberReveal({
   scrollYProgress,
+  startLeft,
+  startTop,
 }: {
   scrollYProgress: MotionValue<number>;
+  startLeft: number;
+  startTop: number;
 }) {
-  // Position: funnel bottom → right-column upper area
-  // Start coords match where falling person exits (FUNNEL_CX in SVG → ~22% viewport)
-  const leftPct = useTransform(scrollYProgress, [0.70, 0.78], [22, 68]);
-  const topPct = useTransform(scrollYProgress, [0.70, 0.78], [86, 28]);
+  // Position: measured funnel bottom → right-column upper area
+  const leftPct = useTransform(scrollYProgress, [0.70, 0.78], [startLeft, 68]);
+  const topPct = useTransform(scrollYProgress, [0.70, 0.78], [startTop, 22]);
   const leftStr = useTransform(leftPct, (v) => `${v}%`);
   const topStr = useTransform(topPct, (v) => `${v}%`);
 
@@ -435,8 +419,8 @@ function NewMemberReveal({
     [0, 1, 1, 0]
   );
 
-  // Rotation: tilted during Superman flight, upright at arrival
-  const rotation = useTransform(scrollYProgress, [0.70, 0.78], [-35, 0]);
+  // Rotation: slight tilt during flight (Fly.svg already has built-in lean), upright at arrival
+  const rotation = useTransform(scrollYProgress, [0.70, 0.78], [-20, 0]);
 
   // Cross-fade: Superman pose → standing pose
   const flyingPoseOpacity = useTransform(scrollYProgress, [0.76, 0.79], [1, 0]);
@@ -460,7 +444,7 @@ function NewMemberReveal({
         left: leftStr,
         top: topStr,
         opacity: figOpacity,
-        x: "-55px",
+        x: "-48px",
         y: "-75px",
       }}
     >
@@ -468,14 +452,14 @@ function NewMemberReveal({
         {/* Rotatable figure container — large for bold pictogram */}
         <motion.div
           className="relative shrink-0"
-          style={{ width: 120, height: 135, rotate: rotation }}
+          style={{ width: 100, height: 160, rotate: rotation }}
         >
           {/* Outer golden bloom from palm — only visible on standing pose */}
           <motion.div
             className="absolute rounded-full"
             style={{
-              left: "72%",
-              top: "15%",
+              left: "87%",
+              top: "24%",
               width: 140,
               height: 140,
               x: "-50%",
@@ -491,8 +475,8 @@ function NewMemberReveal({
           <motion.div
             className="absolute rounded-full"
             style={{
-              left: "72%",
-              top: "15%",
+              left: "87%",
+              top: "24%",
               width: 56,
               height: 56,
               x: "-50%",
@@ -503,11 +487,11 @@ function NewMemberReveal({
               filter: "blur(6px)",
             }}
           />
-          {/* Superman (flying) pose */}
+          {/* Flying pose */}
           <motion.svg
             viewBox={POSE_VIEWBOX}
-            width={120}
-            height={135}
+            width={100}
+            height={160}
             className="absolute inset-0 z-10"
             style={{ opacity: flyingPoseOpacity }}
           >
@@ -516,8 +500,8 @@ function NewMemberReveal({
           {/* Standing (arrived) pose */}
           <motion.svg
             viewBox={POSE_VIEWBOX}
-            width={120}
-            height={135}
+            width={100}
+            height={160}
             className="absolute inset-0 z-10"
             style={{ opacity: standingPoseOpacity }}
           >
@@ -581,6 +565,48 @@ function TheKeyStage({
 
 export default function Section07b_ConversionJourney() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Measure funnel bottom position relative to flex container
+  const [startPos, setStartPos] = useState({ left: 18, top: 80 });
+
+  useEffect(() => {
+    const measure = () => {
+      const svg = svgRef.current;
+      const container = containerRef.current;
+      if (!svg || !container) return;
+
+      const svgRect = svg.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      // SVG viewBox: 0 0 750 620 with preserveAspectRatio="xMidYMid meet"
+      const scaleX = svgRect.width / SVG_W;
+      const scaleY = svgRect.height / SVG_H;
+      const scale = Math.min(scaleX, scaleY);
+
+      // Content offset within SVG element (centering from "xMidYMid")
+      const renderedW = SVG_W * scale;
+      const renderedH = SVG_H * scale;
+      const offsetX = (svgRect.width - renderedW) / 2;
+      const offsetY = (svgRect.height - renderedH) / 2;
+
+      // Funnel bottom center in viewport pixels (person exits at BOT_Y + 40)
+      const funnelExitX = svgRect.left + offsetX + FUNNEL_CX * scale;
+      const funnelExitY = svgRect.top + offsetY + (FUNNEL_BOT_Y + 40) * scale;
+
+      // Convert to percentage of the flex container
+      const leftPct = ((funnelExitX - containerRect.left) / containerRect.width) * 100;
+      const topPct = ((funnelExitY - containerRect.top) / containerRect.height) * 100;
+
+      setStartPos({ left: leftPct, top: topPct });
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -649,12 +675,14 @@ export default function Section07b_ConversionJourney() {
 
         {/* Two-column layout: funnel (left) + text (right) — stays visible */}
         <motion.div
-          className="flex flex-col lg:flex-row items-stretch flex-1 w-full max-w-6xl mx-auto px-4 sm:px-8 gap-2 lg:gap-4 min-h-0"
+          ref={containerRef}
+          className="relative flex flex-col lg:flex-row items-stretch flex-1 w-full max-w-6xl mx-auto px-4 sm:px-8 gap-2 lg:gap-4 min-h-0"
           style={{ opacity: funnelOpacity }}
         >
           {/* Left: SVG funnel + person + keywords */}
           <div className="w-full lg:w-[60%] flex items-center justify-center min-h-0">
             <svg
+              ref={svgRef}
               viewBox={`0 0 ${SVG_W} ${SVG_H}`}
               className="w-full h-full max-h-[calc(100vh-10rem)]"
               preserveAspectRatio="xMidYMid meet"
@@ -736,10 +764,14 @@ export default function Section07b_ConversionJourney() {
             {/* "The Key" — same position as other narrative stages */}
             <TheKeyStage scrollYProgress={scrollYProgress} />
           </div>
-        </motion.div>
 
-        {/* New Member Reveal — flies from funnel bottom to right column, stays put */}
-        <NewMemberReveal scrollYProgress={scrollYProgress} />
+          {/* New Member Reveal — positioned relative to this flex container */}
+          <NewMemberReveal
+            scrollYProgress={scrollYProgress}
+            startLeft={startPos.left}
+            startTop={startPos.top}
+          />
+        </motion.div>
       </motion.div>
     </section>
   );

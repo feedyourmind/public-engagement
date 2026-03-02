@@ -1,15 +1,22 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, memo } from "react";
 import {
   motion,
   useScroll,
   useTransform,
+  useMotionValueEvent,
   useInView,
+  AnimatePresence,
   type MotionValue,
 } from "framer-motion";
+import {
+  SKEPTICISMS,
+  clusterMap,
+  TOTAL_COUNT,
+} from "@/data/skepticisms";
 
-/* ── Story data ─────────────────────────────────────────── */
+/* ── Story data (for Part 2) ─────────────────────────────── */
 
 const STORIES = [
   {
@@ -74,7 +81,7 @@ const STORIES = [
     argLabel: null,
     experts: [],
     mechanism:
-      "85+ short videos addressing very specific denial arguments, released across all platforms\u2014Reddit, X, Threads, Bluesky, YouTube. Any dismissive comment receives a tailored-made response: a link to a playlist of rebuttals by thought-leaders, addressing specifically that comment.",
+      "100+ short videos addressing very specific denial arguments, released across all platforms\u2014Reddit, X, Threads, Bluesky, YouTube. Any dismissive comment receives a tailored-made response: a link to a playlist of rebuttals by thought-leaders, addressing specifically that comment.",
     outcome:
       "An infinite content glitch: endless original, high-quality AI safety content. The library is alive\u2014new responses added every two weeks, community voting surfaces the most convincing for each argument. Volunteers master the best arguments and deploy them in live conversations.",
     outcomeHighlight: "The most powerful tool in our arsenal.",
@@ -89,10 +96,10 @@ const STORIES = [
     argNumber: 62,
     argLabel: "ASI will preserve us out of curiosity",
     experts: [],
-    agreeCount: 85,
+    agreeCount: 100,
     stickingPoint: 62,
     mechanism:
-      "Agrees with 85 of 86 Takedowns. Advocates for all of them\u2014except #62, where he provides the optimistic \u201Csteelman.\u201D His millions of admirers discover AI Takedowns exists and get exposed to the best arguments by the best minds in the field.",
+      "Agrees with 100 of 101 Takedowns. Advocates for all of them\u2014except #62, where he provides the optimistic \u201Csteelman.\u201D His millions of admirers discover AI Takedowns exists and get exposed to the best arguments by the best minds in the field.",
     outcome:
       "Each of those millions of followers has their own specific sticking point. The ultimate rebuttal to their argument finds them\u2014optimized to convince, delivered by the best minds. They don\u2019t stand a chance resisting conversion.",
     outcomeHighlight: "Millions onboarded in droves.",
@@ -107,216 +114,371 @@ const STORIES = [
     argNumber: 71,
     argLabel: "China will build ASI regardless (game theory)",
     experts: [],
-    agreeCount: 85,
+    agreeCount: 100,
     stickingPoint: 71,
     mechanism:
-      "Like Musk, agrees with 85 Takedowns but has a sticking point at #71. His global audience\u2014fans and critics alike\u2014now knows AI Takedowns exists, and that the Humans First movement is THE PATH to action.",
+      "Like Musk, agrees with 100 Takedowns but has a sticking point at #71. His global audience\u2014fans and critics alike\u2014now knows AI Takedowns exists, and that the Humans First movement is THE PATH to action.",
     outcome:
       "Everyone consumes this highly optimized, targeted content. AI safety policy becomes a hot political topic. The Overton window is wide open. The world has changed forever.",
     outcomeHighlight: "The Overton window is wide open.",
   },
 ];
 
-const ARGUMENT_COUNT = 86;
-const GRID_COLS = 14;
+/* ── Precomputed lookups ─────────────────────────────────── */
 
-/* ── Single argument tile (hook-safe) ───────────────────── */
+const GRID_COLS = 10;
+const tileColors = SKEPTICISMS.map(
+  (s) => clusterMap[s.clusterId]?.color ?? "#888"
+);
+const indexToCluster = SKEPTICISMS.map((s) => clusterMap[s.clusterId]);
 
-function ArgTile({
+/* ── Single grid tile (memo'd for perf) ──────────────────── */
+
+const SkeptTile = memo(function SkeptTile({
   index,
   x,
   y,
-  tileSize,
-  isHighlight,
-  highlightColor,
+  size,
+  color,
   fillProgress,
 }: {
   index: number;
   x: number;
   y: number;
-  tileSize: number;
-  isHighlight: boolean;
-  highlightColor: string;
+  size: number;
+  color: string;
   fillProgress: MotionValue<number>;
 }) {
-  const tileOpacity = useTransform(
-    fillProgress,
-    [index / ARGUMENT_COUNT, (index + 1) / ARGUMENT_COUNT],
-    [0.08, 0.7]
-  );
-
+  const t = index / TOTAL_COUNT;
+  const opacity = useTransform(fillProgress, [t - 0.003, t + 0.003], [0.08, 0.7]);
   return (
     <motion.rect
       x={x}
       y={y}
-      width={tileSize}
-      height={tileSize}
+      width={size}
+      height={size}
       rx={3}
-      fill={isHighlight ? highlightColor : "#f4a261"}
-      style={{ opacity: isHighlight ? 1 : tileOpacity }}
+      fill={color}
+      style={{ opacity }}
     />
   );
-}
+});
 
-/* ── Argument Grid sub-component ────────────────────────── */
+/* ── Memoized tile layer ─────────────────────────────────── */
 
-function ArgumentGrid({
+const MemoizedTiles = memo(function MemoizedTiles({
   fillProgress,
-  highlightTile,
-  highlightColor = "#e63946",
-  tileSize = 18,
-  gap = 3,
+  tileSize,
+  gap,
+}: {
+  fillProgress: MotionValue<number>;
+  tileSize: number;
+  gap: number;
+}) {
+  return (
+    <>
+      {SKEPTICISMS.map((_, i) => (
+        <SkeptTile
+          key={i}
+          index={i}
+          x={(i % GRID_COLS) * (tileSize + gap)}
+          y={Math.floor(i / GRID_COLS) * (tileSize + gap)}
+          size={tileSize}
+          color={tileColors[i]}
+          fillProgress={fillProgress}
+        />
+      ))}
+    </>
+  );
+});
+
+/* ── Grid component ──────────────────────────────────────── */
+
+function SkeptGrid({
+  fillProgress,
+  activeIndex,
   className = "",
 }: {
   fillProgress: MotionValue<number>;
-  highlightTile?: number | null;
-  highlightColor?: string;
-  tileSize?: number;
-  gap?: number;
+  activeIndex: number;
   className?: string;
 }) {
-  const rows = Math.ceil(ARGUMENT_COUNT / GRID_COLS);
+  const tileSize = 24;
+  const gap = 4;
+  const rows = Math.ceil(TOTAL_COUNT / GRID_COLS);
   const svgW = GRID_COLS * (tileSize + gap) - gap;
   const svgH = rows * (tileSize + gap) - gap;
+
+  const col = activeIndex % GRID_COLS;
+  const row = Math.floor(activeIndex / GRID_COLS);
+  const color = tileColors[activeIndex] ?? "#fff";
 
   return (
     <svg
       viewBox={`0 0 ${svgW} ${svgH}`}
       className={className}
-      aria-label="86 AI risk denial arguments"
+      aria-label="100 AI risk denial arguments grid"
     >
-      {Array.from({ length: ARGUMENT_COUNT }, (_, i) => {
-        const col = i % GRID_COLS;
-        const row = Math.floor(i / GRID_COLS);
-        return (
-          <ArgTile
-            key={i}
-            index={i}
-            x={col * (tileSize + gap)}
-            y={row * (tileSize + gap)}
-            tileSize={tileSize}
-            isHighlight={highlightTile === i + 1}
-            highlightColor={highlightColor}
-            fillProgress={fillProgress}
-          />
-        );
-      })}
-      {highlightTile && (
-        <text
-          x={((highlightTile - 1) % GRID_COLS) * (tileSize + gap) + tileSize / 2}
-          y={Math.floor((highlightTile - 1) / GRID_COLS) * (tileSize + gap) + tileSize / 2 + 4}
-          fill="#fff"
-          fontSize={9}
-          fontWeight="bold"
-          textAnchor="middle"
-          fontFamily="var(--font-dm-sans)"
-        >
-          {highlightTile}
-        </text>
-      )}
+      <defs>
+        <filter id="tileGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      <MemoizedTiles
+        fillProgress={fillProgress}
+        tileSize={tileSize}
+        gap={gap}
+      />
+
+      {/* Active tile glow */}
+      <rect
+        x={col * (tileSize + gap) - 3}
+        y={row * (tileSize + gap) - 3}
+        width={tileSize + 6}
+        height={tileSize + 6}
+        rx={5}
+        fill={color}
+        filter="url(#tileGlow)"
+        opacity={0.95}
+      />
+      {/* Active tile border ring */}
+      <rect
+        x={col * (tileSize + gap) - 1}
+        y={row * (tileSize + gap) - 1}
+        width={tileSize + 2}
+        height={tileSize + 2}
+        rx={4}
+        fill="none"
+        stroke="#fff"
+        strokeWidth={1.5}
+        opacity={0.5}
+      />
     </svg>
   );
 }
 
-/* ── Expert badge ───────────────────────────────────────── */
+/* ── Detail panel ────────────────────────────────────────── */
 
-function ExpertBadge({
-  name,
-  delay,
-  scrollYProgress,
-  startAt,
-}: {
-  name: string;
-  delay: number;
-  scrollYProgress: MotionValue<number>;
-  startAt: number;
-}) {
-  const opacity = useTransform(
-    scrollYProgress,
-    [startAt + delay, startAt + delay + 0.04],
-    [0, 1],
-    { clamp: true }
-  );
-  const x = useTransform(
-    scrollYProgress,
-    [startAt + delay, startAt + delay + 0.04],
-    [30, 0],
-    { clamp: true }
-  );
+function SkeptDetail({ activeIndex }: { activeIndex: number }) {
+  const item = SKEPTICISMS[activeIndex];
+  const cluster = indexToCluster[activeIndex];
 
   return (
-    <motion.div
-      className="flex items-center gap-2 px-3 py-2 rounded-lg"
-      style={{
-        opacity,
-        x,
-        background: "rgba(224,122,95,0.15)",
-        border: "1px solid rgba(224,122,95,0.25)",
-      }}
-    >
-      {/* Play icon */}
-      <svg width={14} height={14} viewBox="0 0 24 24" fill="none">
-        <polygon points="5 3 19 12 5 21 5 3" fill="#e07a5f" />
-      </svg>
-      <span className="text-xs text-text font-medium">{name}</span>
-      <span className="text-xs text-text-dim">5 min</span>
-    </motion.div>
-  );
-}
+    <div className="relative min-h-[180px] sm:min-h-[220px]">
+      <AnimatePresence mode="popLayout">
+        <motion.div
+          key={activeIndex}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
+          className="absolute inset-0"
+        >
+          {/* Cluster badge */}
+          <div className="mb-4">
+            <span
+              className="text-[11px] font-semibold tracking-wide uppercase px-3 py-1.5 rounded-full"
+              style={{
+                color: cluster?.color,
+                background: cluster?.colorDim,
+              }}
+            >
+              {cluster?.label}
+            </span>
+          </div>
 
-/* ── Platform icon ──────────────────────────────────────── */
+          {/* Title */}
+          <h4 className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold text-text leading-tight mb-3">
+            {item.title}
+          </h4>
 
-function PlatformIcon({
-  name,
-  color,
-}: {
-  name: string;
-  color: string;
-}) {
-  const iconProps = {
-    width: 16,
-    height: 16,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: color,
-    strokeWidth: 1.5,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-  };
-
-  return (
-    <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.03]">
-      {name === "YouTube" && (
-        <svg {...iconProps}>
-          <polygon points="5 3 19 12 5 21 5 3" fill={color} stroke="none" />
-        </svg>
-      )}
-      {name === "Reddit" && (
-        <svg {...iconProps}>
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 6v6" />
-          <circle cx="9" cy="14" r="1" fill={color} stroke="none" />
-          <circle cx="15" cy="14" r="1" fill={color} stroke="none" />
-        </svg>
-      )}
-      {name === "X / Twitter" && (
-        <svg {...iconProps}>
-          <path d="M4 4l16 16M20 4L4 20" />
-        </svg>
-      )}
-      {name === "Bluesky" && (
-        <svg {...iconProps}>
-          <path d="M12 3C8 7 4 10 4 14a4 4 0 008 0 4 4 0 008 0c0-4-4-7-8-11z" />
-        </svg>
-      )}
-      <span className="text-xs text-text-muted">{name}</span>
+          {/* Description */}
+          <p className="text-sm sm:text-base text-text-muted leading-relaxed">
+            &ldquo;{item.description}&rdquo;
+          </p>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
 
-/* ── Story card (flowing section) ───────────────────────── */
+/* ── Lazy-loaded GIF hero ────────────────────────────────── */
 
-function StoryCard({ story, index }: { story: (typeof STORIES)[number]; index: number }) {
+function TakedownsHero() {
+  const ref = useRef<HTMLDivElement>(null);
+  // Start loading the GIF when ~600px before it enters the viewport
+  const isNear = useInView(ref, { once: true, margin: "600px 0px 600px 0px" });
+
+  return (
+    <div
+      ref={ref}
+      className="px-4 sm:px-8 lg:px-16 pt-20 pb-0 max-w-5xl mx-auto text-center"
+    >
+      {/* GIF container — fixed aspect ratio placeholder to prevent layout shift */}
+      <div
+        className="relative w-full max-w-sm mx-auto rounded-xl overflow-hidden border border-white/[0.08]"
+        style={{
+          background: "rgba(255,255,255,0.02)",
+          aspectRatio: "16 / 9",
+        }}
+      >
+        {isNear ? (
+          <img
+            src="/takedowns-intro.gif"
+            alt="AI Takedowns concept — targeted rebuttals matching denial arguments with expert responses"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          /* Placeholder while GIF hasn't started loading */
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full border-2 border-white/10 border-t-cautious animate-spin" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Organic Growth Engine (recovered section) ───────────── */
+
+function OrganicGrowthHook() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <div
+      ref={ref}
+      className="relative z-10 px-4 sm:px-8 lg:px-16 py-20 max-w-3xl mx-auto"
+    >
+      <motion.div
+        className="flex flex-col items-center text-center"
+        style={{
+          opacity: isInView ? 1 : 0,
+          y: isInView ? 0 : 50,
+          transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
+        }}
+      >
+        <h3 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text leading-tight tracking-tight mb-6">
+          The Ultimate Organic Growth Engine
+        </h3>
+        <p className="text-lg sm:text-xl text-text-muted max-w-2xl leading-relaxed mb-10">
+          The ultimate organic growth engine for AI safety awareness.
+        </p>
+
+        {/* The key insight */}
+        <div
+          className="rounded-xl p-5 sm:p-6 text-left max-w-2xl w-full mb-6"
+          style={{
+            background: "rgba(244,162,97,0.08)",
+            border: "1px solid rgba(244,162,97,0.2)",
+          }}
+        >
+          <p className="text-sm sm:text-base text-text leading-relaxed mb-3">
+            Imagine a library of highly targeted playlists&mdash;each one a
+            precision-crafted collection of expert rebuttals addressing one
+            specific AI risk denial argument.
+          </p>
+          <p className="text-sm sm:text-base text-text leading-relaxed">
+            Now imagine our promoters in every comment thread on Reddit, X,
+            YouTube, Bluesky&mdash;responding to dismissive comments with a{" "}
+            <span
+              className="inline-flex items-center gap-1.5 font-semibold"
+              style={{
+                color: "#f4a261",
+                textShadow: "0 0 12px rgba(244,162,97,0.35)",
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="inline-block shrink-0 -mt-px"
+              >
+                <circle cx="12" cy="12" r="10" stroke="#f4a261" strokeWidth="2" fill="none" />
+                <circle cx="12" cy="12" r="6" stroke="#f4a261" strokeWidth="2" fill="none" />
+                <circle cx="12" cy="12" r="2.5" fill="#f4a261" />
+              </svg>
+              laser-targeted
+            </span>{" "}
+            link to the exact playlist that addresses that specific
+            argument.
+          </p>
+        </div>
+
+        {/* The punchline */}
+        <div className="flex flex-col sm:flex-row gap-4 max-w-2xl w-full">
+          <div
+            className="flex-1 rounded-lg p-4 text-center"
+            style={{
+              background: "rgba(82,183,136,0.1)",
+              border: "1px solid rgba(82,183,136,0.2)",
+            }}
+          >
+            <p className="text-xs text-text-dim uppercase tracking-widest mb-1">
+              Not spam
+            </p>
+            <p className="text-sm text-text font-medium">
+              The link is spot-on. It&rsquo;s pure value for every reader.
+            </p>
+          </div>
+          <div
+            className="flex-1 rounded-lg p-4 text-center"
+            style={{
+              background: "rgba(224,122,95,0.1)",
+              border: "1px solid rgba(224,122,95,0.2)",
+            }}
+          >
+            <p className="text-xs text-text-dim uppercase tracking-widest mb-1">
+              Organic inbound
+            </p>
+            <p className="text-sm text-text font-medium">
+              The purest form of organic traffic. Growth without limit.
+            </p>
+          </div>
+        </div>
+
+        {/* Scaling the engine */}
+        <div
+          className="rounded-xl p-5 sm:p-6 text-left max-w-2xl w-full mt-8"
+          style={{
+            background: "rgba(82,183,136,0.08)",
+            border: "1px solid rgba(82,183,136,0.2)",
+          }}
+        >
+          <p className="text-sm sm:text-base text-text leading-relaxed mb-3">
+            And the best part? This organic engine scales effortlessly.
+            Every new promoter who joins the movement multiplies our
+            reach&mdash;distributing these{" "}
+            <span className="font-semibold text-text">
+              hyper-relevant, perfectly matched links
+            </span>{" "}
+            into conversations that are already happening.
+          </p>
+          <p className="text-sm sm:text-base text-text-muted leading-relaxed">
+            More promoters = more high-relevancy links deployed = more
+            organic traffic = more conversions. No ad spend. No algorithms
+            to fight. Just the right rebuttal, in the right thread, at the
+            right time.
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ── Story card ──────────────────────────────────────────── */
+
+function StoryCard({
+  story,
+}: {
+  story: (typeof STORIES)[number];
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -333,27 +495,37 @@ function StoryCard({ story, index }: { story: (typeof STORIES)[number]; index: n
         transition: "all 0.7s cubic-bezier(0.16,1,0.3,1)",
       }}
     >
-      <div className="p-5 sm:p-6">
+      <div className="p-5 sm:p-7">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-4">
-          {/* Person silhouette */}
+        <div className="flex items-center gap-3 mb-5">
           <div
-            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: story.accentBg, border: `1px solid ${story.accentBorder}` }}
+            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+            style={{
+              background: story.accentBg,
+              border: `1px solid ${story.accentBorder}`,
+            }}
           >
-            <svg width={16} height={16} viewBox="0 0 24 24" fill="none">
+            <svg width={18} height={18} viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="8" r="4" fill={story.accent} />
-              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill={story.accent} />
+              <path
+                d="M4 20c0-4 3.6-7 8-7s8 3 8 7"
+                fill={story.accent}
+              />
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-text">{story.character}</h4>
-            <p className="text-xs text-text-dim">{story.role}</p>
+            <h4 className="text-base font-semibold text-text">
+              {story.character}
+            </h4>
+            <p className="text-sm text-text-dim">{story.role}</p>
           </div>
           {story.argNumber && (
             <span
-              className="ml-auto text-xs font-mono px-2 py-0.5 rounded"
-              style={{ background: story.accentBg, color: story.accent }}
+              className="ml-auto text-sm font-mono px-2.5 py-1 rounded"
+              style={{
+                background: story.accentBg,
+                color: story.accent,
+              }}
             >
               #{story.argNumber}
             </span>
@@ -363,7 +535,7 @@ function StoryCard({ story, index }: { story: (typeof STORIES)[number]; index: n
         {/* Denial quote */}
         {story.denial && (
           <div
-            className="rounded-lg px-4 py-3 mb-4 text-xs leading-relaxed italic text-text-muted"
+            className="rounded-lg px-4 sm:px-5 py-3.5 mb-5 text-sm leading-relaxed italic text-text-muted"
             style={{
               background: "rgba(255,255,255,0.03)",
               borderLeft: `2px solid ${story.accent}40`,
@@ -376,17 +548,20 @@ function StoryCard({ story, index }: { story: (typeof STORIES)[number]; index: n
         {/* Second denial (Peter only) */}
         {"secondDenial" in story && story.secondDenial && (
           <div
-            className="rounded-lg px-4 py-3 mb-4 text-xs leading-relaxed italic text-text-muted"
+            className="rounded-lg px-4 sm:px-5 py-3.5 mb-5 text-sm leading-relaxed italic text-text-muted"
             style={{
               background: "rgba(255,255,255,0.03)",
               borderLeft: `2px solid ${story.accent}40`,
             }}
           >
             <span
-              className="not-italic font-mono text-xs mr-2 px-1.5 py-0.5 rounded"
-              style={{ background: story.accentBg, color: story.accent }}
+              className="not-italic font-mono text-sm mr-2 px-1.5 py-0.5 rounded"
+              style={{
+                background: story.accentBg,
+                color: story.accent,
+              }}
             >
-              #{(story as typeof STORIES[1]).secondArgNumber}
+              #{(story as (typeof STORIES)[1]).secondArgNumber}
             </span>
             {story.secondDenial}
           </div>
@@ -394,9 +569,9 @@ function StoryCard({ story, index }: { story: (typeof STORIES)[number]; index: n
 
         {/* Leader agreement indicator */}
         {"agreeCount" in story && story.agreeCount && (
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-5">
             <div className="flex gap-[2px]">
-              {Array.from({ length: 86 }, (_, i) => (
+              {Array.from({ length: TOTAL_COUNT }, (_, i) => (
                 <div
                   key={i}
                   className="rounded-sm"
@@ -404,42 +579,55 @@ function StoryCard({ story, index }: { story: (typeof STORIES)[number]; index: n
                     width: 4,
                     height: 12,
                     background:
-                      i + 1 === (story as typeof STORIES[4]).stickingPoint
+                      i + 1 ===
+                      (story as (typeof STORIES)[4]).stickingPoint
                         ? "#e63946"
                         : story.accent,
-                    opacity: i + 1 === (story as typeof STORIES[4]).stickingPoint ? 1 : 0.6,
+                    opacity:
+                      i + 1 ===
+                      (story as (typeof STORIES)[4]).stickingPoint
+                        ? 1
+                        : 0.6,
                   }}
                 />
               ))}
             </div>
-            <span className="text-xs text-text-dim ml-1">
-              {story.agreeCount}/86 agreed &middot; sticking point{" "}
+            <span className="text-sm text-text-dim ml-1">
+              {story.agreeCount}/{TOTAL_COUNT} agreed &middot; sticking point{" "}
               <span className="text-[#e63946] font-mono">
-                #{(story as typeof STORIES[4]).stickingPoint}
+                #{(story as (typeof STORIES)[4]).stickingPoint}
               </span>
             </span>
           </div>
         )}
 
         {/* Mechanism */}
-        <p className="text-xs text-text-muted leading-relaxed mb-4">
+        <p className="text-sm text-text-muted leading-relaxed mb-5">
           {story.mechanism}
         </p>
 
         {/* Expert badges */}
         {story.experts.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-wrap gap-2 mb-5">
             {story.experts.map((expert) => (
               <div
                 key={expert}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm"
                 style={{
                   background: "rgba(224,122,95,0.12)",
                   border: "1px solid rgba(224,122,95,0.2)",
                 }}
               >
-                <svg width={10} height={10} viewBox="0 0 24 24" fill="none">
-                  <polygon points="5 3 19 12 5 21 5 3" fill="#e07a5f" />
+                <svg
+                  width={12}
+                  height={12}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <polygon
+                    points="5 3 19 12 5 21 5 3"
+                    fill="#e07a5f"
+                  />
                 </svg>
                 <span className="text-text-muted">{expert}</span>
               </div>
@@ -449,17 +637,20 @@ function StoryCard({ story, index }: { story: (typeof STORIES)[number]; index: n
 
         {/* Outcome */}
         <div
-          className="rounded-lg px-4 py-3 text-xs"
+          className="rounded-lg px-4 sm:px-5 py-4 text-sm"
           style={{
             background: story.accentBg,
             border: `1px solid ${story.accentBorder}`,
           }}
         >
-          <span className="font-semibold" style={{ color: story.accent }}>
+          <span
+            className="font-semibold"
+            style={{ color: story.accent }}
+          >
             Outcome:
           </span>{" "}
           <span className="text-text-muted">{story.outcome}</span>
-          <p className="mt-1.5 font-semibold text-text text-sm">
+          <p className="mt-2 font-semibold text-text text-base">
             {story.outcomeHighlight}
           </p>
         </div>
@@ -468,410 +659,297 @@ function StoryCard({ story, index }: { story: (typeof STORIES)[number]; index: n
   );
 }
 
-/* ── Main section ───────────────────────────────────────── */
+/* ── Main section ────────────────────────────────────────── */
 
 export default function Section09_Takedowns() {
   const sectionRef = useRef<HTMLDivElement>(null);
-
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
 
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndexRef = useRef(0);
+
   /* ── Section envelope ── */
   const sectionOpacity = useTransform(
     scrollYProgress,
-    [0.0, 0.04, 0.90, 0.96],
+    [0.0, 0.02, 0.96, 1.0],
     [0, 1, 1, 0]
   );
 
-  /* ── Phase A: Organic growth hook ── */
-  const hookOpacity = useTransform(
+  /* ── Phase A: Intro — sticking-point explanation ── */
+  const introOpacity = useTransform(
     scrollYProgress,
-    [0.02, 0.06, 0.16, 0.20],
+    [0.01, 0.03, 0.14, 0.18],
     [0, 1, 1, 0]
   );
-  const hookY = useTransform(scrollYProgress, [0.02, 0.06], [50, 0]);
-  const hookSubOpacity = useTransform(
+  const introY = useTransform(scrollYProgress, [0.01, 0.03], [40, 0]);
+  const introSub1 = useTransform(
     scrollYProgress,
-    [0.08, 0.12],
+    [0.04, 0.07],
+    [0, 1],
+    { clamp: true }
+  );
+  const introSub2 = useTransform(
+    scrollYProgress,
+    [0.07, 0.10],
     [0, 1],
     { clamp: true }
   );
 
-  /* ── Phase B: Hero + argument grid ── */
-  const heroOpacity = useTransform(
+  /* ── Phase B: Grid walkthrough ── */
+  const gridPhaseOpacity = useTransform(
     scrollYProgress,
-    [0.18, 0.23, 0.34, 0.38],
+    [0.16, 0.21, 0.95, 0.99],
     [0, 1, 1, 0]
   );
-  const heroY = useTransform(scrollYProgress, [0.18, 0.23], [40, 0]);
-  const gridFillA = useTransform(scrollYProgress, [0.24, 0.34], [0, 1], {
-    clamp: true,
+  const gridTitleY = useTransform(scrollYProgress, [0.16, 0.21], [30, 0]);
+  const fillProgress = useTransform(
+    scrollYProgress,
+    [0.22, 0.88],
+    [0, 1],
+    { clamp: true }
+  );
+
+  /* Track active index — only re-render on actual change */
+  useMotionValueEvent(fillProgress, "change", (latest) => {
+    const idx = Math.max(
+      0,
+      Math.min(Math.floor(latest * TOTAL_COUNT), TOTAL_COUNT - 1)
+    );
+    if (idx !== activeIndexRef.current) {
+      activeIndexRef.current = idx;
+      setActiveIndex(idx);
+    }
   });
-  const counterOpacity = useTransform(
-    scrollYProgress,
-    [0.30, 0.34],
-    [0, 1],
-    { clamp: true }
-  );
-
-  /* ── Phase C: The Mechanism ── */
-  const mechOpacity = useTransform(
-    scrollYProgress,
-    [0.36, 0.42, 0.58, 0.64],
-    [0, 1, 1, 0]
-  );
-  const mechTitleY = useTransform(scrollYProgress, [0.36, 0.42], [30, 0]);
-
-  const denialOpacity = useTransform(
-    scrollYProgress,
-    [0.40, 0.45],
-    [0, 1],
-    { clamp: true }
-  );
-  const denialX = useTransform(scrollYProgress, [0.40, 0.45], [-40, 0], {
-    clamp: true,
-  });
-
-  const arrowOpacity = useTransform(
-    scrollYProgress,
-    [0.45, 0.50],
-    [0, 1],
-    { clamp: true }
-  );
-  const arrowScale = useTransform(
-    scrollYProgress,
-    [0.45, 0.50],
-    [0.5, 1],
-    { clamp: true }
-  );
-
-  /* ── Phase D: The Scale ── */
-  const scaleOpacity = useTransform(
-    scrollYProgress,
-    [0.62, 0.68, 0.86, 0.92],
-    [0, 1, 1, 0]
-  );
-  const scaleTitleY = useTransform(scrollYProgress, [0.62, 0.68], [30, 0]);
-  const gridFillC = useTransform(scrollYProgress, [0.68, 0.78], [0, 1], {
-    clamp: true,
-  });
-  const platformsOpacity = useTransform(
-    scrollYProgress,
-    [0.76, 0.82],
-    [0, 1],
-    { clamp: true }
-  );
-  const growthPulse = useTransform(
-    scrollYProgress,
-    [0.80, 0.82, 0.84, 0.86],
-    [1, 1.03, 1, 1.02]
-  );
 
   return (
     <section id="takedowns">
+      {/* ── Part 0: Title + GIF hero ── */}
+      <TakedownsHero />
+
       {/* ── Part 1: Scroll-driven animated area ── */}
       <div
         ref={sectionRef}
         className="relative"
-        style={{ height: "500vh" }}
+        style={{ height: "1800vh" }}
       >
         <motion.div
           className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
           style={{ opacity: sectionOpacity }}
         >
-          {/* ── Phase A: Organic Growth Hook ── */}
+          {/* ── Phase A: Intro ── */}
           <motion.div
             className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8"
-            style={{ opacity: hookOpacity, y: hookY }}
+            style={{ opacity: introOpacity, y: introY }}
           >
-            <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text text-center leading-tight tracking-tight mb-6">
-              AI Takedowns
+            <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text text-center leading-tight tracking-tight mb-8">
+              Targeted Skepticisms
             </h2>
-            <p className="text-lg sm:text-xl text-text-muted text-center max-w-2xl leading-relaxed mb-8">
-              The ultimate organic growth engine for AI safety awareness.
-            </p>
 
-            <motion.div
-              className="max-w-2xl w-full space-y-5"
-              style={{ opacity: hookSubOpacity }}
-            >
-              {/* The key insight */}
-              <div
-                className="rounded-xl p-5 sm:p-6"
+            <div className="max-w-2xl space-y-5">
+              <p className="text-base sm:text-lg text-text-muted leading-relaxed text-center">
+                Every single person has their very own unique sticking
+                point&mdash;one specific reason they believe everything will
+                turn out fine. Because they think they&rsquo;ve figured it
+                out, every time they&rsquo;re exposed to content about AI
+                risk, they simply tune out. They don&rsquo;t really listen,
+                because deep down they feel they already know better.
+              </p>
+
+              <motion.div
+                className="rounded-xl p-5 text-center"
                 style={{
+                  opacity: introSub1,
                   background: "rgba(244,162,97,0.08)",
                   border: "1px solid rgba(244,162,97,0.2)",
                 }}
               >
-                <p className="text-sm sm:text-base text-text leading-relaxed mb-3">
-                  Imagine a library of highly targeted playlists&mdash;each one a
-                  precision-crafted collection of expert rebuttals addressing one
-                  specific AI risk denial argument.
-                </p>
-                <p className="text-sm sm:text-base text-text leading-relaxed">
-                  Now imagine our promoters in every comment thread on Reddit, X,
-                  YouTube, Bluesky&mdash;responding to dismissive comments with a
-                  link to the exact playlist that addresses that specific
-                  argument.
-                </p>
-              </div>
-
-              {/* The punchline */}
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div
-                  className="flex-1 rounded-lg p-4 text-center"
-                  style={{
-                    background: "rgba(82,183,136,0.1)",
-                    border: "1px solid rgba(82,183,136,0.2)",
-                  }}
-                >
-                  <p className="text-xs text-text-dim uppercase tracking-widest mb-1">
-                    Not spam
-                  </p>
-                  <p className="text-sm text-text font-medium">
-                    The link is spot-on. It&rsquo;s pure value for every reader.
-                  </p>
-                </div>
-                <div
-                  className="flex-1 rounded-lg p-4 text-center"
-                  style={{
-                    background: "rgba(224,122,95,0.1)",
-                    border: "1px solid rgba(224,122,95,0.2)",
-                  }}
-                >
-                  <p className="text-xs text-text-dim uppercase tracking-widest mb-1">
-                    Organic inbound
-                  </p>
-                  <p className="text-sm text-text font-medium">
-                    The purest form of organic traffic. Growth without limit.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* ── Phase B: Hero + argument grid ── */}
-          <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center px-4"
-            style={{ opacity: heroOpacity, y: heroY }}
-          >
-            <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text text-center mb-3">
-              86 Denial Arguments. 86 Expert Takedowns.
-            </h3>
-            <p className="text-sm text-text-muted text-center max-w-xl leading-relaxed mb-8">
-              The definitive collection of rebuttals to AI risk denial&mdash;short,
-              targeted video responses by the best minds in the field.
-            </p>
-
-            {/* Argument grid */}
-            <ArgumentGrid
-              fillProgress={gridFillA}
-              className="w-full max-w-md sm:max-w-lg mb-6"
-            />
-
-            {/* Counter */}
-            <motion.p
-              className="text-sm text-text-dim text-center font-mono tracking-wider"
-              style={{ opacity: counterOpacity }}
-            >
-              Each tile = one denial argument, matched with expert rebuttals.
-            </motion.p>
-          </motion.div>
-
-          {/* ── Phase C: The Mechanism ── */}
-          <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16"
-            style={{ opacity: mechOpacity }}
-          >
-            <motion.h3
-              className="font-heading text-2xl sm:text-3xl font-bold text-text text-center mb-2"
-              style={{ y: mechTitleY }}
-            >
-              How It Works
-            </motion.h3>
-            <motion.p
-              className="text-sm text-text-muted text-center max-w-lg mb-10"
-              style={{ y: mechTitleY }}
-            >
-              Every specific denial argument is matched with targeted expert
-              responses.
-            </motion.p>
-
-            {/* Flow: Denial → Takedowns → Expert responses */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 max-w-4xl w-full">
-              {/* Denial argument */}
-              <motion.div
-                className="flex-1 rounded-xl p-4 sm:p-5 max-w-xs"
-                style={{
-                  opacity: denialOpacity,
-                  x: denialX,
-                  background: "rgba(45,106,79,0.15)",
-                  border: "1px solid rgba(82,183,136,0.2)",
-                }}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-dismissive/20 text-unconcerned">
-                    #10
-                  </span>
-                  <span className="text-xs text-text-muted font-medium">
-                    Denial Argument
-                  </span>
-                </div>
-                <p className="text-xs text-text-muted leading-relaxed italic">
-                  &ldquo;Infrastructure requirements will delay AGI for 100
-                  years&hellip;&rdquo;
+                <p className="text-lg sm:text-xl text-text font-heading font-bold">
+                  I have documented 100+ of these denial arguments and
+                  skepticisms.
                 </p>
               </motion.div>
 
-              {/* Arrow / connection */}
-              <motion.div
-                className="flex flex-col items-center gap-1"
-                style={{ opacity: arrowOpacity, scale: arrowScale }}
+              <motion.p
+                className="text-base sm:text-lg text-text-muted leading-relaxed text-center"
+                style={{ opacity: introSub1 }}
               >
-                <svg
-                  width={40}
-                  height={40}
-                  viewBox="0 0 40 40"
-                  className="text-cautious hidden sm:block"
-                >
-                  <path
-                    d="M8 20h18m0 0l-6-6m6 6l-6 6"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                </svg>
-                <svg
-                  width={40}
-                  height={40}
-                  viewBox="0 0 40 40"
-                  className="text-cautious sm:hidden"
-                >
-                  <path
-                    d="M20 8v18m0 0l-6-6m6 6l6-6"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                </svg>
-                <span className="text-[10px] text-cautious font-semibold tracking-widest uppercase">
-                  Takedown
+                What works for one person doesn&rsquo;t work for another.
+                They have a different sticking point. After years of
+                extensive debate, I&rsquo;ve found that{" "}
+                <span className="text-text font-semibold">
+                  everyone gives a different reason
+                </span>{" "}
+                why AI risk isn&rsquo;t real.
+              </motion.p>
+
+              <motion.p
+                className="text-base sm:text-lg text-text-muted leading-relaxed text-center"
+                style={{ opacity: introSub2 }}
+              >
+                For someone to become truly alarmed, they have to process{" "}
+                <span className="text-text font-semibold">
+                  every single argument
                 </span>
-              </motion.div>
-
-              {/* Expert responses */}
-              <div className="flex-1 flex flex-col gap-2 max-w-xs">
-                <ExpertBadge
-                  name="Dan Hendrycks"
-                  delay={0}
-                  scrollYProgress={scrollYProgress}
-                  startAt={0.47}
-                />
-                <ExpertBadge
-                  name="Max Tegmark"
-                  delay={0.03}
-                  scrollYProgress={scrollYProgress}
-                  startAt={0.47}
-                />
-                <ExpertBadge
-                  name="Elon Musk"
-                  delay={0.06}
-                  scrollYProgress={scrollYProgress}
-                  startAt={0.47}
-                />
-                <ExpertBadge
-                  name="Emmanuel Macron"
-                  delay={0.09}
-                  scrollYProgress={scrollYProgress}
-                  startAt={0.47}
-                />
-              </div>
+                &mdash;and find that none of them holds up. Only then do
+                they understand: there is no silver bullet, and the risk
+                is very real.
+              </motion.p>
             </div>
           </motion.div>
 
-          {/* ── Phase D: The Scale ── */}
+          {/* ── Phase B: Grid walkthrough ── */}
           <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16"
-            style={{ opacity: scaleOpacity }}
+            className="absolute inset-0 flex items-center justify-center px-4 sm:px-8 lg:px-16"
+            style={{ opacity: gridPhaseOpacity }}
           >
-            <motion.h3
-              className="font-heading text-2xl sm:text-3xl font-bold text-text text-center mb-2"
-              style={{ y: scaleTitleY }}
-            >
-              Deployed Everywhere
-            </motion.h3>
-            <motion.p
-              className="text-sm text-text-muted text-center max-w-lg mb-8"
-              style={{ y: scaleTitleY }}
-            >
-              Any dismissive comment, on any platform, receives a tailored
-              playlist response from the best minds in the field.
-            </motion.p>
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-6 lg:gap-12 max-w-5xl w-full">
+              {/* Left — grid + counter */}
+              <div className="w-full lg:w-[42%] flex flex-col items-center">
+                <motion.h3
+                  className="font-heading text-lg sm:text-xl lg:text-2xl font-bold text-text text-center mb-1"
+                  style={{ y: gridTitleY }}
+                >
+                  100+ Denial Arguments
+                </motion.h3>
+                <motion.p
+                  className="text-xs text-text-dim text-center mb-5"
+                  style={{ y: gridTitleY }}
+                >
+                  Each box = one skepticism, colored by category.
+                </motion.p>
 
-            {/* Argument grid — all lit up */}
-            <motion.div style={{ scale: growthPulse }}>
-              <ArgumentGrid
-                fillProgress={gridFillC}
-                className="w-full max-w-sm sm:max-w-md mb-6"
-              />
-            </motion.div>
+                <SkeptGrid
+                  fillProgress={fillProgress}
+                  activeIndex={activeIndex}
+                  className="w-full max-w-[280px] sm:max-w-xs"
+                />
 
-            {/* Platform badges */}
-            <motion.div
-              className="flex flex-wrap justify-center gap-2 sm:gap-3"
-              style={{ opacity: platformsOpacity }}
-            >
-              <PlatformIcon name="YouTube" color="#e07a5f" />
-              <PlatformIcon name="Reddit" color="#f4a261" />
-              <PlatformIcon name="X / Twitter" color="#f0ece2" />
-              <PlatformIcon name="Bluesky" color="#67d4e8" />
-            </motion.div>
+                {/* Progress bar + counter */}
+                <div className="mt-4 w-full max-w-[280px] sm:max-w-xs">
+                  <div className="flex justify-between text-[11px] text-text-dim font-mono mb-1.5">
+                    <span>
+                      {activeIndex + 1} / {TOTAL_COUNT}
+                    </span>
+                    <span
+                      style={{
+                        color: indexToCluster[activeIndex]?.color,
+                      }}
+                    >
+                      {indexToCluster[activeIndex]?.label}
+                    </span>
+                  </div>
+                  <div className="h-1 rounded-full bg-white/[0.06] overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-150 ease-out"
+                      style={{
+                        width: `${((activeIndex + 1) / TOTAL_COUNT) * 100}%`,
+                        background: indexToCluster[activeIndex]?.color,
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
 
-            <motion.p
-              className="text-xs text-text-dim text-center mt-6 italic"
-              style={{ opacity: platformsOpacity }}
-            >
-              85+ videos and growing. New responses every two weeks. Community-ranked.
-            </motion.p>
+              {/* Right — detail panel */}
+              <div className="w-full lg:w-[58%] flex flex-col justify-center">
+                <SkeptDetail activeIndex={activeIndex} />
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </div>
 
+      {/* ── Part 1.5: Organic Growth Engine ── */}
+      <OrganicGrowthHook />
+
       {/* ── Part 2: Flowing story cards ── */}
-      <div className="relative z-10 px-4 sm:px-8 lg:px-16 pt-16 pb-20 max-w-5xl mx-auto">
+      <div className="relative z-10 px-4 sm:px-8 lg:px-16 pt-6 pb-20 max-w-3xl mx-auto">
         {/* Section heading */}
-        <div className="text-center mb-12">
-          <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text mb-3">
-            The Stories
+        <div className="text-center mb-10">
+          <h3 className="font-heading text-3xl sm:text-4xl font-bold text-text mb-3">
+            Short Stories Featuring Personas
           </h3>
-          <p className="text-sm text-text-muted leading-relaxed max-w-xl mx-auto">
-            What follows is a set of short stories featuring personas to
-            demonstrate the impact. Each story shows how targeted takedowns
-            convert skeptics into advocates.
+          <p className="text-base text-text-muted leading-relaxed max-w-xl mx-auto">
+            Each story shows how targeted takedowns convert skeptics into
+            advocates.
           </p>
         </div>
 
-        {/* Story cards — 2-column grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
-          {STORIES.map((story, i) => (
-            <StoryCard key={story.character} story={story} index={i} />
+        {/* Characters intro */}
+        <div
+          className="rounded-xl p-5 sm:p-6 mb-10"
+          style={{
+            background: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          <h4 className="text-base font-semibold text-text mb-1">
+            About the characters
+          </h4>
+          <p className="text-sm text-text-dim mb-4 italic">
+            All names below are fictional and chosen at random. Think of them
+            as roles, not specific people.
+          </p>
+          <div className="space-y-2.5">
+            <div className="flex gap-3 text-sm">
+              <span className="text-text font-medium shrink-0 w-36">Emily</span>
+              <span className="text-text-muted">Exposed to Lethal Intelligence content, she became curious, learned more, and joined the &ldquo;Humans First&rdquo; movement.</span>
+            </div>
+            <div className="flex gap-3 text-sm">
+              <span className="text-text font-medium shrink-0 w-36">Paul</span>
+              <span className="text-text-muted">Emily&rsquo;s husband. Dismisses AI risk for a specific reason.</span>
+            </div>
+            <div className="flex gap-3 text-sm">
+              <span className="text-text font-medium shrink-0 w-36">Peter</span>
+              <span className="text-text-muted">Paul&rsquo;s colleague. Disagrees with Paul&rsquo;s reasoning, but is also dismissive of existential risk for a different reason.</span>
+            </div>
+            <div className="flex gap-3 text-sm">
+              <span className="text-text font-medium shrink-0 w-36">Dan Hendrycks</span>
+              <span className="text-text-muted">A prominent AI safety advocate.</span>
+            </div>
+            <div className="flex gap-3 text-sm">
+              <span className="text-text font-medium shrink-0 w-36">Max Tegmark</span>
+              <span className="text-text-muted">A prominent AI safety advocate.</span>
+            </div>
+            <div className="flex gap-3 text-sm">
+              <span className="text-text font-medium shrink-0 w-36">Elon Musk</span>
+              <span className="text-text-muted">A famous industry leader.</span>
+            </div>
+            <div className="flex gap-3 text-sm">
+              <span className="text-text font-medium shrink-0 w-36">Emmanuel Macron</span>
+              <span className="text-text-muted">A well-known politician.</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Story cards — single column */}
+        <div className="flex flex-col gap-6">
+          {STORIES.map((story) => (
+            <StoryCard key={story.character} story={story} />
           ))}
         </div>
 
-        {/* Closing statement */}
-        <div className="text-center mt-16">
-          <p className="text-lg sm:text-2xl text-text leading-snug font-heading font-bold mb-3">
+        <div className="text-center mt-20">
+          <p className="text-2xl sm:text-4xl lg:text-5xl text-text leading-snug font-heading font-extrabold mb-4">
             Every Dismissal Has an Answer
           </p>
-          <p className="text-sm text-text-muted leading-relaxed max-w-xl mx-auto">
-            86 targeted video rebuttals. Created by thought leaders. Deployed
-            everywhere. The end of plausible denial.
+          <p className="text-base sm:text-lg lg:text-xl text-text-muted leading-relaxed max-w-2xl mx-auto">
+            100+ targeted video rebuttal collections / playlists.
+            <br />
+            Created by thought leaders, AI experts, and AI safety advocates.
+          </p>
+          <div className="w-16 h-px bg-white/10 mx-auto my-5" />
+          <p className="text-base sm:text-lg lg:text-xl text-text-muted leading-relaxed max-w-2xl mx-auto">
+            Deployed everywhere.
+            <br />
+            The audience decides, surfaces the best to the top.
+          </p>
+          <div className="w-16 h-px bg-white/10 mx-auto my-5" />
+          <p className="text-lg sm:text-xl lg:text-2xl font-heading font-bold leading-snug max-w-2xl mx-auto" style={{ color: "#f4a261" }}>
+            The end of plausible denial.
           </p>
         </div>
       </div>

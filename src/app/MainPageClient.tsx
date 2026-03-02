@@ -22,6 +22,8 @@ import Section07b_ConversionJourney from "@/sections/Section07b_ConversionJourne
 import Section08_AIEndsPub from "@/sections/Section08_AIEndsPub";
 import Section09_Takedowns from "@/sections/Section09_Takedowns";
 import Section10_YouTube from "@/sections/Section10_YouTube";
+import Section10b_InfluencerDeals from "@/sections/Section10b_InfluencerDeals";
+import Section11_WildExperiments from "@/sections/Section11_WildExperiments";
 import type { VariationWithPresets } from "@/types";
 
 interface MainPageClientProps {
@@ -75,6 +77,10 @@ export default function MainPageClient({
           <Section09_Takedowns />
           <SectionDivider />
           <Section10_YouTube />
+          <SectionDivider />
+          <Section10b_InfluencerDeals />
+          <SectionDivider />
+          <Section11_WildExperiments />
           <SectionDivider />
           <Section05_ConcernedSplit />
           <SectionDivider />

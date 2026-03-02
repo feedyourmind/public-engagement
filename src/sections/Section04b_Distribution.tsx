@@ -689,8 +689,13 @@ export default function Section04b_Distribution() {
               style={{ background: 'linear-gradient(135deg, rgba(103,212,232,0.06), rgba(192,132,252,0.06))' }}>
               <span style={{ color: ACCENT }} className="font-semibold">No hard ceiling</span>
               <span className="text-text-muted"> &mdash; output scales just by adding more resource
-              units to the production line. Like a factory of attention, each
-              building block can be copied and extended to multiply views and
+              units to the production line. Like a{" "}
+              </span>
+              <span className="font-bold underline decoration-2 underline-offset-4" style={{ color: ACCENT }}>
+                factory of attention units
+              </span>
+              <span className="text-text-muted">
+              , each building block can be copied and extended to multiply views and
               reach.</span>
             </p>
           </motion.div>

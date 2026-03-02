@@ -13,9 +13,11 @@ const SECTIONS = [
   { id: "strategies", label: "Strategies" },
   { id: "distribution", label: "Distribution" },
   { id: "the-hub", label: "The Hub" },
+  { id: "conversion-journey", label: "Conversion" },
   { id: "ai-ends-pub", label: "The Community" },
   { id: "takedowns", label: "Takedowns" },
   { id: "youtube", label: "YouTube" },
+  { id: "wild-experiments", label: "Experiments" },
   { id: "concerned", label: "Concerned" },
   { id: "conclusion", label: "Conclusion" },
 ];

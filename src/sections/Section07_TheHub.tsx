@@ -392,12 +392,12 @@ export default function Section07_TheHub() {
                   No Place to Just&hellip; Read
                 </h4>
               </div>
-              <p className="text-sm text-text-dim leading-relaxed m-0 mb-3">
+              <p className="text-base text-text-dim leading-relaxed m-0 mb-3">
                 Want to casually consume AI safety content the way you&rsquo;d
                 read <span className="text-text-muted">The Economist</span> or your
                 favorite magazine? Right now, that doesn&rsquo;t exist.
               </p>
-              <p className="text-sm text-text-dim leading-relaxed m-0 mb-3">
+              <p className="text-base text-text-dim leading-relaxed m-0 mb-3">
                 The best content is scattered across social media feeds, buried in
                 long rationalist blogs, locked behind academic jargon, or{" "}
                 <span className="text-text-muted italic">lost the moment you scroll
@@ -405,7 +405,7 @@ export default function Section07_TheHub() {
                 Today&rsquo;s best memes? Dig through Reddit noise. A great X post you
                 saw last week? Gone in your feed forever.
               </p>
-              <p className="text-sm text-text-muted leading-relaxed m-0 font-medium">
+              <p className="text-base text-text-muted leading-relaxed m-0 font-medium">
                 There&rsquo;s no immersive, magazine-like experience for AI safety
                 &mdash; just chaos. Until now.
               </p>
@@ -422,18 +422,18 @@ export default function Section07_TheHub() {
                   No Place to Find &amp; Share
                 </h4>
               </div>
-              <p className="text-sm text-text-dim leading-relaxed m-0 mb-3">
+              <p className="text-base text-text-dim leading-relaxed m-0 mb-3">
                 Already alarmed about AI risk and want to spread the word? Finding
                 the perfect meme, the most powerful video clip, or the clearest
                 explainer means maintaining your own scattered system of bookmarks
                 across a hundred different sources.
               </p>
-              <p className="text-sm text-text-dim leading-relaxed m-0 mb-3">
+              <p className="text-base text-text-dim leading-relaxed m-0 mb-3">
                 There&rsquo;s no single place where an advocate can go to find the
                 best curated resources &mdash; ready to share with one click. No
                 arsenal of content organized by type, by topic, by impact.
               </p>
-              <p className="text-sm text-text-muted leading-relaxed m-0 font-medium">
+              <p className="text-base text-text-muted leading-relaxed m-0 font-medium">
                 The Hub is that arsenal. The best memes, videos, explainers, and
                 posts from across the entire internet &mdash; curated, organized,
                 and always at your fingertips.

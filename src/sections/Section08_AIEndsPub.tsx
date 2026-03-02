@@ -145,7 +145,7 @@ export default function Section08_AIEndsPub() {
     <section id="ai-ends-pub" className="relative">
       {/* ── Phase A: Hero ── */}
       <motion.div
-        className="flex flex-col items-center justify-center px-4 py-24 sm:py-32"
+        className="flex flex-col items-center justify-center px-4 pt-24 pb-4 sm:pt-32 sm:pb-6"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
@@ -168,20 +168,26 @@ export default function Section08_AIEndsPub() {
         <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text text-center leading-tight tracking-tight mb-3">
           AI Ends Pub
         </h2>
-        <p className="text-base sm:text-lg text-text-muted text-center max-w-xl leading-relaxed">
+        <p className="text-base sm:text-lg text-text-muted text-center max-w-xl leading-relaxed mb-0">
           Join the debates. The lowest-effort, highest-impact thing you can do.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 max-w-2xl w-full">
-          <div className="p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-            <p className="text-sm text-text-dim leading-relaxed m-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-2 max-w-3xl w-full">
+          <div className="p-6 sm:p-7 rounded-xl bg-[#f4a261]/[0.07] border border-[#f4a261]/20">
+            <h4 className="text-sm uppercase tracking-widest text-[#f4a261] font-semibold mb-3">
+              The Debates
+            </h4>
+            <p className="text-base sm:text-lg text-text-muted leading-relaxed m-0">
               A community on a mission to foster vibrant discussions and
               clash worldviews between those who worry about AI and those who
               don&rsquo;t &mdash; in a productive dialog, from which we will
               all come out wiser.
             </p>
           </div>
-          <div className="p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-            <p className="text-sm text-text-dim leading-relaxed m-0">
+          <div className="p-6 sm:p-7 rounded-xl bg-[#67d4e8]/[0.07] border border-[#67d4e8]/20">
+            <h4 className="text-sm uppercase tracking-widest text-[#67d4e8] font-semibold mb-3">
+              The Belonging
+            </h4>
+            <p className="text-base sm:text-lg text-text-muted leading-relaxed m-0">
               A place to find belonging, amplify your voice, and connect with
               friends who want to spread AI risk awareness just like you.
             </p>
@@ -191,7 +197,7 @@ export default function Section08_AIEndsPub() {
 
       {/* ── Phase B: Value Proposition ── */}
       <motion.div
-        className="flex flex-col items-center justify-center px-4 sm:px-8 py-20 sm:py-28"
+        className="flex flex-col items-center justify-center px-4 sm:px-8 pt-14 pb-8 sm:pt-20 sm:pb-10"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
@@ -212,9 +218,12 @@ export default function Section08_AIEndsPub() {
           <p className="text-base sm:text-lg text-text-muted text-center leading-relaxed">
             Giving you all the resources you need to be as effective an AI risk awareness crusader as you can.
           </p>
-          <p className="text-sm sm:text-base text-text-dim text-center leading-relaxed">
-            We don&rsquo;t tell you how to do it &mdash; we just help you spread the message to your own circle of influence, in your own way.
-          </p>
+          <div className="mt-2 px-6 py-5 rounded-xl bg-white/[0.04] border border-white/[0.08]">
+            <p className="text-sm sm:text-base text-text-muted text-center leading-relaxed m-0">
+              We don&rsquo;t tell you how to do it &mdash; we just help you spread the message to your own{" "}
+              <em className="text-text font-bold not-italic">circle of influence</em>, in your own way.
+            </p>
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4">
             {[
               { text: "Empowering you", color: "#f4a261" },
@@ -242,7 +251,7 @@ export default function Section08_AIEndsPub() {
 
       {/* ── Phase C: Activities Grid ── */}
       <motion.div
-        className="flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16 py-20 sm:py-28"
+        className="flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16 pt-8 pb-10 sm:pt-10 sm:pb-14"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
@@ -285,7 +294,7 @@ export default function Section08_AIEndsPub() {
 
       {/* ── Color-coding ── */}
       <motion.div
-        className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-14 px-4 sm:px-8 lg:px-16 py-20 sm:py-28 max-w-6xl mx-auto"
+        className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-14 px-4 sm:px-8 lg:px-16 py-12 sm:py-16 max-w-6xl mx-auto"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
@@ -305,20 +314,20 @@ export default function Section08_AIEndsPub() {
 
         {/* Text */}
         <div className="flex-1">
-          <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text mb-4">
+          <h3 className="font-heading text-xl sm:text-2xl font-bold text-text mb-3">
             Color-coding
           </h3>
-          <p className="text-base sm:text-lg text-text-muted leading-relaxed mb-5">
+          <p className="text-sm sm:text-base text-text-muted leading-relaxed mb-4">
             Upon joining, you&rsquo;ll be asked to share your stance on AI risk.
             Based on your response, you&rsquo;ll receive a unique colour badge,
             instantly signalling your perspective to others during conversations.
           </p>
-          <div className="space-y-3 mb-5">
-            <p className="text-base sm:text-lg font-medium" style={{ color: "#e07a5f" }}>
+          <div className="space-y-2 mb-4">
+            <p className="text-sm sm:text-base font-medium" style={{ color: "#e07a5f" }}>
               RED 🔥 If you are an AINotKillEveryoneist{" "}
               <span className="text-text-dim font-normal">(You worry about upcoming AI)</span>
             </p>
-            <p className="text-base sm:text-lg font-medium" style={{ color: "#52b788" }}>
+            <p className="text-sm sm:text-base font-medium" style={{ color: "#52b788" }}>
               Green 😏 If you are an AI-Risk denier{" "}
               <span className="text-text-dim font-normal">(You believe it will all be fine)</span>
             </p>
@@ -331,7 +340,7 @@ export default function Section08_AIEndsPub() {
 
       {/* ── Tables ── */}
       <motion.div
-        className="flex flex-col lg:flex-row-reverse items-center lg:items-start gap-8 lg:gap-14 px-4 sm:px-8 lg:px-16 py-20 sm:py-28 max-w-6xl mx-auto"
+        className="flex flex-col lg:flex-row-reverse items-center lg:items-start gap-8 lg:gap-14 px-4 sm:px-8 lg:px-16 py-12 sm:py-16 max-w-6xl mx-auto"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
@@ -351,20 +360,20 @@ export default function Section08_AIEndsPub() {
 
         {/* Text */}
         <div className="flex-1">
-          <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text mb-4">
+          <h3 className="font-heading text-xl sm:text-2xl font-bold text-text mb-3">
             Tables
           </h3>
-          <p className="text-base sm:text-lg text-text-muted leading-relaxed mb-4">
+          <p className="text-sm sm:text-base text-text-muted leading-relaxed mb-3">
             There is a table (text-channel) for each documented common
             skepticism, organised in categories. If you don&rsquo;t believe in
             AI risk, chances are the deep reason can be found in one or more of
             those tables.
           </p>
-          <p className="text-base sm:text-lg text-text-muted leading-relaxed mb-4">
+          <p className="text-sm sm:text-base text-text-muted leading-relaxed mb-3">
             Share your thoughts there, and the other side will respond and
             provide their rebuttal to your argument.
           </p>
-          <p className="text-base sm:text-lg text-text-muted leading-relaxed">
+          <p className="text-sm sm:text-base text-text-muted leading-relaxed">
             Each category also has its own voice channel, so there can be live
             discussions in parallel debating the arguments.
           </p>

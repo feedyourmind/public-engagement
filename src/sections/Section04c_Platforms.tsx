@@ -436,7 +436,7 @@ export default function Section04c_Platforms() {
               </h3>
             </div>
             <p className="text-base sm:text-lg text-text-muted max-w-lg mx-auto leading-relaxed">
-              Accounts established across every major platform &mdash;
+              Placeholder accounts established across every major platform &mdash;
               ready to be activated.
             </p>
           </motion.div>
