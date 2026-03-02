@@ -202,6 +202,34 @@ function Goal2Inner({
     { clamp: true },
   );
 
+  /* ── Three-pillar box transforms ── */
+  const pillarScale = useTransform(
+    scrollYProgress,
+    [0.10, 0.50, 0.80],
+    [1.0, 1.05, 1.12],
+    { clamp: true },
+  );
+  const pillarNumberScale = useTransform(
+    scrollYProgress,
+    [0.10, 0.50, 0.80],
+    [1.0, 1.3, 1.6],
+    { clamp: true },
+  );
+  const pillarGlow = useTransform(
+    scrollYProgress,
+    [0.10, 0.50, 0.80],
+    [0, 0.3, 0.7],
+    { clamp: true },
+  );
+  const pillarBorderColor = useTransform(
+    scrollYProgress,
+    [0.10, 0.50, 0.80],
+    ["rgba(255,255,255,0.06)", "rgba(255,255,255,0.1)", "rgba(255,255,255,0.18)"],
+  );
+  const pillarBoxShadow = useTransform(pillarGlow, (v) =>
+    `0 0 ${v * 20}px ${v * 6}px rgba(255,250,210,${v * 0.3}), inset 0 0 ${v * 10}px rgba(255,250,210,${v * 0.1})`
+  );
+
   /* ── Washout overlay ── */
   const washoutOpacity = useTransform(
     scrollYProgress,
@@ -444,6 +472,51 @@ function Goal2Inner({
           }}
         />
       </div>
+
+      {/* ── Three pillars — always visible during animation ── */}
+      <motion.div
+        className="rounded-xl bg-white/3 overflow-hidden w-full max-w-5xl mt-4"
+        style={{
+          scale: pillarScale,
+          borderWidth: 1,
+          borderStyle: "solid",
+          borderColor: pillarBorderColor,
+          boxShadow: pillarBoxShadow,
+        }}
+      >
+        <div className="grid sm:grid-cols-3 text-center">
+          {[
+            {
+              num: "1",
+              text: "Make AI risk a dinner-table conversation \u2014 critical mass creates unstoppable momentum.",
+            },
+            {
+              num: "2",
+              text: "Every advocate becomes a missionary \u2014 each conversation plants a seed, turning bystanders into crusaders.",
+            },
+            {
+              num: "3",
+              text: "Preachers of awareness drive media coverage, policy discussion, and public demand for AI safety.",
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={item.num}
+              className="p-4"
+              style={i > 0 ? { borderLeftWidth: 1, borderLeftStyle: "solid" as const, borderLeftColor: pillarBorderColor } : undefined}
+            >
+              <motion.div
+                className="mb-2 font-heading font-bold text-cautious origin-center"
+                style={{ scale: pillarNumberScale }}
+              >
+                {item.num}
+              </motion.div>
+              <p className="text-sm text-text-muted leading-relaxed">
+                {item.text}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -523,35 +596,6 @@ export default function Section03d_Goal2() {
           becomes a crusader that starts a chain reaction.
         </p>
 
-        <div className="grid gap-6 sm:grid-cols-3 text-center">
-          <div className="rounded-xl p-6 border border-white/6 bg-white/3">
-            <div className="text-2xl mb-2 font-heading font-bold text-cautious">
-              1
-            </div>
-            <p className="text-base text-text-muted leading-relaxed">
-              Make AI risk a dinner-table conversation &mdash; critical mass
-              creates unstoppable momentum.
-            </p>
-          </div>
-          <div className="rounded-xl p-6 border border-white/6 bg-white/3">
-            <div className="text-2xl mb-2 font-heading font-bold text-cautious">
-              2
-            </div>
-            <p className="text-base text-text-muted leading-relaxed">
-              Every advocate becomes a missionary &mdash; each conversation
-              plants a seed, turning bystanders into crusaders.
-            </p>
-          </div>
-          <div className="rounded-xl p-6 border border-white/6 bg-white/3">
-            <div className="text-2xl mb-2 font-heading font-bold text-cautious">
-              3
-            </div>
-            <p className="text-base text-text-muted leading-relaxed">
-              Preachers of awareness drive media coverage, policy discussion,
-              and public demand for AI safety.
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* ── Sticky animation ── */}

@@ -230,38 +230,42 @@ export default function Section04b_Distribution() {
     [0, 1, 1, 0]
   );
 
-  /* ── Phase A: Hero (extended for 3-stage counter) ── */
+  /* ── Phase A: Hero (extended for 3-stage counter) ──
+   * With 320vh height + 100vh viewport = 420vh total scroll.
+   * Section becomes sticky at ~0.24 (100/420).
+   * Counter animations start AFTER sticky so they're visible.
+   */
   const heroOpacity = useTransform(
     scrollYProgress,
-    [0.02, 0.05, 0.34, 0.38],
+    [0.02, 0.06, 0.44, 0.48],
     [0, 1, 1, 0]
   );
-  const heroY = useTransform(scrollYProgress, [0.02, 0.05], [40, 0]);
-  const iconScale = useTransform(scrollYProgress, [0.02, 0.07], [0.6, 1], {
+  const heroY = useTransform(scrollYProgress, [0.02, 0.06], [40, 0]);
+  const iconScale = useTransform(scrollYProgress, [0.02, 0.08], [0.6, 1], {
     clamp: true,
   });
   const iconGlowOpacity = useTransform(
     scrollYProgress,
-    [0.04, 0.08],
+    [0.05, 0.10],
     [0, 0.6],
     { clamp: true }
   );
 
-  /* Stats 3-stage progression */
+  /* Stats 3-stage progression — delayed until section is sticky */
   const statsContainerOpacity = useTransform(
     scrollYProgress,
-    [0.08, 0.10, 0.34, 0.38],
+    [0.24, 0.26, 0.44, 0.48],
     [0, 1, 1, 0],
     { clamp: true }
   );
 
   // Counter 1: views per month
-  const counter1 = useTransform(scrollYProgress, [0.09, 0.15], [0, 9], {
+  const counter1 = useTransform(scrollYProgress, [0.26, 0.31], [0, 9], {
     clamp: true,
   });
   const counter1Opacity = useTransform(
     scrollYProgress,
-    [0.08, 0.10],
+    [0.25, 0.27],
     [0, 1],
     { clamp: true }
   );
@@ -269,18 +273,18 @@ export default function Section04b_Distribution() {
   // Arrow 1 + "aiming for"
   const arrow1Opacity = useTransform(
     scrollYProgress,
-    [0.16, 0.19],
+    [0.31, 0.33],
     [0, 1],
     { clamp: true }
   );
 
   // Counter 2: views per week
-  const counter2 = useTransform(scrollYProgress, [0.19, 0.25], [0, 9], {
+  const counter2 = useTransform(scrollYProgress, [0.33, 0.38], [0, 9], {
     clamp: true,
   });
   const counter2Opacity = useTransform(
     scrollYProgress,
-    [0.19, 0.21],
+    [0.33, 0.35],
     [0, 1],
     { clamp: true }
   );
@@ -288,18 +292,18 @@ export default function Section04b_Distribution() {
   // Arrow 2 + "soon, eventually"
   const arrow2Opacity = useTransform(
     scrollYProgress,
-    [0.26, 0.29],
+    [0.38, 0.40],
     [0, 1],
     { clamp: true }
   );
 
   // Counter 3: views per day
-  const counter3 = useTransform(scrollYProgress, [0.29, 0.35], [0, 9], {
+  const counter3 = useTransform(scrollYProgress, [0.40, 0.44], [0, 9], {
     clamp: true,
   });
   const counter3Opacity = useTransform(
     scrollYProgress,
-    [0.29, 0.31],
+    [0.40, 0.42],
     [0, 1],
     { clamp: true }
   );
@@ -307,43 +311,43 @@ export default function Section04b_Distribution() {
   // Horizontal shift: center stat1 → shift left so stat2 is centered, stat3 appears to its right
   const statsShift = useTransform(
     scrollYProgress,
-    [0.09, 0.15, 0.18, 0.25, 0.28, 0.35],
+    [0.26, 0.31, 0.32, 0.38, 0.39, 0.44],
     [300, 300, 0, 0, 0, 0]
   );
 
   /* ── Phase B: Resonance Intelligence ── */
   const intelligenceOpacity = useTransform(
     scrollYProgress,
-    [0.36, 0.40, 0.54, 0.58],
+    [0.46, 0.50, 0.60, 0.64],
     [0, 1, 1, 0]
   );
   const intelligenceTitleY = useTransform(
     scrollYProgress,
-    [0.36, 0.40],
+    [0.46, 0.50],
     [30, 0]
   );
 
-  const card1Opacity = useTransform(scrollYProgress, [0.39, 0.42], [0, 1], {
+  const card1Opacity = useTransform(scrollYProgress, [0.49, 0.51], [0, 1], {
     clamp: true,
   });
-  const card1Y = useTransform(scrollYProgress, [0.39, 0.42], [20, 0], {
+  const card1Y = useTransform(scrollYProgress, [0.49, 0.51], [20, 0], {
     clamp: true,
   });
-  const card2Opacity = useTransform(scrollYProgress, [0.41, 0.44], [0, 1], {
+  const card2Opacity = useTransform(scrollYProgress, [0.51, 0.53], [0, 1], {
     clamp: true,
   });
-  const card2Y = useTransform(scrollYProgress, [0.41, 0.44], [20, 0], {
+  const card2Y = useTransform(scrollYProgress, [0.51, 0.53], [20, 0], {
     clamp: true,
   });
-  const card3Opacity = useTransform(scrollYProgress, [0.43, 0.46], [0, 1], {
+  const card3Opacity = useTransform(scrollYProgress, [0.53, 0.55], [0, 1], {
     clamp: true,
   });
-  const card3Y = useTransform(scrollYProgress, [0.43, 0.46], [20, 0], {
+  const card3Y = useTransform(scrollYProgress, [0.53, 0.55], [20, 0], {
     clamp: true,
   });
   const resonanceTextOpacity = useTransform(
     scrollYProgress,
-    [0.46, 0.50],
+    [0.55, 0.58],
     [0, 1],
     { clamp: true }
   );
@@ -351,43 +355,43 @@ export default function Section04b_Distribution() {
   /* ── Phase C: Production Pipeline ── */
   const pipelineOpacity = useTransform(
     scrollYProgress,
-    [0.54, 0.58, 0.90, 0.95],
+    [0.62, 0.66, 0.90, 0.95],
     [0, 1, 1, 0]
   );
   const pipelineTitleY = useTransform(
     scrollYProgress,
-    [0.54, 0.58],
+    [0.62, 0.66],
     [30, 0]
   );
 
-  const stage1Opacity = useTransform(scrollYProgress, [0.57, 0.60], [0, 1], {
+  const stage1Opacity = useTransform(scrollYProgress, [0.65, 0.67], [0, 1], {
     clamp: true,
   });
-  const stage1Y = useTransform(scrollYProgress, [0.57, 0.60], [20, 0], {
+  const stage1Y = useTransform(scrollYProgress, [0.65, 0.67], [20, 0], {
     clamp: true,
   });
-  const stage2Opacity = useTransform(scrollYProgress, [0.59, 0.62], [0, 1], {
+  const stage2Opacity = useTransform(scrollYProgress, [0.67, 0.69], [0, 1], {
     clamp: true,
   });
-  const stage2Y = useTransform(scrollYProgress, [0.59, 0.62], [20, 0], {
+  const stage2Y = useTransform(scrollYProgress, [0.67, 0.69], [20, 0], {
     clamp: true,
   });
-  const stage3Opacity = useTransform(scrollYProgress, [0.61, 0.64], [0, 1], {
+  const stage3Opacity = useTransform(scrollYProgress, [0.69, 0.71], [0, 1], {
     clamp: true,
   });
-  const stage3Y = useTransform(scrollYProgress, [0.61, 0.64], [20, 0], {
+  const stage3Y = useTransform(scrollYProgress, [0.69, 0.71], [20, 0], {
     clamp: true,
   });
-  const stage4Opacity = useTransform(scrollYProgress, [0.63, 0.66], [0, 1], {
+  const stage4Opacity = useTransform(scrollYProgress, [0.71, 0.73], [0, 1], {
     clamp: true,
   });
-  const stage4Y = useTransform(scrollYProgress, [0.63, 0.66], [20, 0], {
+  const stage4Y = useTransform(scrollYProgress, [0.71, 0.73], [20, 0], {
     clamp: true,
   });
-  const rolesOpacity = useTransform(scrollYProgress, [0.65, 0.68], [0, 1], {
+  const rolesOpacity = useTransform(scrollYProgress, [0.73, 0.75], [0, 1], {
     clamp: true,
   });
-  const badgeOpacity = useTransform(scrollYProgress, [0.67, 0.70], [0, 1], {
+  const badgeOpacity = useTransform(scrollYProgress, [0.75, 0.77], [0, 1], {
     clamp: true,
   });
 
@@ -415,8 +419,12 @@ export default function Section04b_Distribution() {
   /* Trailing counter position */
   const trailingLeft = useTransform(goldenBarWidth, (w) => `${30 + w}%`);
 
-  /* Trailing counter opacity */
-  const trailingOpacity = useTransform(adScrollY, [0.45, 0.47], [0, 1], { clamp: true });
+  /* Trailing counter opacity — fade in, then fade out before hitting 1M goal label */
+  const trailingFadeIn = useTransform(adScrollY, [0.45, 0.47], [0, 1], { clamp: true });
+  const trailingFadeOut = useTransform(adScrollY, [0.56, 0.59], [1, 0], { clamp: true });
+  const trailingOpacity = useTransform(
+    () => trailingFadeIn.get() * trailingFadeOut.get()
+  );
 
   /* Counter color for trailing label */
   const trailingColor = useTransform(adScrollY, [0.45, 0.60], [ACCENT, "#f4a261"]);
@@ -433,7 +441,7 @@ export default function Section04b_Distribution() {
       ref={sectionRef}
       id="distribution"
       className="relative"
-      style={{ height: "180vh" }}
+      style={{ height: "320vh" }}
     >
       <motion.div
         className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
@@ -676,6 +684,14 @@ export default function Section04b_Distribution() {
             <p className="text-sm text-text-muted max-w-lg mx-auto">
               A workflow that is completely safe, organic, and will never be seen
               as spam.
+            </p>
+            <p className="text-sm max-w-xl mx-auto mt-4 leading-relaxed px-4 py-2.5 rounded-lg border border-white/[0.08]"
+              style={{ background: 'linear-gradient(135deg, rgba(103,212,232,0.06), rgba(192,132,252,0.06))' }}>
+              <span style={{ color: ACCENT }} className="font-semibold">No hard ceiling</span>
+              <span className="text-text-muted"> &mdash; output scales just by adding more resource
+              units to the production line. Like a factory of attention, each
+              building block can be copied and extended to multiply views and
+              reach.</span>
             </p>
           </motion.div>
 

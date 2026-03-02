@@ -1,13 +1,7 @@
 "use client";
 
-import { useRef } from "react";
 import Image from "next/image";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
+import { motion } from "framer-motion";
 
 /* ── Community activities ── */
 
@@ -60,8 +54,8 @@ const ACTIVITIES = [
 
 function ActivityIcon({ name, color }: { name: string; color: string }) {
   const props = {
-    width: 20,
-    height: 20,
+    width: 24,
+    height: 24,
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: color,
@@ -137,325 +131,335 @@ function ActivityIcon({ name, color }: { name: string; color: string }) {
   }
 }
 
-/* ── Activity card with staggered scroll reveal ── */
+/* ── Fade-in-on-scroll wrapper ── */
 
-function ActivityCard({
-  activity,
-  index,
-  scrollYProgress,
-}: {
-  activity: (typeof ACTIVITIES)[number];
-  index: number;
-  scrollYProgress: MotionValue<number>;
-}) {
-  const cardStart = 0.48 + index * 0.015;
-  const cardOpacity = useTransform(
-    scrollYProgress,
-    [cardStart, cardStart + 0.04],
-    [0, 1],
-    { clamp: true }
-  );
-  const cardY = useTransform(
-    scrollYProgress,
-    [cardStart, cardStart + 0.04],
-    [30, 0],
-    { clamp: true }
-  );
-
-  return (
-    <motion.div
-      className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors"
-      style={{ opacity: cardOpacity, y: cardY }}
-    >
-      <div className="flex items-center gap-3 mb-2">
-        <ActivityIcon name={activity.icon} color={activity.accent} />
-        <h4
-          className="text-sm font-semibold"
-          style={{ color: activity.accent }}
-        >
-          {activity.title}
-        </h4>
-      </div>
-      <p className="text-xs text-text-dim leading-relaxed m-0">
-        {activity.description}
-      </p>
-    </motion.div>
-  );
-}
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0 },
+};
 
 /* ── Main section ── */
 
 export default function Section08_AIEndsPub() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-
-  /* Section envelope */
-  const sectionOpacity = useTransform(
-    scrollYProgress,
-    [0.0, 0.04, 0.93, 0.98],
-    [0, 1, 1, 0]
-  );
-
-  /* Phase A: Hero with pub image */
-  const heroOpacity = useTransform(
-    scrollYProgress,
-    [0.02, 0.06, 0.22, 0.28],
-    [0, 1, 1, 0]
-  );
-  const heroY = useTransform(scrollYProgress, [0.02, 0.06], [40, 0]);
-  const imageScale = useTransform(
-    scrollYProgress,
-    [0.02, 0.12],
-    [0.92, 1],
-    { clamp: true }
-  );
-  const taglineOpacity = useTransform(
-    scrollYProgress,
-    [0.09, 0.14],
-    [0, 1],
-    { clamp: true }
-  );
-
-  /* Phase B: Value proposition */
-  const valueOpacity = useTransform(
-    scrollYProgress,
-    [0.25, 0.31, 0.38, 0.44],
-    [0, 1, 1, 0]
-  );
-  const valueY = useTransform(scrollYProgress, [0.25, 0.31], [40, 0]);
-
-  /* Phase C: Activities grid */
-  const gridOpacity = useTransform(
-    scrollYProgress,
-    [0.44, 0.50, 0.64, 0.70],
-    [0, 1, 1, 0]
-  );
-  const gridTitleOpacity = useTransform(
-    scrollYProgress,
-    [0.44, 0.50],
-    [0, 1],
-    { clamp: true }
-  );
-  const gridTitleY = useTransform(scrollYProgress, [0.44, 0.50], [30, 0]);
-
-  /* Phase D: Crusader connection */
-  const crusaderOpacity = useTransform(
-    scrollYProgress,
-    [0.63, 0.69, 0.81, 0.87],
-    [0, 1, 1, 0]
-  );
-  const crusaderY = useTransform(scrollYProgress, [0.63, 0.69], [40, 0]);
-
-  /* Phase E: CTA */
-  const ctaOpacity = useTransform(
-    scrollYProgress,
-    [0.84, 0.89, 0.93, 0.97],
-    [0, 1, 1, 0]
-  );
-  const ctaY = useTransform(scrollYProgress, [0.84, 0.89], [40, 0]);
-
   return (
-    <section
-      ref={sectionRef}
-      id="ai-ends-pub"
-      className="relative"
-      style={{ height: "500vh" }}
-    >
+    <section id="ai-ends-pub" className="relative">
+      {/* ── Phase A: Hero ── */}
       <motion.div
-        className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
-        style={{ opacity: sectionOpacity }}
+        className="flex flex-col items-center justify-center px-4 py-24 sm:py-32"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={fadeUp}
+        transition={{ duration: 0.6 }}
       >
-        {/* ── Phase A: Hero ── */}
-        <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center px-4"
-          style={{ opacity: heroOpacity, y: heroY }}
-        >
-          {/* Pub sign image with warm glow */}
-          <motion.div
-            className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg mb-6 rounded-2xl overflow-hidden"
-            style={{ scale: imageScale }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent z-10" />
-            <div className="absolute -inset-4 bg-[#f4a261]/10 blur-3xl rounded-full z-0" />
-            <Image
-              src="/AIEndsPub.png"
-              alt="AI Ends Pub — a warm community gathering place"
-              width={800}
-              height={500}
-              className="relative z-[1] w-full h-auto object-cover rounded-2xl shadow-2xl"
-              priority
-            />
-          </motion.div>
+        <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg mb-6 rounded-2xl overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent z-10" />
+          <div className="absolute -inset-4 bg-[#f4a261]/10 blur-3xl rounded-full z-0" />
+          <Image
+            src="/AIEndsPub.png"
+            alt="AI Ends Pub — a warm community gathering place"
+            width={800}
+            height={500}
+            className="relative z-[1] w-full h-auto object-cover rounded-2xl shadow-2xl"
+            priority
+          />
+        </div>
 
-          <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text text-center leading-tight tracking-tight mb-3">
-            AI Ends Pub
-          </h2>
-          <motion.p
-            className="text-base sm:text-lg text-text-muted text-center max-w-xl leading-relaxed"
-            style={{ opacity: taglineOpacity }}
-          >
-            Join the debates. The lowest-effort, highest-impact thing you can do.
-          </motion.p>
-          <motion.p
-            className="text-sm text-text-dim text-center max-w-lg leading-relaxed mt-3"
-            style={{ opacity: taglineOpacity }}
-          >
-            A Discord server on a mission to foster vibrant discussions and
-            clash worldviews between those who worry about AI and those who
-            don&rsquo;t &mdash; in a productive dialog, from which we will all
-            come out wiser.
-          </motion.p>
-          <motion.p
-            className="text-sm text-text-dim text-center max-w-lg leading-relaxed mt-2"
-            style={{ opacity: taglineOpacity }}
-          >
-            A place to find belonging, amplify your voice, and connect with
-            friends who want to spread AI risk awareness just like you.
-          </motion.p>
-        </motion.div>
-
-        {/* ── Phase B: Value Proposition ── */}
-        <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8"
-          style={{ opacity: valueOpacity, y: valueY }}
-        >
-          <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text text-center mb-6">
-            A community that is NOT about volunteering or unpaid work.
-          </h3>
-          <div className="max-w-2xl space-y-4">
-            <p className="text-base sm:text-lg text-text-muted text-center leading-relaxed">
-              It&rsquo;s not about assigning tasks or extracting value from you.
+        <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text text-center leading-tight tracking-tight mb-3">
+          AI Ends Pub
+        </h2>
+        <p className="text-base sm:text-lg text-text-muted text-center max-w-xl leading-relaxed">
+          Join the debates. The lowest-effort, highest-impact thing you can do.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 max-w-2xl w-full">
+          <div className="p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+            <p className="text-sm text-text-dim leading-relaxed m-0">
+              A community on a mission to foster vibrant discussions and
+              clash worldviews between those who worry about AI and those who
+              don&rsquo;t &mdash; in a productive dialog, from which we will
+              all come out wiser.
             </p>
-            <p className="text-lg sm:text-xl text-text text-center leading-relaxed font-medium">
-              It&rsquo;s a community that delivers value{" "}
-              <em className="text-cautious not-italic font-bold">to&nbsp;you</em>.
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4">
-              {[
-                { text: "Empowering you", color: "#f4a261" },
-                { text: "Amplifying your reach", color: "#e07a5f" },
-                { text: "Helping you make friends", color: "#52b788" },
-                { text: "Sense of belonging", color: "#67d4e8" },
-                { text: "Resources & tools", color: "#c084fc" },
-                { text: "On your own terms", color: "#f0b429" },
-              ].map((item) => (
-                <div
-                  key={item.text}
-                  className="text-center px-4 py-3.5 rounded-lg bg-white/[0.03] border border-white/[0.06]"
-                >
-                  <span
-                    className="text-sm sm:text-base font-medium"
-                    style={{ color: item.color }}
-                  >
-                    {item.text}
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
-        </motion.div>
+          <div className="p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+            <p className="text-sm text-text-dim leading-relaxed m-0">
+              A place to find belonging, amplify your voice, and connect with
+              friends who want to spread AI risk awareness just like you.
+            </p>
+          </div>
+        </div>
+      </motion.div>
 
-        {/* ── Phase C: Activities Grid ── */}
-        <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16"
-          style={{ opacity: gridOpacity }}
-        >
-          <motion.h3
-            className="font-heading text-2xl sm:text-3xl font-bold text-text text-center mb-2"
-            style={{ opacity: gridTitleOpacity, y: gridTitleY }}
-          >
-            What awaits you inside
-          </motion.h3>
-          <motion.p
-            className="text-sm text-text-muted text-center max-w-lg mb-8"
-            style={{ opacity: gridTitleOpacity }}
-          >
-            Find inspiration. Draw strength. Build confidence. Get equipped.
-          </motion.p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 max-w-4xl w-full">
-            {ACTIVITIES.map((act, i) => (
-              <ActivityCard
-                key={act.title}
-                activity={act}
-                index={i}
-                scrollYProgress={scrollYProgress}
-              />
+      {/* ── Phase B: Value Proposition ── */}
+      <motion.div
+        className="flex flex-col items-center justify-center px-4 sm:px-8 py-20 sm:py-28"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={fadeUp}
+        transition={{ duration: 0.6 }}
+      >
+        <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text text-center mb-6">
+          A community that is NOT about volunteering or unpaid work.
+        </h3>
+        <div className="max-w-2xl space-y-4">
+          <p className="text-base sm:text-lg text-text-muted text-center leading-relaxed">
+            It&rsquo;s not about assigning tasks or extracting value from you.
+          </p>
+          <p className="text-lg sm:text-xl text-text text-center leading-relaxed font-medium">
+            It&rsquo;s a community that delivers value{" "}
+            <em className="text-cautious not-italic font-bold">to&nbsp;you</em>.
+          </p>
+          <p className="text-base sm:text-lg text-text-muted text-center leading-relaxed">
+            Giving you all the resources you need to be as effective an AI risk awareness crusader as you can.
+          </p>
+          <p className="text-sm sm:text-base text-text-dim text-center leading-relaxed">
+            We don&rsquo;t tell you how to do it &mdash; we just help you spread the message to your own circle of influence, in your own way.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4">
+            {[
+              { text: "Empowering you", color: "#f4a261" },
+              { text: "Amplifying your reach", color: "#e07a5f" },
+              { text: "Helping you make friends", color: "#52b788" },
+              { text: "Sense of belonging", color: "#67d4e8" },
+              { text: "Resources & tools", color: "#c084fc" },
+              { text: "On your own terms", color: "#f0b429" },
+            ].map((item) => (
+              <div
+                key={item.text}
+                className="text-center px-4 py-3.5 rounded-lg bg-white/[0.03] border border-white/[0.06]"
+              >
+                <span
+                  className="text-sm sm:text-base font-medium"
+                  style={{ color: item.color }}
+                >
+                  {item.text}
+                </span>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
+      </motion.div>
 
-        {/* ── Phase D: Crusader Connection ── */}
-        <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center px-4"
-          style={{ opacity: crusaderOpacity, y: crusaderY }}
-        >
-          <p className="text-xs uppercase tracking-[0.2em] text-cautious/70 mb-4 font-body">
-            The AI Risk Awareness Force
-          </p>
-          <h3 className="font-heading text-3xl sm:text-4xl font-bold text-text text-center mb-6 max-w-3xl leading-tight">
-            Every advocate starts as a visitor.
+      {/* ── Phase C: Activities Grid ── */}
+      <motion.div
+        className="flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16 py-20 sm:py-28"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeUp}
+        transition={{ duration: 0.6 }}
+      >
+        <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text text-center mb-2">
+          What awaits you inside
+        </h3>
+        <p className="text-sm text-text-muted text-center max-w-lg mb-8">
+          Find inspiration. Draw strength. Build confidence. Get equipped.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-5xl w-full">
+          {ACTIVITIES.map((act, i) => (
+            <motion.div
+              key={act.title}
+              className="p-5 sm:p-6 rounded-xl bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] transition-colors"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.5, delay: i * 0.08 }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <ActivityIcon name={act.icon} color={act.accent} />
+                <h4
+                  className="text-base sm:text-lg font-semibold"
+                  style={{ color: act.accent }}
+                >
+                  {act.title}
+                </h4>
+              </div>
+              <p className="text-sm sm:text-base text-text-dim leading-relaxed m-0">
+                {act.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ── Color-coding ── */}
+      <motion.div
+        className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-14 px-4 sm:px-8 lg:px-16 py-20 sm:py-28 max-w-6xl mx-auto"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeUp}
+        transition={{ duration: 0.6 }}
+      >
+        {/* Image */}
+        <div className="w-full max-w-sm lg:max-w-md flex-shrink-0 rounded-2xl overflow-hidden">
+          <Image
+            src="/color-coding.png"
+            alt="Color-coded badges — AINotKillEveryoneist or AI-Risk Denier"
+            width={600}
+            height={400}
+            className="w-full h-auto object-cover rounded-2xl"
+          />
+        </div>
+
+        {/* Text */}
+        <div className="flex-1">
+          <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text mb-4">
+            Color-coding
           </h3>
-          <div className="max-w-2xl space-y-4 text-center">
-            <p className="text-base sm:text-lg text-text-muted leading-relaxed">
-              You walk in curious. You sit down at the table. You listen, you
-              question, you debate &mdash; and somewhere along the way, something
-              clicks.
+          <p className="text-base sm:text-lg text-text-muted leading-relaxed mb-5">
+            Upon joining, you&rsquo;ll be asked to share your stance on AI risk.
+            Based on your response, you&rsquo;ll receive a unique colour badge,
+            instantly signalling your perspective to others during conversations.
+          </p>
+          <div className="space-y-3 mb-5">
+            <p className="text-base sm:text-lg font-medium" style={{ color: "#e07a5f" }}>
+              RED 🔥 If you are an AINotKillEveryoneist{" "}
+              <span className="text-text-dim font-normal">(You worry about upcoming AI)</span>
             </p>
-            <p className="text-base sm:text-lg text-text leading-relaxed font-medium">
-              You don&rsquo;t need to be an expert. You just need to care enough
-              to share the message in your own way, within your own sphere of
-              influence.
+            <p className="text-base sm:text-lg font-medium" style={{ color: "#52b788" }}>
+              Green 😏 If you are an AI-Risk denier{" "}
+              <span className="text-text-dim font-normal">(You believe it will all be fine)</span>
             </p>
-            <p className="text-sm text-text-dim leading-relaxed italic mt-6">
+          </div>
+          <p className="text-sm text-text-dim leading-relaxed">
+            You can update your stance anytime via &ldquo;Channels &amp; Roles&rdquo; in the sidebar.
+          </p>
+        </div>
+      </motion.div>
+
+      {/* ── Tables ── */}
+      <motion.div
+        className="flex flex-col lg:flex-row-reverse items-center lg:items-start gap-8 lg:gap-14 px-4 sm:px-8 lg:px-16 py-20 sm:py-28 max-w-6xl mx-auto"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={fadeUp}
+        transition={{ duration: 0.6 }}
+      >
+        {/* Image */}
+        <div className="w-full max-w-sm lg:max-w-md flex-shrink-0 rounded-2xl overflow-hidden">
+          <Image
+            src="/channels-tables.png"
+            alt="100+ channels covering AI-Risk skepticisms and topics"
+            width={600}
+            height={400}
+            className="w-full h-auto object-cover rounded-2xl"
+          />
+        </div>
+
+        {/* Text */}
+        <div className="flex-1">
+          <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text mb-4">
+            Tables
+          </h3>
+          <p className="text-base sm:text-lg text-text-muted leading-relaxed mb-4">
+            There is a table (text-channel) for each documented common
+            skepticism, organised in categories. If you don&rsquo;t believe in
+            AI risk, chances are the deep reason can be found in one or more of
+            those tables.
+          </p>
+          <p className="text-base sm:text-lg text-text-muted leading-relaxed mb-4">
+            Share your thoughts there, and the other side will respond and
+            provide their rebuttal to your argument.
+          </p>
+          <p className="text-base sm:text-lg text-text-muted leading-relaxed">
+            Each category also has its own voice channel, so there can be live
+            discussions in parallel debating the arguments.
+          </p>
+        </div>
+      </motion.div>
+
+      {/* ── The "AI Ends" Name ── */}
+      <motion.div
+        className="flex flex-col items-center px-4 sm:px-8 py-14 sm:py-20 max-w-2xl mx-auto"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={fadeUp}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <Image
+            src="/AIEndsPub.png"
+            alt="AI Ends Pub sign"
+            width={40}
+            height={40}
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-cover"
+          />
+          <h3 className="font-heading text-xl sm:text-2xl font-bold text-text">
+            The &ldquo;AI Ends&rdquo; name
+          </h3>
+        </div>
+
+        <p className="text-sm sm:text-base text-text-muted leading-relaxed text-center mb-3">
+          The name draws inspiration from London&rsquo;s famous World&rsquo;s End
+          pub. <span className="text-text font-medium">AI will mark the end of many things</span> &mdash; the
+          hope is it ends disease, suffering, and poverty. It will also end
+          society in its current form, potentially ushering in the end of
+          drudgery and scarcity.
+        </p>
+        <p className="text-sm sm:text-base text-text-muted leading-relaxed text-center mb-3">
+          But it will also signal the end of a long era where humans reigned as
+          the apex intelligence. And as it heralds the close of an age, some
+          fear it could literally lead to the end of the world &mdash; which
+          ties back neatly to the World&rsquo;s End pub.
+        </p>
+        <p className="text-sm sm:text-base text-text leading-relaxed text-center font-medium italic">
+          The AI Ends pub is a safe place where we can gather to discuss AI &mdash;
+          by far the most interesting phenomenon of our time.
+        </p>
+      </motion.div>
+
+      {/* ── Crusader Connection + CTA (merged) ── */}
+      <motion.div
+        className="flex flex-col items-center justify-center px-4 py-20 sm:py-28"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={fadeUp}
+        transition={{ duration: 0.6 }}
+      >
+        <p className="text-sm sm:text-base uppercase tracking-[0.2em] text-cautious/70 mb-4 font-body font-bold">
+          The AI Risk Awareness Force
+        </p>
+        <h3 className="font-heading text-3xl sm:text-4xl font-bold text-text text-center mb-6 max-w-3xl leading-tight">
+          Every advocate starts as a visitor.
+        </h3>
+        <div className="max-w-2xl space-y-4 text-center">
+          <p className="text-base sm:text-lg text-text-muted leading-relaxed">
+            You walk in curious. You sit down at the table. You listen, you
+            question, you debate &mdash; and somewhere along the way, something
+            clicks.
+          </p>
+          <p className="text-base sm:text-lg text-text leading-relaxed font-medium">
+            You don&rsquo;t need to be an expert. You just need to care enough
+            to share the message in your own way, within your own sphere of
+            influence.
+          </p>
+
+          {/* Emphasized quote block */}
+          <div className="mt-8 mx-auto max-w-xl px-6 py-6 rounded-xl bg-white/[0.04] border border-cautious/20">
+            <p className="text-base sm:text-lg text-cautious leading-relaxed font-medium m-0">
               The pub doesn&rsquo;t create crusaders through assignments or
               obligations. It creates them through belonging, confidence, and the
               simple realization that your voice matters.
             </p>
           </div>
-        </motion.div>
+        </div>
 
-        {/* ── Phase E: CTA ── */}
-        <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center px-4"
-          style={{ opacity: ctaOpacity, y: ctaY }}
-        >
+        {/* Pull up a chair — merged in */}
+        <div className="mt-16 text-center">
           <h3 className="font-heading text-3xl sm:text-4xl font-bold text-text text-center mb-4">
             Pull up a chair.
           </h3>
-          <p className="text-base text-text-muted text-center max-w-lg mb-8 leading-relaxed">
-            AI Ends Pub is where the AI risk awareness movement finds its
-            people. All the action paths are designed for you &mdash; on your
-            own terms.
+          <p className="text-base text-text-muted text-center max-w-lg mx-auto leading-relaxed">
+            AI Ends Pub is where the AI Risk Awareness Force finds its
+            people. All the action paths are designed for the community
+            &mdash; on their own terms.
           </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-            <a
-              href="https://lethalintelligence.ai/ai-ends-pub/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 rounded-full bg-cautious text-bg text-sm font-semibold hover:brightness-110 transition-all text-center"
-            >
-              Enter the Pub
-            </a>
-            <a
-              href="https://lethalintelligence.ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 rounded-full border border-white/10 text-text-muted text-sm font-medium hover:bg-white/[0.05] transition-colors text-center"
-            >
-              Visit The Hub
-            </a>
-          </div>
-
-          <p className="text-xs text-text-dim italic text-center max-w-md">
-            From which we will all come out wiser.
-          </p>
-        </motion.div>
+        </div>
       </motion.div>
     </section>
   );

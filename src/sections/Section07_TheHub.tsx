@@ -232,11 +232,11 @@ function ContentCard({
     >
       <div className="flex items-center gap-3 mb-2">
         <CategoryIcon name={category.icon} color={category.accent} />
-        <h4 className="text-sm font-semibold" style={{ color: category.accent }}>
+        <h4 className="text-base font-semibold" style={{ color: category.accent }}>
           {category.title}
         </h4>
       </div>
-      <p className="text-xs text-text-dim leading-relaxed m-0">
+      <p className="text-sm text-text-dim leading-relaxed m-0">
         {category.description}
       </p>
     </motion.div>
@@ -325,7 +325,7 @@ export default function Section07_TheHub() {
       ref={sectionRef}
       id="the-hub"
       className="relative"
-      style={{ height: "500vh" }}
+      style={{ height: "450vh" }}
     >
       <motion.div
         className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
@@ -353,12 +353,12 @@ export default function Section07_TheHub() {
           <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text text-center leading-tight tracking-tight mb-3">
             The Hub
           </h2>
-          <p className="text-lg sm:text-xl text-text-muted text-center max-w-2xl leading-relaxed mb-2">
-            Your one-stop destination for everything
+          <p className="text-xl sm:text-2xl text-text-muted text-center max-w-2xl leading-relaxed mb-2">
+            The one-stop destination for everything
             <br />
             <span className="font-semibold text-text">AI Risk Awareness</span> related.
           </p>
-          <p className="text-sm text-text-dim text-center max-w-lg leading-relaxed">
+          <p className="text-base sm:text-lg text-text-dim text-center max-w-xl leading-relaxed">
             Curated content from across the entire internet &mdash; organized,
             searchable, and ready to consume or share.
           </p>

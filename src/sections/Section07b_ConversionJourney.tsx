@@ -33,7 +33,7 @@ const FUNNEL_BANDS = [
   },
 ];
 
-/* ── Narrative stages (5 for funnel, "The Key" moves to final phase) ── */
+/* ── Narrative stages ── */
 
 const NARRATIVE_STAGES = [
   {
@@ -65,9 +65,9 @@ const THE_KEY_TEXT =
 
 const SVG_W = 750;
 const SVG_H = 620;
-const FUNNEL_TOP_W = 300;
-const FUNNEL_BOT_W = 50;
-const FUNNEL_CX = 170;
+const FUNNEL_TOP_W = 400;
+const FUNNEL_BOT_W = 60;
+const FUNNEL_CX = 230;
 const FUNNEL_TOP_Y = 50;
 const FUNNEL_BOT_Y = 570;
 const FUNNEL_H = FUNNEL_BOT_Y - FUNNEL_TOP_Y;
@@ -80,7 +80,6 @@ function funnelWidthAtY(y: number) {
 
 /* ── Scroll progress ranges ── */
 
-// Keywords highlight when the person is in that band
 const BAND_RANGES = [
   [0.10, 0.20],
   [0.20, 0.30],
@@ -90,7 +89,7 @@ const BAND_RANGES = [
   [0.64, 0.72],
 ];
 
-// 5 narrative stages — no overlap (±0.02 fade, 0.04 gap between)
+// 5 narrative stages for the funnel journey
 const NARRATIVE_RANGES = [
   [0.10, 0.19],
   [0.23, 0.32],
@@ -119,8 +118,8 @@ function KeywordGroup({
 
   const bandY = FUNNEL_TOP_Y + bandIndex * BAND_H;
   const bandMidY = bandY + BAND_H / 2;
-  const kw_x = FUNNEL_CX + FUNNEL_TOP_W / 2 + 30;
-  const lineH = 16;
+  const kw_x = FUNNEL_CX + FUNNEL_TOP_W / 2 + 25;
+  const lineH = 23;
   const groupStartY = bandMidY - ((band.items.length - 1) * lineH) / 2;
 
   return (
@@ -131,7 +130,7 @@ function KeywordGroup({
           x={kw_x}
           y={groupStartY + j * lineH}
           fill={band.color}
-          fontSize={11}
+          fontSize={17}
           fontFamily="var(--font-dm-sans)"
           textAnchor="start"
           dominantBaseline="middle"
@@ -178,12 +177,12 @@ function NarrativeStage({
       style={{ opacity, y }}
     >
       <p
-        className="text-xs font-semibold uppercase tracking-widest mb-3"
+        className="text-sm font-semibold uppercase tracking-widest mb-3"
         style={{ color: FUNNEL_BANDS[Math.min(stageIndex, FUNNEL_BANDS.length - 1)].color }}
       >
         {stage.title}
       </p>
-      <p className="text-sm sm:text-base text-text-muted leading-relaxed">
+      <p className="text-base sm:text-lg text-text-muted leading-relaxed">
         {stage.text}
       </p>
     </motion.div>
@@ -208,37 +207,31 @@ interface Pose {
 }
 
 const FALLING_POSES: Pose[] = [
-  // Pose 0 — Leaning back, right arm reaching up
   {
     head: [-4, -22], shoulder: [0, -12], hip: [5, 8],
     lHand: [-20, -2], rHand: [12, -26],
     lFoot: [-6, 26], rFoot: [18, 20],
   },
-  // Pose 1 — Spread eagle, classic freefall
   {
     head: [2, -20], shoulder: [0, -10], hip: [-2, 10],
     lHand: [-24, -6], rHand: [24, -2],
     lFoot: [-16, 26], rFoot: [18, 24],
   },
-  // Pose 2 — Tumbling sideways, asymmetric
   {
     head: [8, -18], shoulder: [4, -8], hip: [-4, 10],
     lHand: [-18, -16], rHand: [22, 4],
     lFoot: [-18, 20], rFoot: [4, 28],
   },
-  // Pose 3 — Diving forward, arms back
   {
     head: [-6, -20], shoulder: [-2, -10], hip: [4, 10],
     lHand: [-18, 6], rHand: [14, -20],
     lFoot: [18, 18], rFoot: [-2, 28],
   },
-  // Pose 4 — Star/X pose, fully spread
   {
     head: [0, -22], shoulder: [0, -12], hip: [0, 6],
     lHand: [-24, -18], rHand: [24, -14],
     lFoot: [-18, 24], rFoot: [20, 22],
   },
-  // Pose 5 — Curling inward, arms near head (exiting)
   {
     head: [2, -18], shoulder: [0, -8], hip: [-2, 12],
     lHand: [-10, -22], rHand: [14, -20],
@@ -246,7 +239,6 @@ const FALLING_POSES: Pose[] = [
   },
 ];
 
-// Compressed pose ranges for funnel phase (0.08-0.72)
 const POSE_RANGES: [number, number][] = [
   [0.08, 0.20],
   [0.19, 0.32],
@@ -255,6 +247,84 @@ const POSE_RANGES: [number, number][] = [
   [0.55, 0.66],
   [0.65, 0.74],
 ];
+
+/* ── Common viewBox for both poses — ensures seamless cross-fade ── */
+const POSE_VIEWBOX = "-34 -52 96 108";
+
+/* ── Arrived figure — standing upright, right arm extended, palm holding light ── */
+
+function ArrivedFigureSVG() {
+  return (
+    <>
+      {/* Head */}
+      <circle cx={0} cy={-30} r={9} fill={FIG_COLOR} />
+      {/* Torso */}
+      <line x1={0} y1={-21} x2={0} y2={8}
+        stroke={FIG_COLOR} strokeWidth={7} strokeLinecap="round" />
+      {/* Left arm — naturally at side, slight bend */}
+      <line x1={-1} y1={-16} x2={-10} y2={-2}
+        stroke={FIG_COLOR} strokeWidth={5.5} strokeLinecap="round" />
+      <line x1={-10} y1={-2} x2={-11} y2={10}
+        stroke={FIG_COLOR} strokeWidth={5} strokeLinecap="round" />
+      {/* Right arm — extended upward */}
+      <line x1={1} y1={-16} x2={18} y2={-24}
+        stroke={FIG_COLOR} strokeWidth={5.5} strokeLinecap="round" />
+      <line x1={18} y1={-24} x2={32} y2={-34}
+        stroke={FIG_COLOR} strokeWidth={5} strokeLinecap="round" />
+      {/* Palm */}
+      <circle cx={35} cy={-36} r={4.5} fill={FIG_COLOR} />
+      {/* Left leg — straight */}
+      <line x1={-2} y1={8} x2={-5} y2={26}
+        stroke={FIG_COLOR} strokeWidth={5.5} strokeLinecap="round" />
+      <line x1={-5} y1={26} x2={-5} y2={38}
+        stroke={FIG_COLOR} strokeWidth={5} strokeLinecap="round" />
+      {/* Right leg — straight */}
+      <line x1={2} y1={8} x2={5} y2={26}
+        stroke={FIG_COLOR} strokeWidth={5.5} strokeLinecap="round" />
+      <line x1={5} y1={26} x2={5} y2={38}
+        stroke={FIG_COLOR} strokeWidth={5} strokeLinecap="round" />
+    </>
+  );
+}
+
+/* ── Flying figure — bold pictogram superhero lunge ──
+   All coordinates computed to look correct AFTER -35° CSS rotation.
+   Key insight: "right" in SVG → "upper-right" on screen after rotation. */
+
+function FlyingPoseSVG() {
+  return (
+    <>
+      {/* Head — positioned ahead of torso in flight direction */}
+      <circle cx={8} cy={-24} r={12} fill={FIG_COLOR} />
+      {/* Torso — thick, straight vertical (rotation provides the lean) */}
+      <line x1={0} y1={-14} x2={0} y2={14}
+        stroke={FIG_COLOR} strokeWidth={14} strokeLinecap="round" />
+      {/* Right arm — goes RIGHT in SVG → appears upper-right on screen */}
+      <line x1={4} y1={-10} x2={18} y2={-14}
+        stroke={FIG_COLOR} strokeWidth={10} strokeLinecap="round" />
+      <line x1={18} y1={-14} x2={32} y2={-18}
+        stroke={FIG_COLOR} strokeWidth={9} strokeLinecap="round" />
+      {/* Left arm — upper: goes upper-left in SVG → appears left on screen */}
+      <line x1={-4} y1={-10} x2={-12} y2={-20}
+        stroke={FIG_COLOR} strokeWidth={10} strokeLinecap="round" />
+      {/* Left arm — forearm: drops lower-left in SVG → appears down on screen */}
+      <line x1={-12} y1={-20} x2={-20} y2={-8}
+        stroke={FIG_COLOR} strokeWidth={9} strokeLinecap="round" />
+      {/* Right leg — thigh: goes down-right in SVG → appears forward on screen */}
+      <line x1={2} y1={14} x2={16} y2={26}
+        stroke={FIG_COLOR} strokeWidth={10} strokeLinecap="round" />
+      {/* Right leg — shin: goes down-left in SVG → appears dropping down on screen */}
+      <line x1={16} y1={26} x2={9} y2={40}
+        stroke={FIG_COLOR} strokeWidth={9} strokeLinecap="round" />
+      {/* Left leg — thigh: goes LEFT+slightly UP in SVG → appears back on screen */}
+      <line x1={-2} y1={14} x2={-19} y2={9}
+        stroke={FIG_COLOR} strokeWidth={10} strokeLinecap="round" />
+      {/* Left leg — shin: continues left in SVG → appears back-down on screen */}
+      <line x1={-19} y1={9} x2={-28} y2={12}
+        stroke={FIG_COLOR} strokeWidth={9} strokeLinecap="round" />
+    </>
+  );
+}
 
 function StaticPose({ pose }: { pose: Pose }) {
   return (
@@ -300,16 +370,13 @@ function FallingPoseLayer({
 }) {
   const [start, end] = POSE_RANGES[poseIndex];
   const isFirst = poseIndex === 0;
-  const isLast = poseIndex === FALLING_POSES.length - 1;
   const fade = 0.012;
 
   const opacity = useTransform(
     scrollYProgress,
     isFirst
       ? [0, start, end - fade, end]
-      : isLast
-        ? [start, start + fade, end - fade, end]
-        : [start, start + fade, end - fade, end],
+      : [start, start + fade, end - fade, end],
     isFirst
       ? [1, 1, 1, 0]
       : [0, 1, 1, 0]
@@ -324,13 +391,15 @@ function FallingPoseLayer({
 
 function FallingPerson({
   personY,
+  personOpacity,
   scrollYProgress,
 }: {
   personY: MotionValue<number>;
+  personOpacity: MotionValue<number>;
   scrollYProgress: MotionValue<number>;
 }) {
   return (
-    <motion.g style={{ y: personY }}>
+    <motion.g style={{ y: personY, opacity: personOpacity }}>
       <g transform={`translate(${FUNNEL_CX}, 0)`}>
         {FALLING_POSES.map((pose, i) => (
           <FallingPoseLayer
@@ -345,148 +414,165 @@ function FallingPerson({
   );
 }
 
-/* ── Final phase: standing figure with golden glow ── */
+/* ── New Member Reveal: Superman flight → settles upright → glow from palm ── */
 
-// Standing pose — upright, arms raised holding the light
-const STANDING_POSE: Pose = {
-  head: [0, -26],
-  shoulder: [0, -16],
-  hip: [0, 6],
-  lHand: [-14, -22],
-  rHand: [14, -22],
-  lFoot: [-8, 28],
-  rFoot: [8, 28],
-};
-
-function FinalPhase({
+function NewMemberReveal({
   scrollYProgress,
 }: {
   scrollYProgress: MotionValue<number>;
 }) {
-  const phaseOpacity = useTransform(
+  // Position: funnel bottom → right-column upper area
+  // Start coords match where falling person exits (FUNNEL_CX in SVG → ~22% viewport)
+  const leftPct = useTransform(scrollYProgress, [0.70, 0.78], [22, 68]);
+  const topPct = useTransform(scrollYProgress, [0.70, 0.78], [86, 28]);
+  const leftStr = useTransform(leftPct, (v) => `${v}%`);
+  const topStr = useTransform(topPct, (v) => `${v}%`);
+
+  // Appear at funnel exit, stay visible until section end
+  const figOpacity = useTransform(
     scrollYProgress,
-    [0.72, 0.77, 0.92, 0.96],
+    [0.70, 0.72, 0.92, 0.96],
     [0, 1, 1, 0]
   );
-  const phaseY = useTransform(scrollYProgress, [0.72, 0.77], [40, 0]);
 
-  // Golden glow — intensifies over time
-  const glowOpacity = useTransform(
-    scrollYProgress,
-    [0.77, 0.82, 0.88, 0.92],
-    [0.15, 0.5, 0.85, 1.0]
-  );
-  const glowScale = useTransform(
-    scrollYProgress,
-    [0.77, 0.88, 0.92],
-    [0.6, 1.2, 1.6]
-  );
+  // Rotation: tilted during Superman flight, upright at arrival
+  const rotation = useTransform(scrollYProgress, [0.70, 0.78], [-35, 0]);
 
-  // "The Key" text fades in after the badge
-  const keyOpacity = useTransform(
+  // Cross-fade: Superman pose → standing pose
+  const flyingPoseOpacity = useTransform(scrollYProgress, [0.76, 0.79], [1, 0]);
+  const standingPoseOpacity = useTransform(scrollYProgress, [0.76, 0.79], [0, 1]);
+
+  // Pure golden glow — from palm, after figure settles
+  const glowOpacity = useTransform(scrollYProgress, [0.80, 0.88], [0, 1]);
+  const glowScale = useTransform(scrollYProgress, [0.80, 0.92], [0.3, 1.6]);
+
+  // Badge title fades in after arrival
+  const titleOpacity = useTransform(
     scrollYProgress,
-    [0.80, 0.84, 0.92, 0.96],
+    [0.81, 0.85, 0.92, 0.96],
     [0, 1, 1, 0]
   );
-  const keyY = useTransform(scrollYProgress, [0.80, 0.84], [20, 0]);
 
   return (
     <motion.div
-      className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8"
-      style={{ opacity: phaseOpacity, y: phaseY }}
+      className="absolute z-20 pointer-events-none"
+      style={{
+        left: leftStr,
+        top: topStr,
+        opacity: figOpacity,
+        x: "-55px",
+        y: "-75px",
+      }}
     >
-      {/* Badge: figure + glow + title */}
-      <div className="flex items-center gap-6 sm:gap-8 mb-10">
-        {/* Figure with glow */}
-        <div className="relative shrink-0" style={{ width: 72, height: 90 }}>
-          {/* Outer golden bloom */}
+      <div className="flex items-center gap-3 sm:gap-5">
+        {/* Rotatable figure container — large for bold pictogram */}
+        <motion.div
+          className="relative shrink-0"
+          style={{ width: 120, height: 135, rotate: rotation }}
+        >
+          {/* Outer golden bloom from palm — only visible on standing pose */}
           <motion.div
             className="absolute rounded-full"
             style={{
-              top: -20,
-              left: -14,
-              width: 100,
-              height: 100,
+              left: "72%",
+              top: "15%",
+              width: 140,
+              height: 140,
+              x: "-50%",
+              y: "-50%",
               opacity: glowOpacity,
               scale: glowScale,
               background:
-                "radial-gradient(circle, rgba(255,250,210,0.9) 0%, rgba(255,245,180,0.5) 30%, transparent 70%)",
-              filter: "blur(12px)",
+                "radial-gradient(circle, rgba(255,250,210,0.9) 0%, rgba(255,235,130,0.45) 35%, rgba(255,220,80,0.12) 60%, transparent 80%)",
+              filter: "blur(16px)",
             }}
           />
-          {/* Mid glow ring */}
+          {/* Inner bright core at palm */}
           <motion.div
             className="absolute rounded-full"
             style={{
-              top: -10,
-              left: -2,
-              width: 76,
-              height: 76,
+              left: "72%",
+              top: "15%",
+              width: 56,
+              height: 56,
+              x: "-50%",
+              y: "-50%",
               opacity: glowOpacity,
               background:
-                "radial-gradient(circle, rgba(244,162,97,0.6) 0%, rgba(244,162,97,0.15) 50%, transparent 80%)",
+                "radial-gradient(circle, rgba(255,255,240,1) 0%, rgba(255,248,200,0.7) 40%, transparent 75%)",
               filter: "blur(6px)",
             }}
           />
-          {/* Golden circle the figure "holds" */}
-          <motion.div
-            className="absolute rounded-full border-2"
-            style={{
-              top: 2,
-              left: 14,
-              width: 44,
-              height: 44,
-              opacity: glowOpacity,
-              borderColor: "rgba(244,162,97,0.8)",
-              background:
-                "radial-gradient(circle, rgba(255,250,210,0.7) 0%, rgba(244,162,97,0.3) 60%, transparent 100%)",
-              boxShadow:
-                "0 0 16px 6px rgba(255,250,210,0.4), inset 0 0 10px 3px rgba(255,245,180,0.25)",
-            }}
-          />
-          {/* The standing figure */}
-          <svg
-            viewBox="-30 -34 60 70"
-            width={72}
-            height={90}
-            className="relative z-10"
+          {/* Superman (flying) pose */}
+          <motion.svg
+            viewBox={POSE_VIEWBOX}
+            width={120}
+            height={135}
+            className="absolute inset-0 z-10"
+            style={{ opacity: flyingPoseOpacity }}
           >
-            <StaticPose pose={STANDING_POSE} />
-          </svg>
-        </div>
+            <FlyingPoseSVG />
+          </motion.svg>
+          {/* Standing (arrived) pose */}
+          <motion.svg
+            viewBox={POSE_VIEWBOX}
+            width={120}
+            height={135}
+            className="absolute inset-0 z-10"
+            style={{ opacity: standingPoseOpacity }}
+          >
+            <ArrivedFigureSVG />
+          </motion.svg>
+        </motion.div>
 
-        {/* Title text */}
-        <div>
+        {/* Badge title */}
+        <motion.div style={{ opacity: titleOpacity }}>
           <p
-            className="text-lg sm:text-xl lg:text-2xl font-heading font-bold leading-tight"
+            className="text-sm sm:text-base lg:text-lg font-heading font-bold leading-tight"
             style={{ color: "#f0ece2" }}
           >
             AI Risk Awareness Force
           </p>
           <p
-            className="text-sm sm:text-base font-semibold mt-1"
-            style={{ color: "#f4a261" }}
+            className="text-xs sm:text-sm font-semibold mt-0.5"
+            style={{ color: "#f4c542" }}
           >
             New Member
           </p>
-        </div>
+        </motion.div>
       </div>
+    </motion.div>
+  );
+}
 
-      {/* The Key text */}
-      <motion.div
-        className="max-w-lg text-center"
-        style={{ opacity: keyOpacity, y: keyY }}
+/* ── "The Key" stage — same layout as narrative stages, in the right column ── */
+
+function TheKeyStage({
+  scrollYProgress,
+}: {
+  scrollYProgress: MotionValue<number>;
+}) {
+  const opacity = useTransform(
+    scrollYProgress,
+    [0.82, 0.86, 0.92, 0.96],
+    [0, 1, 1, 0]
+  );
+  const y = useTransform(scrollYProgress, [0.82, 0.86], [25, 0]);
+
+  return (
+    <motion.div
+      className="absolute inset-0 flex flex-col justify-center px-2 sm:px-6"
+      style={{ opacity, y }}
+    >
+      <p
+        className="text-sm font-semibold uppercase tracking-widest mb-3"
+        style={{ color: "#f4c542" }}
       >
-        <p
-          className="text-xs font-semibold uppercase tracking-widest mb-3"
-          style={{ color: "#f4a261" }}
-        >
-          The Key
-        </p>
-        <p className="text-sm sm:text-base text-text-muted leading-relaxed">
-          {THE_KEY_TEXT}
-        </p>
-      </motion.div>
+        The Key
+      </p>
+      <p className="text-base sm:text-lg text-text-muted leading-relaxed">
+        {THE_KEY_TEXT}
+      </p>
     </motion.div>
   );
 }
@@ -516,10 +602,10 @@ export default function Section07b_ConversionJourney() {
   );
   const titleY = useTransform(scrollYProgress, [0.04, 0.09], [30, 0]);
 
-  /* Funnel + keywords fade in/out (gone before final phase) */
+  /* Funnel stays visible throughout */
   const funnelOpacity = useTransform(
     scrollYProgress,
-    [0.06, 0.10, 0.70, 0.76],
+    [0.06, 0.10, 0.92, 0.96],
     [0, 1, 1, 0]
   );
 
@@ -528,6 +614,13 @@ export default function Section07b_ConversionJourney() {
     scrollYProgress,
     [0.08, 0.72],
     [FUNNEL_TOP_Y - 50, FUNNEL_BOT_Y + 40]
+  );
+
+  /* Fade out falling person when NewMemberReveal takes over */
+  const personOpacity = useTransform(
+    scrollYProgress,
+    [0.70, 0.72],
+    [1, 0]
   );
 
   return (
@@ -549,12 +642,12 @@ export default function Section07b_ConversionJourney() {
           <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-text mb-1">
             The Conversion Journey
           </h2>
-          <p className="text-sm text-text-muted max-w-lg mx-auto">
+          <p className="text-base text-text-muted max-w-xl mx-auto">
             How casual curiosity becomes unstoppable conviction.
           </p>
         </motion.div>
 
-        {/* Funnel phase: funnel (left) + narrative (right) */}
+        {/* Two-column layout: funnel (left) + text (right) — stays visible */}
         <motion.div
           className="flex flex-col lg:flex-row items-stretch flex-1 w-full max-w-6xl mx-auto px-4 sm:px-8 gap-2 lg:gap-4 min-h-0"
           style={{ opacity: funnelOpacity }}
@@ -598,13 +691,13 @@ export default function Section07b_ConversionJourney() {
               {/* Side labels */}
               <text
                 x={FUNNEL_CX - FUNNEL_TOP_W / 2} y={FUNNEL_TOP_Y - 10}
-                fill="#666" fontSize={10} fontFamily="var(--font-dm-sans)" textAnchor="start"
+                fill="#666" fontSize={12} fontFamily="var(--font-dm-sans)" textAnchor="start"
               >
                 Easy to share
               </text>
               <text
-                x={FUNNEL_CX} y={FUNNEL_BOT_Y + 20}
-                fill="#666" fontSize={10} fontFamily="var(--font-dm-sans)" textAnchor="middle"
+                x={FUNNEL_CX} y={FUNNEL_BOT_Y + 22}
+                fill="#666" fontSize={12} fontFamily="var(--font-dm-sans)" textAnchor="middle"
               >
                 Deep commitment
               </text>
@@ -622,13 +715,15 @@ export default function Section07b_ConversionJourney() {
               {/* Falling person */}
               <FallingPerson
                 personY={personY}
+                personOpacity={personOpacity}
                 scrollYProgress={scrollYProgress}
               />
             </svg>
           </div>
 
-          {/* Right: Narrative text */}
+          {/* Right: Narrative text + "The Key" */}
           <div className="w-full lg:w-[40%] relative min-h-50 lg:min-h-0">
+            {/* Stages 0-4: funnel journey narratives */}
             {NARRATIVE_STAGES.map((stage, i) => (
               <NarrativeStage
                 key={i}
@@ -637,11 +732,14 @@ export default function Section07b_ConversionJourney() {
                 scrollYProgress={scrollYProgress}
               />
             ))}
+
+            {/* "The Key" — same position as other narrative stages */}
+            <TheKeyStage scrollYProgress={scrollYProgress} />
           </div>
         </motion.div>
 
-        {/* Final phase: figure with golden glow + "The Key" */}
-        <FinalPhase scrollYProgress={scrollYProgress} />
+        {/* New Member Reveal — flies from funnel bottom to right column, stays put */}
+        <NewMemberReveal scrollYProgress={scrollYProgress} />
       </motion.div>
     </section>
   );

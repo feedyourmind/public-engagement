@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { VariationProvider } from "@/context/VariationContext";
 import { DistributionProvider } from "@/context/DistributionContext";
 import SectionNav from "@/components/SectionNav";
+import SectionDivider from "@/components/SectionDivider";
 import Section02_Spectrum from "@/sections/Section02_Spectrum";
 import Section03_ZoomedSegments from "@/sections/Section03_ZoomedSegments";
 import Section03b_Funnel from "@/sections/Section03b_Funnel";
@@ -49,21 +50,34 @@ export default function MainPageClient({
         <SectionNav />
         <main className="overflow-x-clip">
           <Section02_Spectrum />
+          <SectionDivider />
           <Section03_ZoomedSegments />
+          <SectionDivider />
           <Section03b_Funnel />
+          <SectionDivider />
           <Section03c_Goals />
           <Section03d_Goal2 />
+          <SectionDivider />
           <Section03e_Grassroots />
+          <SectionDivider />
           <Section04_Comparisons />
+          <SectionDivider />
           <Section04a_Strategies />
+          <SectionDivider />
           <Section04b_Distribution />
           <Section04c_Platforms />
+          <SectionDivider />
           <Section07_TheHub />
           <Section07b_ConversionJourney />
+          <SectionDivider />
           <Section08_AIEndsPub />
+          <SectionDivider />
           <Section09_Takedowns />
+          <SectionDivider />
           <Section10_YouTube />
+          <SectionDivider />
           <Section05_ConcernedSplit />
+          <SectionDivider />
           <Section06_Conclusion />
         </main>
       </DistributionProvider>

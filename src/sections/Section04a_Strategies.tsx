@@ -940,9 +940,11 @@ export default function Section04a_Strategies() {
             This is why we cannot ignore the high X-risk side of the spectrum.
           </p>
           <p className="text-sm sm:text-base text-text-muted leading-relaxed">
-            Not because it&rsquo;s easy&nbsp;&mdash; but because each person
-            who truly understands the risk becomes a force multiplier that no
-            amount of viral content can match.
+            Not because it&rsquo;s easy
+          </p>
+          <p className="text-sm sm:text-base text-text-muted leading-relaxed mt-1 max-w-lg mx-auto">
+            but because each person who responds to this content becomes
+            a force multiplier that no amount of viral content can match.
           </p>
         </div>
 
