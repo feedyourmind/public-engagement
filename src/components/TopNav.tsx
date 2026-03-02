@@ -97,9 +97,25 @@ export default function TopNav() {
         </Link>
       ) : (
         <div className="flex items-center gap-6">
-          <span className="text-xs uppercase tracking-widest text-text-muted font-body">
-            AI X-Risk Spectrum
-          </span>
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="p-1.5 -ml-1.5 rounded-lg text-text-muted hover:text-text transition-colors cursor-pointer bg-transparent border-none"
+            aria-label="Scroll to top"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 9l9-7 9 7" />
+              <path d="M9 22V12h6v10" />
+            </svg>
+          </button>
           {[
             { id: "spectrum", label: "Spectrum", offset: 56 },
             { id: "goals", label: "Mission", offset: 350 },

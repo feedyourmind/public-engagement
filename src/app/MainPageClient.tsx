@@ -39,6 +39,14 @@ function PageSections() {
     <>
       <SectionNav />
       <main className="overflow-x-clip">
+        <div className="flex flex-col items-center px-4 pt-24 sm:pt-32 pb-8">
+          <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text text-center leading-tight tracking-tight mb-3">
+            A Vision for Public Engagement
+          </h1>
+          <p className="text-base sm:text-lg lg:text-xl text-text-muted text-center max-w-2xl leading-relaxed">
+            Maximize Impact in Raising Awareness of AI&nbsp;Risks
+          </p>
+        </div>
         <Section02_Spectrum />
         <SectionDivider />
         <Section03_ZoomedSegments />
@@ -59,6 +67,7 @@ function PageSections() {
         <SectionDivider />
         <Section07_TheHub />
         <Section07b_ConversionJourney />
+        <div className="h-[20vh]" />
         <SectionDivider />
         <Section08_AIEndsPub />
         <SectionDivider />
