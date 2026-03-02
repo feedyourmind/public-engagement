@@ -128,9 +128,12 @@ function NicheCard({
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
+  const nicheId = `niche-${example.icon}`;
+
   return (
     <motion.div
       ref={ref}
+      id={nicheId}
       className="rounded-xl overflow-hidden"
       style={{
         background: "rgba(255,255,255,0.02)",
@@ -363,7 +366,7 @@ export default function Section10b_InfluencerDeals() {
         variants={fadeUp}
         transition={{ duration: 0.6 }}
       >
-        <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-text text-center mb-6 leading-tight">
+        <h3 id="endless-opportunities" className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-text text-center mb-6 leading-tight">
           An Endless Stream of Opportunities
         </h3>
         <div className="space-y-4 text-center">

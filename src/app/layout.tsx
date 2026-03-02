@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Playfair_Display, DM_Sans, DM_Mono } from "next/font/google";
+import { Lora, DM_Sans, DM_Mono } from "next/font/google";
 import TopNav from "@/components/TopNav";
+import LayoutProviders from "@/components/LayoutProviders";
 import "./globals.css";
 
-const playfair = Playfair_Display({
+const lora = Lora({
   subsets: ["latin"],
-  weight: ["700", "800"],
-  variable: "--font-playfair",
+  variable: "--font-lora",
   display: "swap",
 });
 
@@ -44,13 +44,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${dmSans.variable} ${dmMono.variable}`}
+      className={`${lora.variable} ${dmSans.variable} ${dmMono.variable}`}
     >
       <body className="bg-bg text-text font-body pt-12">
-        <Suspense>
-          <TopNav />
-        </Suspense>
-        {children}
+        <LayoutProviders>
+          <Suspense>
+            <TopNav />
+          </Suspense>
+          {children}
+        </LayoutProviders>
       </body>
     </html>
   );

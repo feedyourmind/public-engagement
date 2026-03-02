@@ -198,6 +198,12 @@ export default function Section10_YouTube() {
       className="relative"
       style={{ height: "600vh" }}
     >
+      {/* Invisible scroll anchors for URL hash navigation */}
+      <div id="animated-content" className="absolute" style={{ top: "20%" }} />
+      <div id="xrisk-paradox" className="absolute" style={{ top: "38%" }} />
+      <div id="podcasting" className="absolute" style={{ top: "55%" }} />
+      <div id="content-engine" className="absolute" style={{ top: "75%" }} />
+
       <motion.div
         className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
         style={{ opacity: sectionOpacity }}

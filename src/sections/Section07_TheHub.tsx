@@ -309,7 +309,7 @@ export default function Section07_TheHub() {
   /* ── Phase B: Grid ── */
   const gridOpacity = useTransform(
     scrollYProgress,
-    [0.46, 0.52, 0.72, 0.78],
+    [0.46, 0.52, 0.86, 0.93],
     [0, 1, 1, 0]
   );
   const gridTitleOpacity = useTransform(
@@ -327,6 +327,10 @@ export default function Section07_TheHub() {
       className="relative"
       style={{ height: "450vh" }}
     >
+      {/* Scroll-position markers for hash navigation */}
+      <div id="hub-gap" className="absolute left-0 w-0 h-0" style={{ top: "20%" }} />
+      <div id="hub-content" className="absolute left-0 w-0 h-0" style={{ top: "38%" }} />
+
       <motion.div
         className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
         style={{ opacity: sectionOpacity }}
@@ -350,7 +354,7 @@ export default function Section07_TheHub() {
             />
           </motion.div>
 
-          <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text text-center leading-tight tracking-tight mb-3">
+          <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text text-center leading-tight tracking-tight mb-3">
             The Hub
           </h2>
           <p className="text-xl sm:text-2xl text-text-muted text-center max-w-2xl leading-relaxed mb-2">
@@ -392,20 +396,20 @@ export default function Section07_TheHub() {
                   No Place to Just&hellip; Read
                 </h4>
               </div>
-              <p className="text-base text-text-dim leading-relaxed m-0 mb-3">
+              <p className="text-base text-text-muted leading-relaxed m-0 mb-3">
                 Want to casually consume AI safety content the way you&rsquo;d
-                read <span className="text-text-muted">The Economist</span> or your
+                read <span className="text-text">The Economist</span> or your
                 favorite magazine? Right now, that doesn&rsquo;t exist.
               </p>
-              <p className="text-base text-text-dim leading-relaxed m-0 mb-3">
+              <p className="text-base text-text-muted leading-relaxed m-0 mb-3">
                 The best content is scattered across social media feeds, buried in
                 long rationalist blogs, locked behind academic jargon, or{" "}
-                <span className="text-text-muted italic">lost the moment you scroll
+                <span className="text-text italic">lost the moment you scroll
                 past it</span>. Videos from luminaries? Search a dozen platforms.
                 Today&rsquo;s best memes? Dig through Reddit noise. A great X post you
                 saw last week? Gone in your feed forever.
               </p>
-              <p className="text-base text-text-muted leading-relaxed m-0 font-medium">
+              <p className="text-base text-text leading-relaxed m-0 font-medium">
                 There&rsquo;s no immersive, magazine-like experience for AI safety
                 &mdash; just chaos. Until now.
               </p>
@@ -422,18 +426,18 @@ export default function Section07_TheHub() {
                   No Place to Find &amp; Share
                 </h4>
               </div>
-              <p className="text-base text-text-dim leading-relaxed m-0 mb-3">
+              <p className="text-base text-text-muted leading-relaxed m-0 mb-3">
                 Already alarmed about AI risk and want to spread the word? Finding
                 the perfect meme, the most powerful video clip, or the clearest
                 explainer means maintaining your own scattered system of bookmarks
                 across a hundred different sources.
               </p>
-              <p className="text-base text-text-dim leading-relaxed m-0 mb-3">
+              <p className="text-base text-text-muted leading-relaxed m-0 mb-3">
                 There&rsquo;s no single place where an advocate can go to find the
                 best curated resources &mdash; ready to share with one click. No
                 arsenal of content organized by type, by topic, by impact.
               </p>
-              <p className="text-base text-text-muted leading-relaxed m-0 font-medium">
+              <p className="text-base text-text leading-relaxed m-0 font-medium">
                 The Hub is that arsenal. The best memes, videos, explainers, and
                 posts from across the entire internet &mdash; curated, organized,
                 and always at your fingertips.

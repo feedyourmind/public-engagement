@@ -38,7 +38,13 @@
       "Bash(curl -s -X POST http://localhost:3333/api/variations/test-user/presets -H \"Content-Type: application/json\" -H \"X-Passcode: 1234\" -d '{\"\"label\"\":\"\"My Preset\"\",\"\"loc\"\":0.5,\"\"sc\"\":0.8,\"\"sh\"\":3.0,\"\"boundaries\"\":[-0.1,0.4,1.0,1.5,2.2]}')",
       "Bash(curl -s -X DELETE http://localhost:3333/api/variations/test-user -H \"X-Passcode: 1234\")",
       "Bash(curl -s -X PUT http://localhost:3333/api/variations/michael/presets/1 -H \"Content-Type: application/json\" -H \"X-Passcode: 0000\" -d '{\"\"loc\"\":0.40,\"\"sc\"\":0.70}')",
-      "Bash(curl -s \"https://www.youtube.com/watch?v=GWEGwID7SE0\")"
+      "Bash(curl -s \"https://www.youtube.com/watch?v=GWEGwID7SE0\")",
+      "Bash(git config http.postBuffer 524288000)",
+      "Bash(git push origin main)",
+      "WebFetch(domain:www.typewolf.com)",
+      "WebFetch(domain:maxibestof.one)",
+      "Bash(curl -s \"http://localhost:3333/_next/static/chunks/%5Broot-of-the-server%5D__0878783b._.css\")",
+      "Bash(grep -n \"window.location.hash\\\\|useRouter\\\\|usePathname\" src/**/*.tsx src/components/*.tsx)"
     ],
     "additionalDirectories": [
       "/Users/bitlitup1/dev/vibe-coding/public-engagement/src/app/api/variations/[slug]"

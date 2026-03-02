@@ -353,6 +353,7 @@ function OrganicGrowthHook() {
   return (
     <div
       ref={ref}
+      id="organic-engine"
       className="relative z-10 px-4 sm:px-8 lg:px-16 py-20 max-w-3xl mx-auto"
     >
       <motion.div
@@ -482,9 +483,12 @@ function StoryCard({
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
+  const storyId = `story-${story.character.toLowerCase().replace(/\s+/g, "-")}`;
+
   return (
     <motion.div
       ref={ref}
+      id={storyId}
       className="rounded-xl overflow-hidden"
       style={{
         background: "rgba(255,255,255,0.02)",
@@ -674,7 +678,7 @@ export default function Section09_Takedowns() {
   /* ── Section envelope ── */
   const sectionOpacity = useTransform(
     scrollYProgress,
-    [0.0, 0.02, 0.96, 1.0],
+    [0.0, 0.02, 0.95, 0.99],
     [0, 1, 1, 0]
   );
 
@@ -701,13 +705,13 @@ export default function Section09_Takedowns() {
   /* ── Phase B: Grid walkthrough ── */
   const gridPhaseOpacity = useTransform(
     scrollYProgress,
-    [0.16, 0.21, 0.95, 0.99],
+    [0.17, 0.22, 0.94, 0.98],
     [0, 1, 1, 0]
   );
   const gridTitleY = useTransform(scrollYProgress, [0.16, 0.21], [30, 0]);
   const fillProgress = useTransform(
     scrollYProgress,
-    [0.22, 0.88],
+    [0.23, 0.93],
     [0, 1],
     { clamp: true }
   );
@@ -758,8 +762,12 @@ export default function Section09_Takedowns() {
       <div
         ref={sectionRef}
         className="relative"
-        style={{ height: "1800vh" }}
+        style={{ height: "1700vh" }}
       >
+        {/* Invisible scroll anchors for URL hash navigation */}
+        <div id="targeted-skepticisms" className="absolute" style={{ top: "3%" }} />
+        <div id="100-sticking-points" className="absolute" style={{ top: "22%" }} />
+
         <motion.div
           className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
           style={{ opacity: sectionOpacity }}
@@ -893,7 +901,7 @@ export default function Section09_Takedowns() {
       {/* ── Part 2: Flowing story cards ── */}
       <div className="relative z-10 px-4 sm:px-8 lg:px-16 pt-6 pb-20 max-w-3xl mx-auto">
         {/* Section heading */}
-        <div className="text-center mb-10">
+        <div id="persona-stories" className="text-center mb-10">
           <h3 className="font-heading text-3xl sm:text-4xl font-bold text-text mb-3">
             Short Stories Featuring Personas
           </h3>

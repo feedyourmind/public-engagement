@@ -14,6 +14,7 @@ import {
 } from "@/context/DistributionContext";
 import { useVariation } from "@/context/VariationContext";
 import DistributionChart from "@/components/DistributionChart";
+import DistributionGrid from "@/components/DistributionGrid";
 import {
   interpolatePresetMonotonic,
   computeCumulativeAreas,
@@ -131,7 +132,7 @@ function ConclusionInner({
             to influence the shape of this curve,{" "}
             <span className="text-cautious">before it&apos;s too late.</span>
           </p>
-          <p className="text-sm text-text-muted leading-relaxed max-w-xl mx-auto">
+          <p className="text-lg sm:text-xl text-cautious font-heading font-bold leading-relaxed max-w-2xl mx-auto tracking-wide">
             This will be the most decisive factor of what version of the
             future we land on.
           </p>
@@ -143,6 +144,7 @@ function ConclusionInner({
           showLabels={true}
           interactive={false}
         />
+        <DistributionGrid interactive={false} />
 
         {/* Qualifier + nav */}
         <div className="mt-6 text-center">

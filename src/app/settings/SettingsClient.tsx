@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import Link from "next/link";
 import { VariationProvider, useVariation } from "@/context/VariationContext";
 import { DistributionProvider, useDistribution } from "@/context/DistributionContext";
 import type { PresetParams } from "@/types";
@@ -30,12 +29,6 @@ function SettingsContent() {
 
   const isLocked = !playgroundMode && !isAuthenticated;
 
-  const viewHref = playgroundMode
-    ? "/"
-    : variation?.isDefault
-      ? "/"
-      : `/${variation?.slug}`;
-
   const exportSettings = () => {
     const json = JSON.stringify(
       { loc: location, sc: scale, sh: shape, boundaries },
@@ -60,15 +53,6 @@ function SettingsContent() {
               Configure the distribution curve and segment boundaries. Changes
               are saved automatically and reflected across all visualizations.
             </p>
-            <Link
-              href={viewHref}
-              className="inline-flex items-center gap-1 mt-2 text-xs text-cautious/70 hover:text-cautious transition-colors"
-            >
-              View Variation
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 17l9.2-9.2M17 17V7H7" />
-              </svg>
-            </Link>
           </div>
           <button
             onClick={exportSettings}

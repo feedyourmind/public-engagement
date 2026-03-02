@@ -35,7 +35,7 @@ export default function Section04_Comparisons() {
         </div>
 
 
-        <div>
+        <div id="comparisons-tpot">
           <h3 className="font-heading text-xl sm:text-2xl font-bold text-text mb-1">
             TPOT{" "}
             <span className="text-text-muted font-normal text-base">
@@ -79,7 +79,7 @@ export default function Section04_Comparisons() {
 
       {/* AI Safety Community text — normal flow */}
       <div className="relative z-10 px-4 sm:px-8 lg:px-16 pt-0 pb-0 max-w-5xl mx-auto">
-        <div>
+        <div id="comparisons-aisafety">
           <h3 className="font-heading text-xl sm:text-2xl font-bold text-text mb-1">
             AI Safety Community
           </h3>

@@ -264,10 +264,16 @@ export default function Section04c_Platforms() {
 
   return (
     <section
+      id="platforms"
       ref={sectionRef}
       className="relative"
       style={{ height: "400vh" }}
     >
+      {/* Scroll-position markers for hash navigation */}
+      <div id="twitter" className="absolute left-0 w-0 h-0" style={{ top: "5%" }} />
+      <div id="instagram" className="absolute left-0 w-0 h-0" style={{ top: "25%" }} />
+      <div id="all-platforms" className="absolute left-0 w-0 h-0" style={{ top: "52%" }} />
+
       <motion.div
         className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
         style={{ opacity: sectionOpacity }}
@@ -381,7 +387,7 @@ export default function Section04c_Platforms() {
             style={{ opacity: igStat1Opacity, y: igStat1Y }}
           >
             <p className="text-5xl sm:text-6xl font-extrabold font-mono mb-3" style={{ background: IG_GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              5k followers*
+              5k followers
             </p>
             <p className="text-base text-text-dim">
               Grown from{" "}
@@ -429,12 +435,9 @@ export default function Section04c_Platforms() {
             className="text-center mb-6"
             style={{ y: allTitleY }}
           >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <GlobeIcon color={GROWTH} />
-              <h3 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-text">
-                All Major Platforms
-              </h3>
-            </div>
+            <h3 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-text mb-4">
+              The Rest of the Major Platforms
+            </h3>
             <p className="text-base sm:text-lg text-text-muted max-w-lg mx-auto leading-relaxed">
               Placeholder accounts established across every major platform &mdash;
               ready to be activated.

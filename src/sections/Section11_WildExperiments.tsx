@@ -251,6 +251,13 @@ export default function Section11_WildExperiments() {
       className="relative"
       style={{ height: "600vh" }}
     >
+      {/* Scroll position markers for hash navigation */}
+      <div id="no-plot-armor" className="absolute" style={{ top: "18%" }} />
+      <div id="exp-2030" className="absolute" style={{ top: "34%" }} />
+      <div id="reality-is-broken" className="absolute" style={{ top: "50%" }} />
+      <div id="dystopian-intelligence" className="absolute" style={{ top: "66%" }} />
+      <div id="experiments-summary" className="absolute" style={{ top: "82%" }} />
+
       <motion.div
         className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
         style={{ opacity: sectionOpacity }}

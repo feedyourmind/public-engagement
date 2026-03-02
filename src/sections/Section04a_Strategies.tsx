@@ -949,7 +949,7 @@ export default function Section04a_Strategies() {
         </div>
 
         {/* Strategy heading — full width */}
-        <p className="text-2xl sm:text-3xl lg:text-4xl text-text leading-snug font-heading font-bold mb-6 mt-20 text-center">
+        <p id="meet-people" className="text-2xl sm:text-3xl lg:text-4xl text-text leading-snug font-heading font-bold mb-6 mt-20 text-center">
           The Strategy: Meet People Where They Are
         </p>
 

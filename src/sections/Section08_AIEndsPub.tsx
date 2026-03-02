@@ -169,7 +169,7 @@ export default function Section08_AIEndsPub() {
           AI Ends Pub
         </h2>
         <p className="text-base sm:text-lg text-text-muted text-center max-w-xl leading-relaxed mb-0">
-          Join the debates. The lowest-effort, highest-impact thing you can do.
+          Join the debates, currently on Discord.<br />The lowest-effort, highest-impact thing you can do.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-2 max-w-3xl w-full">
           <div className="p-6 sm:p-7 rounded-xl bg-[#f4a261]/[0.07] border border-[#f4a261]/20">
@@ -197,6 +197,7 @@ export default function Section08_AIEndsPub() {
 
       {/* ── Phase B: Value Proposition ── */}
       <motion.div
+        id="pub-value"
         className="flex flex-col items-center justify-center px-4 sm:px-8 pt-14 pb-8 sm:pt-20 sm:pb-10"
         initial="hidden"
         whileInView="visible"
@@ -251,6 +252,7 @@ export default function Section08_AIEndsPub() {
 
       {/* ── Phase C: Activities Grid ── */}
       <motion.div
+        id="pub-activities"
         className="flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16 pt-8 pb-10 sm:pt-10 sm:pb-14"
         initial="hidden"
         whileInView="visible"
@@ -294,6 +296,7 @@ export default function Section08_AIEndsPub() {
 
       {/* ── Color-coding ── */}
       <motion.div
+        id="pub-color-coding"
         className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-14 px-4 sm:px-8 lg:px-16 py-12 sm:py-16 max-w-6xl mx-auto"
         initial="hidden"
         whileInView="visible"
@@ -340,6 +343,7 @@ export default function Section08_AIEndsPub() {
 
       {/* ── Tables ── */}
       <motion.div
+        id="pub-tables"
         className="flex flex-col lg:flex-row-reverse items-center lg:items-start gap-8 lg:gap-14 px-4 sm:px-8 lg:px-16 py-12 sm:py-16 max-w-6xl mx-auto"
         initial="hidden"
         whileInView="visible"
@@ -382,6 +386,7 @@ export default function Section08_AIEndsPub() {
 
       {/* ── The "AI Ends" Name ── */}
       <motion.div
+        id="pub-name"
         className="flex flex-col items-center px-4 sm:px-8 py-14 sm:py-20 max-w-2xl mx-auto"
         initial="hidden"
         whileInView="visible"
@@ -393,9 +398,9 @@ export default function Section08_AIEndsPub() {
           <Image
             src="/AIEndsPub.png"
             alt="AI Ends Pub sign"
-            width={40}
-            height={40}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-cover"
+            width={56}
+            height={56}
+            className="w-11 h-11 sm:w-14 sm:h-14 rounded-lg object-cover"
           />
           <h3 className="font-heading text-xl sm:text-2xl font-bold text-text">
             The &ldquo;AI Ends&rdquo; name
@@ -404,7 +409,9 @@ export default function Section08_AIEndsPub() {
 
         <p className="text-sm sm:text-base text-text-muted leading-relaxed text-center mb-3">
           The name draws inspiration from London&rsquo;s famous World&rsquo;s End
-          pub. <span className="text-text font-medium">AI will mark the end of many things</span> &mdash; the
+          pub.
+          <br />
+          <span className="text-text font-medium">AI will mark the end of many things</span> &mdash; the
           hope is it ends disease, suffering, and poverty. It will also end
           society in its current form, potentially ushering in the end of
           drudgery and scarcity.
@@ -423,6 +430,7 @@ export default function Section08_AIEndsPub() {
 
       {/* ── Crusader Connection + CTA (merged) ── */}
       <motion.div
+        id="pub-grab-a-chair"
         className="flex flex-col items-center justify-center px-4 py-20 sm:py-28"
         initial="hidden"
         whileInView="visible"

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useVariationDisplay } from "@/context/VariationDisplayContext";
 import type { VariationWithPresets } from "@/types";
 
 export default function TopNav() {
@@ -10,22 +11,33 @@ export default function TopNav() {
   const searchParams = useSearchParams();
   const isSettings = pathname === "/settings";
 
+  const isPlayground = pathname === "/playground";
+
   // Derive variation slug from the current URL
   // - On /settings?v=oliver → slug is "oliver"
   // - On /oliver → slug is "oliver"
-  // - On / → no slug
+  // - On / or /playground → no slug
   let variationSlug: string | null = null;
   if (isSettings) {
     variationSlug = searchParams.get("v");
-  } else if (pathname !== "/" && !pathname.startsWith("/api")) {
+  } else if (pathname !== "/" && !isPlayground && !pathname.startsWith("/api")) {
     variationSlug = pathname.slice(1); // Remove leading "/"
   }
 
-  const settingsHref = variationSlug
-    ? `/settings?v=${variationSlug}`
-    : "/settings";
+  const settingsHref = isPlayground
+    ? "/settings"
+    : variationSlug
+      ? `/settings?v=${variationSlug}`
+      : "/settings";
 
   const backHref = variationSlug ? `/${variationSlug}` : "/";
+
+  const { variationDisplayName } = useVariationDisplay();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  // Only apply variation styling after hydration to avoid mismatch
+  const showVariationBadge = mounted && !!variationDisplayName;
 
   // Variation dropdown state
   const [showDropdown, setShowDropdown] = useState(false);
@@ -58,7 +70,11 @@ export default function TopNav() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-4 sm:px-8 bg-bg/80 backdrop-blur-md border-b border-white/[0.06]">
+    <nav className={`fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-4 sm:px-8 backdrop-blur-md border-b transition-colors ${
+      showVariationBadge
+        ? "bg-[#1a1520]/85 border-cautious/15"
+        : "bg-bg/80 border-white/6"
+    }`}>
       {/* Left: title or back link */}
       {isSettings ? (
         <Link
@@ -105,9 +121,16 @@ export default function TopNav() {
         </div>
       )}
 
-      {/* Right: user icon + settings gear */}
+      {/* Right: variation label + user icon + settings gear */}
       {!isSettings && (
         <div className="flex items-center gap-1">
+          {/* Variation name badge */}
+          {showVariationBadge && (
+            <span className="text-xs text-cautious/80 font-body mr-2 px-2.5 py-1 rounded-lg border border-cautious/20 bg-cautious/5">
+              {variationDisplayName}&apos;s View
+            </span>
+          )}
+
           {/* User / Variations dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button

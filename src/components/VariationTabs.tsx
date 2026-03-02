@@ -25,6 +25,16 @@ export default function VariationTabs() {
 
   const activeSlug = variation?.slug;
 
+  const viewHref = playgroundMode
+    ? "/playground"
+    : variation?.isDefault
+      ? "/"
+      : `/${variation?.slug}`;
+
+  const viewLabel = playgroundMode
+    ? "View Playground Variation"
+    : `View ${variation?.name ?? "Default"} Variation`;
+
   const handleTabClick = (slug: string) => {
     if (slug === activeSlug && !playgroundMode) return;
     router.push(`/settings?v=${slug}`);
@@ -132,6 +142,21 @@ export default function VariationTabs() {
           </div>
         )}
       </div>
+
+      {/* View Variation — prominent link, opens in new tab */}
+      <a
+        href={viewHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-cautious/40 bg-cautious/10 text-cautious text-sm font-body font-medium transition-all hover:bg-cautious/20 hover:border-cautious/60"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <polyline points="15 3 21 3 21 9" />
+          <line x1="10" y1="14" x2="21" y2="3" />
+        </svg>
+        {viewLabel}
+      </a>
 
       {/* Passcode modal */}
       <PasscodeModal

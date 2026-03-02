@@ -443,6 +443,10 @@ export default function Section04b_Distribution() {
       className="relative"
       style={{ height: "320vh" }}
     >
+      {/* Scroll-position markers for hash navigation */}
+      <div id="resonance-intelligence" className="absolute left-0 w-0 h-0" style={{ top: "42%" }} />
+      <div id="production-pipeline" className="absolute left-0 w-0 h-0" style={{ top: "63%" }} />
+
       <motion.div
         className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
         style={{ opacity: sectionOpacity }}
@@ -785,6 +789,7 @@ export default function Section04b_Distribution() {
 
     {/* ── r/AIDangers — normal scroll, sticky title + animated bar ── */}
     <section
+      id="aidangers"
       ref={aidangersRef}
       className="relative"
       style={{ height: "250vh" }}

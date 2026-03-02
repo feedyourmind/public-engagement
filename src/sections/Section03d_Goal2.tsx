@@ -206,13 +206,13 @@ function Goal2Inner({
   const pillarScale = useTransform(
     scrollYProgress,
     [0.10, 0.50, 0.80],
-    [1.0, 1.05, 1.12],
+    [1.0, 1.08, 1.2],
     { clamp: true },
   );
   const pillarNumberScale = useTransform(
     scrollYProgress,
     [0.10, 0.50, 0.80],
-    [1.0, 1.3, 1.6],
+    [1.0, 1.6, 2.4],
     { clamp: true },
   );
   const pillarGlow = useTransform(

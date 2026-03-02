@@ -226,7 +226,7 @@ export default function Section03e_Grassroots() {
       ref={sectionRef}
       id="grassroots"
       className="relative"
-      style={{ height: "450vh" }}
+      style={{ height: "250vh" }}
     >
       <motion.div
         className="sticky top-12 h-[calc(100vh-3rem)] flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16"

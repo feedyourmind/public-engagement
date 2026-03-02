@@ -13,7 +13,7 @@
   --color-concerned-current: #e07a5f;
   --color-concerned-future: #c1440e;
   --color-alarmed: #9b2226;
-  --font-heading: var(--font-playfair);
+  --font-heading: var(--font-lora);
   --font-body: var(--font-dm-sans);
   --font-mono: var(--font-dm-mono);
 }

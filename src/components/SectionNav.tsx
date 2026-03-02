@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
 
-const SECTIONS = [
+/* ── Nav dots (left rail + progress bar active state) ── */
+const NAV_SECTIONS = [
   { id: "spectrum", label: "Spectrum" },
   { id: "segments", label: "Segments" },
   { id: "funnel", label: "Funnel" },
@@ -23,25 +24,103 @@ const SECTIONS = [
   { id: "conclusion", label: "Conclusion" },
 ];
 
+/* ── Every section on the page, in scroll order — drives URL hash ── */
+const ALL_SECTIONS = [
+  "spectrum",
+  "segments",
+  "funnel",
+  "goals",
+  "goal2",
+  "grassroots",
+  "comparisons",
+  "comparisons-tpot",
+  "comparisons-aisafety",
+  "strategies",
+  "meet-people",
+  "distribution",
+  "resonance-intelligence",
+  "production-pipeline",
+  "aidangers",
+  "platforms",
+  "twitter",
+  "instagram",
+  "all-platforms",
+  "the-hub",
+  "hub-gap",
+  "hub-content",
+  "conversion-journey",
+  "ai-ends-pub",
+  "pub-value",
+  "pub-activities",
+  "pub-color-coding",
+  "pub-tables",
+  "pub-name",
+  "pub-grab-a-chair",
+  "takedowns",
+  "targeted-skepticisms",
+  "100-sticking-points",
+  "organic-engine",
+  "persona-stories",
+  "story-paul",
+  "story-peter",
+  "story-organizations",
+  "story-the-movement",
+  "story-elon-musk",
+  "story-emmanuel-macron",
+  "youtube",
+  "animated-content",
+  "xrisk-paradox",
+  "podcasting",
+  "content-engine",
+  "wild-experiments",
+  "no-plot-armor",
+  "exp-2030",
+  "reality-is-broken",
+  "dystopian-intelligence",
+  "experiments-summary",
+  "influencer-deals",
+  "niche-truck",
+  "niche-school",
+  "niche-code",
+  "endless-opportunities",
+  "concerned",
+  "conclusion",
+];
+
+/* Map granular-only IDs to the nearest nav dot */
+const NAV_IDS = new Set(NAV_SECTIONS.map((s) => s.id));
+function toNavId(id: string): string {
+  if (NAV_IDS.has(id)) return id;
+  // Walk backwards through ALL_SECTIONS to find the closest nav-level parent
+  const idx = ALL_SECTIONS.indexOf(id);
+  for (let i = idx - 1; i >= 0; i--) {
+    if (NAV_IDS.has(ALL_SECTIONS[i])) return ALL_SECTIONS[i];
+  }
+  return ALL_SECTIONS[0];
+}
+
 export default function SectionNav() {
   const { scrollYProgress } = useScroll();
-  const [activeId, setActiveId] = useState<string>(SECTIONS[0].id);
+  const [activeId, setActiveId] = useState<string>(ALL_SECTIONS[0]);
 
   useEffect(() => {
     let ticking = false;
 
     const updateActive = () => {
       const threshold = window.scrollY + window.innerHeight * 0.4;
-      let current = SECTIONS[0].id;
+      let current = ALL_SECTIONS[0];
 
-      for (const section of SECTIONS) {
-        const el = document.getElementById(section.id);
-        if (el && el.offsetTop <= threshold) {
-          current = section.id;
+      for (const id of ALL_SECTIONS) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top + window.scrollY <= threshold) {
+          current = id;
         }
       }
 
       setActiveId(current);
+      if (window.location.hash !== `#${current}`) {
+        history.replaceState(null, "", `#${current}`);
+      }
       ticking = false;
     };
 
@@ -54,6 +133,18 @@ export default function SectionNav() {
 
     window.addEventListener("scroll", onScroll, { passive: true });
     updateActive();
+
+    // On initial load, scroll to the section indicated by the URL hash
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      const target = document.getElementById(hash);
+      if (target) {
+        requestAnimationFrame(() => {
+          const y = target.getBoundingClientRect().top + window.scrollY - 56;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        });
+      }
+    }
 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -75,8 +166,8 @@ export default function SectionNav() {
 
       {/* Side nav — desktop only */}
       <nav className="fixed left-0 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col">
-        {SECTIONS.map((s) => {
-          const isActive = activeId === s.id;
+        {NAV_SECTIONS.map((s) => {
+          const isActive = toNavId(activeId) === s.id;
           return (
             <button
               key={s.id}

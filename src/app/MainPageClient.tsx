@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback } from "react";
-import { VariationProvider } from "@/context/VariationContext";
+import { useCallback, useEffect } from "react";
+import { VariationProvider, useVariation } from "@/context/VariationContext";
 import { DistributionProvider } from "@/context/DistributionContext";
+import { useVariationDisplay } from "@/context/VariationDisplayContext";
 import SectionNav from "@/components/SectionNav";
 import SectionDivider from "@/components/SectionDivider";
 import Section02_Spectrum from "@/sections/Section02_Spectrum";
@@ -24,69 +25,120 @@ import Section09_Takedowns from "@/sections/Section09_Takedowns";
 import Section10_YouTube from "@/sections/Section10_YouTube";
 import Section10b_InfluencerDeals from "@/sections/Section10b_InfluencerDeals";
 import Section11_WildExperiments from "@/sections/Section11_WildExperiments";
-import type { VariationWithPresets } from "@/types";
+import type { VariationWithPresets, PresetRecord } from "@/types";
 
 interface MainPageClientProps {
   variation: VariationWithPresets | null;
   allVariations: VariationWithPresets[];
+  playgroundMode?: boolean;
+  basePresets?: PresetRecord[];
+}
+
+function PageSections() {
+  return (
+    <>
+      <SectionNav />
+      <main className="overflow-x-clip">
+        <Section02_Spectrum />
+        <SectionDivider />
+        <Section03_ZoomedSegments />
+        <SectionDivider />
+        <Section03b_Funnel />
+        <SectionDivider />
+        <Section03c_Goals />
+        <Section03d_Goal2 />
+        <SectionDivider />
+        <Section03e_Grassroots />
+        <SectionDivider />
+        <Section04_Comparisons />
+        <SectionDivider />
+        <Section04a_Strategies />
+        <SectionDivider />
+        <Section04b_Distribution />
+        <Section04c_Platforms />
+        <SectionDivider />
+        <Section07_TheHub />
+        <Section07b_ConversionJourney />
+        <SectionDivider />
+        <Section08_AIEndsPub />
+        <SectionDivider />
+        <Section09_Takedowns />
+        <SectionDivider />
+        <Section10_YouTube />
+        <SectionDivider />
+        <Section11_WildExperiments />
+        <SectionDivider />
+        <Section10b_InfluencerDeals />
+        <SectionDivider />
+        <Section05_ConcernedSplit />
+        <SectionDivider />
+        <Section06_Conclusion />
+      </main>
+    </>
+  );
+}
+
+/** Waits for playground localStorage to load, then renders with the active preset */
+function PlaygroundGate() {
+  const { playgroundReady, presets, activePresetId } = useVariation();
+  const handleParamsChange = useCallback(() => {}, []);
+
+  if (!playgroundReady) return null;
+
+  const activePreset = presets.find((p) => p.id === activePresetId) ?? presets[0] ?? null;
+
+  return (
+    <DistributionProvider
+      key={activePreset?.id ?? "none"}
+      initialPreset={activePreset}
+      onParamsChange={handleParamsChange}
+    >
+      <PageSections />
+    </DistributionProvider>
+  );
 }
 
 export default function MainPageClient({
   variation,
   allVariations,
+  playgroundMode,
+  basePresets,
 }: MainPageClientProps) {
   const firstPreset = variation?.presets?.[0] ?? null;
+  const { setVariationDisplayName } = useVariationDisplay();
+
+  useEffect(() => {
+    if (playgroundMode) {
+      setVariationDisplayName("Playground");
+    } else if (variation && !variation.isDefault) {
+      setVariationDisplayName(variation.name);
+    } else {
+      setVariationDisplayName(null);
+    }
+    return () => setVariationDisplayName(null);
+  }, [variation, playgroundMode, setVariationDisplayName]);
 
   // No-op for main page — debounced saves only happen on settings page
   const handleParamsChange = useCallback(() => {}, []);
 
   return (
     <VariationProvider
+      key={playgroundMode ? "playground" : (variation?.slug ?? "default")}
       initialVariation={variation}
       initialAllVariations={allVariations}
+      playgroundMode={playgroundMode}
+      basePresets={basePresets}
     >
-      <DistributionProvider
-        initialPreset={firstPreset}
-        onParamsChange={handleParamsChange}
-      >
-        <SectionNav />
-        <main className="overflow-x-clip">
-          <Section02_Spectrum />
-          <SectionDivider />
-          <Section03_ZoomedSegments />
-          <SectionDivider />
-          <Section03b_Funnel />
-          <SectionDivider />
-          <Section03c_Goals />
-          <Section03d_Goal2 />
-          <SectionDivider />
-          <Section03e_Grassroots />
-          <SectionDivider />
-          <Section04_Comparisons />
-          <SectionDivider />
-          <Section04a_Strategies />
-          <SectionDivider />
-          <Section04b_Distribution />
-          <Section04c_Platforms />
-          <SectionDivider />
-          <Section07_TheHub />
-          <Section07b_ConversionJourney />
-          <SectionDivider />
-          <Section08_AIEndsPub />
-          <SectionDivider />
-          <Section09_Takedowns />
-          <SectionDivider />
-          <Section10_YouTube />
-          <SectionDivider />
-          <Section11_WildExperiments />
-          <SectionDivider />
-          <Section10b_InfluencerDeals />
-          <SectionDivider />
-          <Section05_ConcernedSplit />
-          <SectionDivider />
-          <Section06_Conclusion />
-        </main>
-      </DistributionProvider>
+      {playgroundMode ? (
+        <PlaygroundGate />
+      ) : (
+        <DistributionProvider
+          initialPreset={firstPreset}
+          onParamsChange={handleParamsChange}
+        >
+          <PageSections />
+        </DistributionProvider>
+      )}
     </VariationProvider>
   );
 }
