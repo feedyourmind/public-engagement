@@ -360,7 +360,7 @@ function Goal2Inner({
           {/* Static logo */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://cdn.lethalintelligence.ai/img/2025/06/03095501/Logo_2-scaled-e1748946443487.jpg"
+            src="/lethalintelligence-logo.jpg"
             alt="Lethal Intelligence"
             width={48}
             height={48}
@@ -515,7 +515,10 @@ export default function Section03d_Goal2() {
           Goal 2: Risk Awareness Force
         </h2>
 
-        <p className="text-lg text-text-muted text-center leading-relaxed max-w-2xl mx-auto mb-8">
+        <p className="text-lg text-text-muted text-center leading-relaxed max-w-2xl mx-auto mb-2">
+          Grow a community of passionate supporters.
+        </p>
+        <p className="text-base text-text-muted text-center leading-relaxed max-w-2xl mx-auto mb-8">
           Every concerned citizen who reaches the end of the conversion funnel
           becomes a crusader that starts a chain reaction.
         </p>

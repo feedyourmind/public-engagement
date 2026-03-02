@@ -4,13 +4,25 @@ import { motion, useTransform, type MotionValue } from "framer-motion";
 
 interface LethalIntelligenceIconProps {
   morphProgress: MotionValue<number>;
+  scrollYProgress?: MotionValue<number>;
 }
 
 export default function LethalIntelligenceIcon({
   morphProgress,
+  scrollYProgress,
 }: LethalIntelligenceIconProps) {
-  const outerRotate = useTransform(morphProgress, [0, 1], [0, 540]);
-  const innerRotate = useTransform(morphProgress, [0, 1], [0, -360]);
+  // Use scrollYProgress for rotation so rings keep spinning through the hold period
+  const rotationSource = scrollYProgress ?? morphProgress;
+  const outerRotate = useTransform(
+    rotationSource,
+    scrollYProgress ? [0.15, 0.92] : [0, 1],
+    [0, 700],
+  );
+  const innerRotate = useTransform(
+    rotationSource,
+    scrollYProgress ? [0.15, 0.92] : [0, 1],
+    [0, -460],
+  );
   const iconScale = useTransform(morphProgress, [0, 0.5, 1], [1, 1.3, 1.7]);
   const iconX = useTransform(morphProgress, [0, 0.5, 1], [0, 40, 90]);
   const iconY = useTransform(morphProgress, [0, 0.5, 1], [0, 25, 50]);
@@ -121,7 +133,7 @@ export default function LethalIntelligenceIcon({
       {/* Static logo in center */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="https://cdn.lethalintelligence.ai/img/2025/06/03095501/Logo_2-scaled-e1748946443487.jpg"
+        src="/lethalintelligence-logo.jpg"
         alt="Lethal Intelligence"
         width={48}
         height={48}

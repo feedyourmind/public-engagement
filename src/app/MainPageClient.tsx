@@ -13,11 +13,14 @@ import Section03e_Grassroots from "@/sections/Section03e_Grassroots";
 import Section04_Comparisons from "@/sections/Section04_Comparisons";
 import Section04a_Strategies from "@/sections/Section04a_Strategies";
 import Section04b_Distribution from "@/sections/Section04b_Distribution";
+import Section04c_Platforms from "@/sections/Section04c_Platforms";
 import Section05_ConcernedSplit from "@/sections/Section05_ConcernedSplit";
 import Section06_Conclusion from "@/sections/Section06_Conclusion";
 import Section07_TheHub from "@/sections/Section07_TheHub";
+import Section07b_ConversionJourney from "@/sections/Section07b_ConversionJourney";
 import Section08_AIEndsPub from "@/sections/Section08_AIEndsPub";
 import Section09_Takedowns from "@/sections/Section09_Takedowns";
+import Section10_YouTube from "@/sections/Section10_YouTube";
 import type { VariationWithPresets } from "@/types";
 
 interface MainPageClientProps {
@@ -54,11 +57,14 @@ export default function MainPageClient({
           <Section04_Comparisons />
           <Section04a_Strategies />
           <Section04b_Distribution />
-          <Section05_ConcernedSplit />
-          <Section06_Conclusion />
+          <Section04c_Platforms />
           <Section07_TheHub />
+          <Section07b_ConversionJourney />
           <Section08_AIEndsPub />
           <Section09_Takedowns />
+          <Section10_YouTube />
+          <Section05_ConcernedSplit />
+          <Section06_Conclusion />
         </main>
       </DistributionProvider>
     </VariationProvider>

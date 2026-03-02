@@ -148,7 +148,7 @@ function ActivityCard({
   index: number;
   scrollYProgress: MotionValue<number>;
 }) {
-  const cardStart = 0.4 + index * 0.015;
+  const cardStart = 0.48 + index * 0.015;
   const cardOpacity = useTransform(
     scrollYProgress,
     [cardStart, cardStart + 0.04],
@@ -223,7 +223,7 @@ export default function Section08_AIEndsPub() {
   /* Phase B: Value proposition */
   const valueOpacity = useTransform(
     scrollYProgress,
-    [0.25, 0.31, 0.46, 0.52],
+    [0.25, 0.31, 0.38, 0.44],
     [0, 1, 1, 0]
   );
   const valueY = useTransform(scrollYProgress, [0.25, 0.31], [40, 0]);
@@ -231,16 +231,16 @@ export default function Section08_AIEndsPub() {
   /* Phase C: Activities grid */
   const gridOpacity = useTransform(
     scrollYProgress,
-    [0.36, 0.42, 0.60, 0.66],
+    [0.44, 0.50, 0.64, 0.70],
     [0, 1, 1, 0]
   );
   const gridTitleOpacity = useTransform(
     scrollYProgress,
-    [0.36, 0.42],
+    [0.44, 0.50],
     [0, 1],
     { clamp: true }
   );
-  const gridTitleY = useTransform(scrollYProgress, [0.36, 0.42], [30, 0]);
+  const gridTitleY = useTransform(scrollYProgress, [0.44, 0.50], [30, 0]);
 
   /* Phase D: Crusader connection */
   const crusaderOpacity = useTransform(
@@ -282,7 +282,7 @@ export default function Section08_AIEndsPub() {
             <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent z-10" />
             <div className="absolute -inset-4 bg-[#f4a261]/10 blur-3xl rounded-full z-0" />
             <Image
-              src="/pub-sign.jpg"
+              src="/AIEndsPub.png"
               alt="AI Ends Pub — a warm community gathering place"
               width={800}
               height={500}
@@ -298,7 +298,23 @@ export default function Section08_AIEndsPub() {
             className="text-base sm:text-lg text-text-muted text-center max-w-xl leading-relaxed"
             style={{ opacity: taglineOpacity }}
           >
-            The lowest-effort, highest-impact thing you can do.
+            Join the debates. The lowest-effort, highest-impact thing you can do.
+          </motion.p>
+          <motion.p
+            className="text-sm text-text-dim text-center max-w-lg leading-relaxed mt-3"
+            style={{ opacity: taglineOpacity }}
+          >
+            A Discord server on a mission to foster vibrant discussions and
+            clash worldviews between those who worry about AI and those who
+            don&rsquo;t &mdash; in a productive dialog, from which we will all
+            come out wiser.
+          </motion.p>
+          <motion.p
+            className="text-sm text-text-dim text-center max-w-lg leading-relaxed mt-2"
+            style={{ opacity: taglineOpacity }}
+          >
+            A place to find belonging, amplify your voice, and connect with
+            friends who want to spread AI risk awareness just like you.
           </motion.p>
         </motion.div>
 
@@ -308,7 +324,7 @@ export default function Section08_AIEndsPub() {
           style={{ opacity: valueOpacity, y: valueY }}
         >
           <h3 className="font-heading text-2xl sm:text-3xl font-bold text-text text-center mb-6">
-            This is NOT volunteering or unpaid work.
+            A community that is NOT about volunteering or unpaid work.
           </h3>
           <div className="max-w-2xl space-y-4">
             <p className="text-base sm:text-lg text-text-muted text-center leading-relaxed">
@@ -329,10 +345,10 @@ export default function Section08_AIEndsPub() {
               ].map((item) => (
                 <div
                   key={item.text}
-                  className="text-center p-3 rounded-lg bg-white/[0.03] border border-white/[0.06]"
+                  className="text-center px-4 py-3.5 rounded-lg bg-white/[0.03] border border-white/[0.06]"
                 >
                   <span
-                    className="text-xs sm:text-sm font-medium"
+                    className="text-sm sm:text-base font-medium"
                     style={{ color: item.color }}
                   >
                     {item.text}

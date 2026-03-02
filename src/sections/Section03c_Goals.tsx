@@ -29,6 +29,7 @@ function GoalsSectionInner({
   morphProgress,
   textProgress,
   sectionOpacity,
+  scrollYProgress,
   goalParams,
   realityParams,
   realityCumAreas,
@@ -37,6 +38,7 @@ function GoalsSectionInner({
   morphProgress: MotionValue<number>;
   textProgress: MotionValue<number>;
   sectionOpacity: MotionValue<number>;
+  scrollYProgress: MotionValue<number>;
   goalParams: PresetParams;
   realityParams: PresetParams;
   realityCumAreas: number[];
@@ -117,7 +119,7 @@ function GoalsSectionInner({
 
         {/* Chart content — opaque backgrounds sit on top of glow */}
         <div className="relative z-1">
-          <LethalIntelligenceIcon morphProgress={morphProgress} />
+          <LethalIntelligenceIcon morphProgress={morphProgress} scrollYProgress={scrollYProgress} />
           <DistributionChart
             showBoundaries={false}
             showLabels={true}
@@ -162,14 +164,14 @@ export default function Section03c_Goals() {
 
   const sectionOpacity = useTransform(
     scrollYProgress,
-    [0.0, 0.08, 0.85, 0.95],
+    [0.0, 0.05, 0.92, 0.98],
     [0, 1, 1, 0],
   );
 
   const morphProgress = useTransform(
     scrollYProgress,
-    [0.15, 0.75],
-    [0, 1],
+    [0.15, 0.40, 0.55, 0.65, 0.75],
+    [0, 0.6, 0.85, 0.95, 1],
     { clamp: true },
   );
 
@@ -188,13 +190,14 @@ export default function Section03c_Goals() {
       ref={sectionRef}
       id="goals"
       className="relative mt-32"
-      style={{ height: "400vh" }}
+      style={{ height: "600vh" }}
     >
       <DistributionProvider initialPreset={realityParams} onParamsChange={noop}>
         <GoalsSectionInner
           morphProgress={morphProgress}
           textProgress={textProgress}
           sectionOpacity={sectionOpacity}
+          scrollYProgress={scrollYProgress}
           goalParams={goalParams}
           realityParams={realityParams}
           realityCumAreas={realityCumAreas}

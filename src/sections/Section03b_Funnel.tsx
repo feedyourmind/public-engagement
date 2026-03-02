@@ -202,8 +202,8 @@ export default function Section03b_Funnel() {
 
         {/* Lethal Intelligence text panel — right side */}
         <motion.div
-          className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 w-[38%] max-w-md"
-          style={{ opacity: textOpacity, y: textY }}
+          className="absolute top-1/2 -translate-y-1/2 w-[38%] max-w-md"
+          style={{ opacity: textOpacity, y: textY, left: "calc(25% + 20vw + 12rem)" }}
         >
           <h3
             className="font-heading text-2xl sm:text-3xl font-bold mb-4"

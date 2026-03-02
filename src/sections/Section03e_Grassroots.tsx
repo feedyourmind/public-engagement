@@ -179,47 +179,47 @@ export default function Section03e_Grassroots() {
   /* ── Section opacity ── */
   const sectionOpacity = useTransform(scrollYProgress, [0.0, 0.04, 0.93, 0.98], [0, 1, 1, 0]);
 
-  /* ── Text phase (longer dwell time so readers can absorb it) ── */
-  const textOpacity = useTransform(scrollYProgress, [0.04, 0.08, 0.20, 0.25], [0, 1, 1, 0]);
-  const textY = useTransform(scrollYProgress, [0.04, 0.08], [40, 0]);
+  /* ── Text phase (waits for sticky to engage ~0.18, then holds) ── */
+  const textOpacity = useTransform(scrollYProgress, [0.15, 0.19, 0.30, 0.35], [0, 1, 1, 0]);
+  const textY = useTransform(scrollYProgress, [0.15, 0.19], [30, 0]);
 
   /* ── Animation area ── */
-  const animOpacity = useTransform(scrollYProgress, [0.24, 0.29, 0.78, 0.83], [0, 1, 1, 0]);
+  const animOpacity = useTransform(scrollYProgress, [0.34, 0.38, 0.78, 0.83], [0, 1, 1, 0]);
 
   /* ── Topic labels above static group ── */
-  const labelsOpacity = useTransform(scrollYProgress, [0.29, 0.33, 0.78, 0.83], [0, 1, 1, 0]);
+  const labelsOpacity = useTransform(scrollYProgress, [0.38, 0.42, 0.78, 0.83], [0, 1, 1, 0]);
 
   /* ── Sequence: X-Risk label first → public moves → politicians move ── */
 
   // 1. AI X-Risk label appears first
-  const xriskLabelOpacity = useTransform(scrollYProgress, [0.31, 0.35, 0.78, 0.83], [0, 1, 1, 0]);
+  const xriskLabelOpacity = useTransform(scrollYProgress, [0.40, 0.44, 0.78, 0.83], [0, 1, 1, 0]);
 
   // 2. Public breakaway moves right (first)
-  const publicBreakawayProgress = useTransform(scrollYProgress, [0.35, 0.42], [0, 1], { clamp: true });
+  const publicBreakawayProgress = useTransform(scrollYProgress, [0.44, 0.50], [0, 1], { clamp: true });
 
   // 3. Politicians breakaway moves right (starts after public finishes)
-  const polBreakawayProgress = useTransform(scrollYProgress, [0.44, 0.51], [0, 1], { clamp: true });
+  const polBreakawayProgress = useTransform(scrollYProgress, [0.52, 0.58], [0, 1], { clamp: true });
 
   /* ── "Next Election Cycle" text drops in ── */
-  const electionOpacity = useTransform(scrollYProgress, [0.50, 0.54, 0.66, 0.70], [0, 1, 1, 0]);
-  const electionY = useTransform(scrollYProgress, [0.50, 0.54], [-30, 0], { clamp: true });
+  const electionOpacity = useTransform(scrollYProgress, [0.57, 0.61, 0.70, 0.74], [0, 1, 1, 0]);
+  const electionY = useTransform(scrollYProgress, [0.57, 0.61], [-30, 0], { clamp: true });
 
   /* ── X mark appears over breakaway politicians ── */
-  const xMarkOpacity = useTransform(scrollYProgress, [0.55, 0.58, 0.66, 0.70], [0, 1, 1, 0]);
+  const xMarkOpacity = useTransform(scrollYProgress, [0.62, 0.65, 0.70, 0.74], [0, 1, 1, 0]);
 
   /* ── Politicians retreat back to group ── */
-  const retreatProgress = useTransform(scrollYProgress, [0.59, 0.65], [0, 1], { clamp: true });
+  const retreatProgress = useTransform(scrollYProgress, [0.66, 0.71], [0, 1], { clamp: true });
 
   /* ── Breakaway politicians fade out as they retreat ── */
-  const breakawayPolOpacity = useTransform(scrollYProgress, [0.59, 0.65], [1, 0], { clamp: true });
+  const breakawayPolOpacity = useTransform(scrollYProgress, [0.66, 0.71], [1, 0], { clamp: true });
 
   /* ── X-Risk label falls after politicians leave ── */
-  const xriskFallY = useTransform(scrollYProgress, [0.65, 0.71], [0, 80], { clamp: true });
-  const xriskRotate = useTransform(scrollYProgress, [0.65, 0.71], [0, 18], { clamp: true });
+  const xriskFallY = useTransform(scrollYProgress, [0.71, 0.76], [0, 80], { clamp: true });
+  const xriskRotate = useTransform(scrollYProgress, [0.71, 0.76], [0, 18], { clamp: true });
 
   /* ── Closing text ── */
-  const closingOpacity = useTransform(scrollYProgress, [0.76, 0.81, 0.87, 0.92], [0, 1, 1, 0]);
-  const closingY = useTransform(scrollYProgress, [0.76, 0.81], [30, 0]);
+  const closingOpacity = useTransform(scrollYProgress, [0.80, 0.84, 0.89, 0.93], [0, 1, 1, 0]);
+  const closingY = useTransform(scrollYProgress, [0.80, 0.84], [30, 0]);
 
   return (
     <section
@@ -234,7 +234,7 @@ export default function Section03e_Grassroots() {
       >
         {/* ── Part 1: Text reveals ── */}
         <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center px-4"
+          className="absolute inset-0 flex flex-col items-center justify-start pt-[18vh] px-4"
           style={{ opacity: textOpacity, y: textY }}
         >
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-text mb-6 text-center">

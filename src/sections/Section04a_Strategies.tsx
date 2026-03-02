@@ -100,14 +100,18 @@ const PEAK_Y = (peakPt.y / totalMax) * 0.85;
 /* ── Example callout sub-component ───────────────────────── */
 function ExampleCallout({
   example,
-  barScale,
+  reachBarScale,
+  impactBarScale,
+  impactOpacity,
 }: {
   example: (typeof EXAMPLES)["left"];
-  barScale: MotionValue<number>;
+  reachBarScale: MotionValue<number>;
+  impactBarScale: MotionValue<number>;
+  impactOpacity: MotionValue<number>;
 }) {
-  const reachW = useTransform(barScale, [0, 1], [0, example.reachBar * 130]);
+  const reachW = useTransform(reachBarScale, [0, 1], [0, example.reachBar * 130]);
   const impactW = useTransform(
-    barScale,
+    impactBarScale,
     [0, 1],
     [0, example.impactBar * 130]
   );
@@ -159,46 +163,48 @@ function ExampleCallout({
         />
       </div>
 
-      {/* Impact bar */}
-      <div style={{ marginBottom: 6 }}>
+      {/* Impact bar — appears when yellow line draws */}
+      <motion.div style={{ opacity: impactOpacity }}>
+        <div style={{ marginBottom: 6 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: 9,
+              color: "#888",
+              marginBottom: 2,
+            }}
+          >
+            <span>Impact / person</span>
+            <span>{example.impactLabel}</span>
+          </div>
+          <motion.div
+            style={{
+              height: 6,
+              borderRadius: 3,
+              backgroundColor: IMPACT_COLOR,
+              width: impactW,
+            }}
+          />
+        </div>
+
+        {/* Total */}
         <div
           style={{
+            borderTop: "1px solid rgba(255,255,255,0.1)",
+            paddingTop: 6,
+            marginTop: 6,
             display: "flex",
             justifyContent: "space-between",
-            fontSize: 9,
-            color: "#888",
-            marginBottom: 2,
+            fontSize: 10,
           }}
         >
-          <span>Impact / person</span>
-          <span>{example.impactLabel}</span>
+          <span style={{ color: "#888" }}>Total activated</span>
+          <span style={{ fontWeight: 700, color: TOTAL_COLOR }}>
+            {example.totalLabel}
+          </span>
         </div>
-        <motion.div
-          style={{
-            height: 6,
-            borderRadius: 3,
-            backgroundColor: IMPACT_COLOR,
-            width: impactW,
-          }}
-        />
-      </div>
-
-      {/* Total */}
-      <div
-        style={{
-          borderTop: "1px solid rgba(255,255,255,0.1)",
-          paddingTop: 6,
-          marginTop: 6,
-          display: "flex",
-          justifyContent: "space-between",
-          fontSize: 10,
-        }}
-      >
-        <span style={{ color: "#888" }}>Total activated</span>
-        <span style={{ fontWeight: 700, color: TOTAL_COLOR }}>
-          {example.totalLabel}
-        </span>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -249,7 +255,7 @@ function ContentFunnel() {
 
   return (
     <svg
-      viewBox={`0 0 ${FUNNEL_W} ${FUNNEL_H}`}
+      viewBox={`0 0 ${FUNNEL_W} ${FUNNEL_H + 40}`}
       className="w-full block"
       preserveAspectRatio="xMidYMid meet"
       aria-label="Content funnel — types of content at each X-risk level"
@@ -291,7 +297,7 @@ function ContentFunnel() {
               return (
                 <text
                   key={j}
-                  x={FUNNEL_CX * 0.75}
+                  x={FUNNEL_CX}
                   y={textY}
                   textAnchor="middle"
                   fill="#f0ece2"
@@ -319,9 +325,9 @@ function ContentFunnel() {
       </text>
       <text
         x={FUNNEL_CX}
-        y={FUNNEL_H - 6}
+        y={FUNNEL_H + 25}
         fill="#888"
-        fontSize={10}
+        fontSize={12}
         fontFamily="var(--font-dm-sans)"
         textAnchor="middle"
       >
@@ -334,50 +340,67 @@ function ContentFunnel() {
 /* ── Main section ────────────────────────────────────────── */
 export default function Section04a_Strategies() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const slowScrollRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: scrollAreaRef,
     offset: ["start end", "end start"],
   });
 
+  // Half-speed scroll for header + boxes area
+  const { scrollYProgress: slowProgress } = useScroll({
+    target: slowScrollRef,
+    offset: ["start end", "end start"],
+  });
+  // Push content down as page scrolls up, counteracting half the scroll distance.
+  // Total travel = 130vh + 100vh = 230vh. Header reaches viewport center at ~50vh/230vh ≈ 0.22.
+  // No parallax before that → normal scroll until "Strategies" is centered, then half-speed.
+  const slowY = useTransform(slowProgress, (v) => {
+    if (typeof window === "undefined") return 0;
+    const vh = window.innerHeight;
+    const threshold = 50 / 230; // header at viewport center (~0.22)
+    if (v <= threshold) return 0;
+    const t = (v - threshold) / (1 - threshold);
+    return t * 0.9 * vh;
+  });
+
   /* ── Phase timings (recalibrated for 400vh scroll area) ──
    * Total travel = 400vh + 100vh = 500vh
    * Sticky pins at progress ~0.20 (100vh / 500vh)
    * Usable sticky range: 0.20–0.80
-   * Mapping: new = old × 0.90 + 0.16
    *
-   * 0.14–0.20  section + title fade in (visible by pin point)
-   * 0.22–0.41  spectrum bands + reach curve draws
-   * 0.25–0.46  reach explanation boxes (sequential)
-   * 0.29–0.42  callout cards + bars appear
-   * 0.44–0.60  impact-per-person curve draws
-   * 0.44–0.67  impact explanation boxes (sequential)
-   * 0.63–0.67  callouts + explanation boxes fade out
-   * 0.66–0.78  total-impact filled area + text + dot
-   * 0.78–0.80  total impact visible, then sticky ends
+   * 0.08–0.13  section + title fade in (faster, less dead space)
+   * 0.14–0.30  spectrum bands + reach curve draws
+   * 0.17–0.38  reach explanation boxes (sequential)
+   * 0.21–0.34  callout cards + bars appear
+   * 0.36–0.52  impact-per-person curve draws
+   * 0.36–0.59  impact explanation boxes (sequential)
+   * 0.55–0.59  callouts + explanation boxes fade out
+   * 0.58–0.70  total-impact filled area + text + dot
+   * 0.70–0.80  total impact visible, then sticky ends
    * ───────────────────────────────────────────────────── */
 
-  // Section envelope — fades in as section approaches, fully visible at pin
+  // Section envelope — fades in earlier for less dead space
   const sectionOpacity = useTransform(
     scrollYProgress,
-    [0.14, 0.20],
+    [0.08, 0.13],
     [0, 1],
     { clamp: true }
   );
 
-  // Title — fades in just before pin
+  // Title — fades in quickly after section appears
   const titleOpacity = useTransform(
     scrollYProgress,
-    [0.18, 0.23],
+    [0.10, 0.14],
     [0, 1],
     { clamp: true }
   );
-  const titleY = useTransform(scrollYProgress, [0.18, 0.23], [40, 0]);
+  const titleY = useTransform(scrollYProgress, [0.10, 0.14], [40, 0]);
 
   // Spectrum bands
   const bandsOpacity = useTransform(
     scrollYProgress,
-    [0.22, 0.28],
+    [0.14, 0.19],
     [0, 0.15],
     { clamp: true }
   );
@@ -385,75 +408,104 @@ export default function Section04a_Strategies() {
   // Reach curve
   const reachPathLength = useTransform(
     scrollYProgress,
-    [0.25, 0.41],
+    [0.17, 0.30],
     [0, 1],
     { clamp: true }
   );
   const reachLabelOpacity = useTransform(
     scrollYProgress,
-    [0.36, 0.41],
+    [0.26, 0.30],
     [0, 1],
     { clamp: true }
   );
   // 1) High-reach box (left green) — first, as blue line starts; stays until impact boxes fade
   const reachTextOpacity = useTransform(
     scrollYProgress,
-    [0.25, 0.30, 0.63, 0.67],
+    [0.17, 0.22, 0.55, 0.59],
     [0, 1, 1, 0]
   );
   // 2) Low-reach box (right red) — shortly after; stays until impact boxes fade
   const reachRightTextOpacity = useTransform(
     scrollYProgress,
-    [0.32, 0.37, 0.63, 0.67],
+    [0.24, 0.29, 0.55, 0.59],
     [0, 1, 1, 0]
   );
 
   // Impact curve
   const impactPathLength = useTransform(
     scrollYProgress,
-    [0.44, 0.60],
+    [0.36, 0.52],
     [0, 1],
     { clamp: true }
   );
   const impactLabelOpacity = useTransform(
     scrollYProgress,
-    [0.55, 0.60],
+    [0.47, 0.52],
     [0, 1],
     { clamp: true }
   );
   // 3) Low-impact box (left green) — as yellow line starts
   const impactLeftTextOpacity = useTransform(
     scrollYProgress,
-    [0.44, 0.48, 0.63, 0.67],
+    [0.36, 0.40, 0.55, 0.59],
     [0, 1, 1, 0]
   );
   // 4) High-impact box (right gold) — last to appear
   const impactTextOpacity = useTransform(
     scrollYProgress,
-    [0.51, 0.56, 0.63, 0.67],
+    [0.43, 0.48, 0.55, 0.59],
     [0, 1, 1, 0]
   );
 
   // Example callout cards (overlaid on chart) — span both reach + impact phases
   const leftCalloutOpacity = useTransform(
     scrollYProgress,
-    [0.29, 0.34, 0.63, 0.67],
+    [0.21, 0.26, 0.55, 0.59],
     [0, 1, 1, 0]
   );
   const rightCalloutOpacity = useTransform(
     scrollYProgress,
-    [0.32, 0.38, 0.63, 0.67],
+    [0.24, 0.30, 0.55, 0.59],
     [0, 1, 1, 0]
   );
-  const leftBarScale = useTransform(
+  // Reach bars — animate with the blue line phase
+  const leftReachBarScale = useTransform(
     scrollYProgress,
-    [0.29, 0.38],
+    [0.21, 0.30],
     [0, 1],
     { clamp: true }
   );
-  const rightBarScale = useTransform(
+  const rightReachBarScale = useTransform(
     scrollYProgress,
-    [0.32, 0.42],
+    [0.24, 0.34],
+    [0, 1],
+    { clamp: true }
+  );
+
+  // Impact bars — animate with the yellow line phase
+  const leftImpactBarScale = useTransform(
+    scrollYProgress,
+    [0.36, 0.45],
+    [0, 1],
+    { clamp: true }
+  );
+  const rightImpactBarScale = useTransform(
+    scrollYProgress,
+    [0.36, 0.45],
+    [0, 1],
+    { clamp: true }
+  );
+
+  // Impact section opacity in callout cards — fade in when yellow line starts
+  const leftImpactSectionOpacity = useTransform(
+    scrollYProgress,
+    [0.36, 0.40],
+    [0, 1],
+    { clamp: true }
+  );
+  const rightImpactSectionOpacity = useTransform(
+    scrollYProgress,
+    [0.36, 0.40],
     [0, 1],
     { clamp: true }
   );
@@ -461,19 +513,19 @@ export default function Section04a_Strategies() {
   // Total impact area
   const totalAreaOpacity = useTransform(
     scrollYProgress,
-    [0.66, 0.74],
+    [0.58, 0.66],
     [0, 0.45],
     { clamp: true }
   );
   const totalTextOpacity = useTransform(
     scrollYProgress,
-    [0.69, 0.76],
+    [0.61, 0.68],
     [0, 1],
     { clamp: true }
   );
   const peakDotScale = useTransform(
     scrollYProgress,
-    [0.72, 0.78],
+    [0.64, 0.70],
     [0, 1],
     { clamp: true }
   );
@@ -485,11 +537,78 @@ export default function Section04a_Strategies() {
 
   return (
     <section id="strategies">
-      {/* ── Section header ── */}
-      <div className="py-24 px-4 sm:px-8 lg:px-16 text-center">
-        <h2 className="font-heading text-5xl sm:text-6xl lg:text-7xl font-bold text-text">
-          Strategies
-        </h2>
+      {/* ── Half-speed scroll wrapper: 130vh tall, content translates at 0.5× scroll rate ── */}
+      <div ref={slowScrollRef} className="relative overflow-hidden" style={{ height: "130vh" }}>
+        <motion.div style={{ y: slowY }}>
+          {/* ── Section header ── */}
+          <div className="py-24 px-4 sm:px-8 lg:px-16 text-center">
+            <h2 className="font-heading text-5xl sm:text-6xl lg:text-7xl font-bold text-text">
+              Strategies
+            </h2>
+          </div>
+
+          {/* ── Three strategic priorities ── */}
+          <div className="px-4 sm:px-8 lg:px-16 pb-16 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Organic growth */}
+              <div
+                className="rounded-xl p-4 border"
+                style={{
+                  background: "rgba(82,183,136,0.08)",
+                  borderColor: "rgba(82,183,136,0.2)",
+                }}
+              >
+                <p className="text-base font-semibold mb-1.5" style={{ color: "#52b788" }}>
+                  Organic Growth
+                </p>
+                <p className="text-sm text-text-muted leading-relaxed">
+                  The gift that keeps on giving. Every person who truly grasps the
+                  risk becomes a broadcaster in their own right&nbsp;&mdash;
+                  reaching audiences no ad budget ever could.
+                </p>
+              </div>
+
+              {/* Cross-pollination */}
+              <div
+                className="rounded-xl p-4 border"
+                style={{
+                  background: "rgba(192,132,252,0.08)",
+                  borderColor: "rgba(192,132,252,0.2)",
+                }}
+              >
+                <p className="text-base font-semibold mb-1.5" style={{ color: "#c084fc" }}>
+                  Cross-Pollinate Distribution
+                </p>
+                <p className="text-sm text-text-muted leading-relaxed">
+                  Maximize every piece of content that has already proven it can go
+                  viral. A story that blew up on r/openai gets posted to
+                  r/anthropic. A viral X thread becomes an Instagram
+                  carousel for a creator with a matching audience.
+                  Proven content, new eyeballs.
+                </p>
+              </div>
+
+              {/* In-house muscle */}
+              <div
+                className="rounded-xl p-4 border"
+                style={{
+                  background: "rgba(224,122,95,0.08)",
+                  borderColor: "rgba(224,122,95,0.2)",
+                }}
+              >
+                <p className="text-base font-semibold mb-1.5" style={{ color: "#e07a5f" }}>
+                  Build In-House Muscle
+                </p>
+                <p className="text-sm text-text-muted leading-relaxed">
+                  Don&rsquo;t outsource the movement. Develop internal capabilities
+                  &nbsp;&mdash; content creators, community managers, data
+                  analysts&nbsp;&mdash; so the mission stays authentic and
+                  self-sustaining.
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* ── Scroll-driven animated area ── */}
@@ -499,7 +618,7 @@ export default function Section04a_Strategies() {
         style={{ height: "400vh" }}
       >
         <motion.div
-          className="sticky top-12 h-[calc(100vh-3rem)] flex flex-col items-center justify-start pt-8 px-4 sm:px-8 lg:px-16 overflow-hidden"
+          className="sticky top-12 z-20 h-[calc(100vh-3rem)] flex flex-col items-center justify-start pt-8 px-4 sm:px-8 lg:px-16 overflow-hidden bg-bg"
           style={{ opacity: sectionOpacity }}
         >
           {/* ── Title — persistent above chart ── */}
@@ -515,6 +634,48 @@ export default function Section04a_Strategies() {
               directions&nbsp;&mdash; and what it means for strategy.
             </p>
           </motion.div>
+
+          {/* ── Reach explanation row (above chart) ── */}
+          <div className="w-full max-w-4xl shrink-0 mb-2">
+            <div className="grid grid-cols-2 gap-x-4">
+              <motion.div
+                className="pointer-events-none"
+                style={{ opacity: reachTextOpacity }}
+              >
+                <p
+                  className="text-xs text-text-muted leading-relaxed rounded-lg p-2.5"
+                  style={{
+                    background: "rgba(45,106,79,0.15)",
+                    border: "1px solid rgba(82,183,136,0.2)",
+                  }}
+                >
+                  <span style={{ color: "#52b788" }} className="font-semibold">
+                    Reach
+                  </span>{" "}
+                  peaks at low X-risk. Content about tech billionaires, job loss,
+                  or AI bias goes viral easily.
+                </p>
+              </motion.div>
+              <motion.div
+                className="pointer-events-none"
+                style={{ opacity: reachRightTextOpacity }}
+              >
+                <p
+                  className="text-xs text-text-muted leading-relaxed rounded-lg p-2.5"
+                  style={{
+                    background: "rgba(107,17,20,0.18)",
+                    border: "1px solid rgba(155,34,38,0.25)",
+                  }}
+                >
+                  <span style={{ color: "#e07a5f" }} className="font-semibold">
+                    Reach drops off
+                  </span>{" "}
+                  at high X-risk. Existential risk sounds like sci-fi&nbsp;&mdash;
+                  abstract, not relatable.
+                </p>
+              </motion.div>
+            </div>
+          </div>
 
           {/* ── SVG chart with callout cards overlaid ── */}
           <div className="w-full max-w-4xl relative shrink-0">
@@ -691,7 +852,9 @@ export default function Section04a_Strategies() {
             >
               <ExampleCallout
                 example={EXAMPLES.left}
-                barScale={leftBarScale}
+                reachBarScale={leftReachBarScale}
+                impactBarScale={leftImpactBarScale}
+                impactOpacity={leftImpactSectionOpacity}
               />
             </motion.div>
             <motion.div
@@ -700,53 +863,15 @@ export default function Section04a_Strategies() {
             >
               <ExampleCallout
                 example={EXAMPLES.right}
-                barScale={rightBarScale}
+                reachBarScale={rightReachBarScale}
+                impactBarScale={rightImpactBarScale}
+                impactOpacity={rightImpactSectionOpacity}
               />
             </motion.div>
           </div>
 
-          {/* ── Below-chart area (explanation boxes + total impact text) ── */}
+          {/* ── Below-chart area (impact explanation boxes + total impact text) ── */}
           <div className="w-full max-w-4xl relative mt-2 shrink-0">
-            {/* Reach explanation row */}
-            <div className="grid grid-cols-2 gap-x-4 mb-2">
-              <motion.div
-                className="pointer-events-none"
-                style={{ opacity: reachTextOpacity }}
-              >
-                <p
-                  className="text-xs text-text-muted leading-relaxed rounded-lg p-2.5"
-                  style={{
-                    background: "rgba(45,106,79,0.15)",
-                    border: "1px solid rgba(82,183,136,0.2)",
-                  }}
-                >
-                  <span style={{ color: "#52b788" }} className="font-semibold">
-                    Reach
-                  </span>{" "}
-                  peaks at low X-risk. Content about tech billionaires, job loss,
-                  or AI bias goes viral easily.
-                </p>
-              </motion.div>
-              <motion.div
-                className="pointer-events-none"
-                style={{ opacity: reachRightTextOpacity }}
-              >
-                <p
-                  className="text-xs text-text-muted leading-relaxed rounded-lg p-2.5"
-                  style={{
-                    background: "rgba(107,17,20,0.18)",
-                    border: "1px solid rgba(155,34,38,0.25)",
-                  }}
-                >
-                  <span style={{ color: "#e07a5f" }} className="font-semibold">
-                    Reach drops off
-                  </span>{" "}
-                  at high X-risk. Existential risk sounds like sci-fi&nbsp;&mdash;
-                  abstract, not relatable.
-                </p>
-              </motion.div>
-            </div>
-
             {/* Impact explanation row */}
             <div className="grid grid-cols-2 gap-x-4">
               <motion.div
@@ -808,7 +933,7 @@ export default function Section04a_Strategies() {
       </div>
 
       {/* ── Normal flow: conclusion + strategy (scrolls naturally) ── */}
-      <div className="relative z-10 px-4 sm:px-8 lg:px-16 pt-6 pb-20 max-w-7xl mx-auto">
+      <div className="relative z-30 bg-bg px-4 sm:px-8 lg:px-16 pt-10 pb-20 max-w-7xl mx-auto -mt-[11vh]">
         {/* Conclusion — full width */}
         <div className="text-center mb-8">
           <p className="text-lg sm:text-2xl text-text leading-snug font-heading font-bold mb-2">
@@ -822,80 +947,20 @@ export default function Section04a_Strategies() {
         </div>
 
         {/* Strategy heading — full width */}
-        <p className="text-lg sm:text-xl text-text leading-snug font-heading font-bold mb-6 text-center">
+        <p className="text-2xl sm:text-3xl lg:text-4xl text-text leading-snug font-heading font-bold mb-6 mt-20 text-center">
           The Strategy: Meet People Where They Are
         </p>
-
-        {/* Three strategic priorities */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-          {/* Organic growth */}
-          <div
-            className="rounded-xl p-4 border"
-            style={{
-              background: "rgba(82,183,136,0.08)",
-              borderColor: "rgba(82,183,136,0.2)",
-            }}
-          >
-            <p className="text-sm font-semibold mb-1.5" style={{ color: "#52b788" }}>
-              Organic Growth
-            </p>
-            <p className="text-xs text-text-muted leading-relaxed">
-              The gift that keeps on giving. Every person who truly grasps the
-              risk becomes a broadcaster in their own right&nbsp;&mdash;
-              reaching audiences no ad budget ever could.
-            </p>
-          </div>
-
-          {/* In-house muscle */}
-          <div
-            className="rounded-xl p-4 border"
-            style={{
-              background: "rgba(224,122,95,0.08)",
-              borderColor: "rgba(224,122,95,0.2)",
-            }}
-          >
-            <p className="text-sm font-semibold mb-1.5" style={{ color: "#e07a5f" }}>
-              Build In-House Muscle
-            </p>
-            <p className="text-xs text-text-muted leading-relaxed">
-              Don&rsquo;t outsource the movement. Develop internal capabilities
-              &nbsp;&mdash; content creators, community managers, data
-              analysts&nbsp;&mdash; so the mission stays authentic and
-              self-sustaining.
-            </p>
-          </div>
-
-          {/* Cross-pollination */}
-          <div
-            className="rounded-xl p-4 border"
-            style={{
-              background: "rgba(192,132,252,0.08)",
-              borderColor: "rgba(192,132,252,0.2)",
-            }}
-          >
-            <p className="text-sm font-semibold mb-1.5" style={{ color: "#c084fc" }}>
-              Cross-Pollinate Distribution
-            </p>
-            <p className="text-xs text-text-muted leading-relaxed">
-              Maximize every piece of content that has already proven it can go
-              viral. A story that blew up on r/openai gets posted to
-              r/anthropic. A viral X thread becomes an Instagram
-              carousel for a creator with a matching audience.
-              Proven content, new eyeballs.
-            </p>
-          </div>
-        </div>
 
         {/* Funnel + text — funnel spans full width, text overlaid on right */}
         <div className="relative overflow-hidden">
           {/* Funnel background — shifted left so it centers under the labels */}
-          <div style={{ transform: "translateX(-18%)" }}>
+          <div style={{ transform: "translateX(-22%)" }}>
             <ContentFunnel />
           </div>
 
           {/* Text overlay — sits over the right portion of the funnel */}
-          <div className="lg:absolute lg:right-0 lg:top-0 lg:h-full lg:w-[38%] flex items-center">
-            <div className="py-6 lg:py-0 lg:pl-6 lg:pr-2">
+          <div className="lg:absolute lg:top-0 lg:h-full lg:w-[42%] flex items-center" style={{ left: "55%" }}>
+            <div className="py-6 lg:py-0 lg:pl-4 lg:pr-4 rounded-xl" style={{ background: "rgba(13,13,20,0.82)", padding: "24px", border: "1px solid rgba(255,255,255,0.06)" }}>
               <p className="text-base text-text-muted leading-relaxed mb-4">
                 The best approach is to strategically target different audiences
                 with content at different levels of X-risk seriousness and academic

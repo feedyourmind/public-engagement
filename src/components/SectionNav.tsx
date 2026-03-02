@@ -12,11 +12,12 @@ const SECTIONS = [
   { id: "comparisons", label: "Perceptions" },
   { id: "strategies", label: "Strategies" },
   { id: "distribution", label: "Distribution" },
-  { id: "concerned", label: "Concerned" },
-  { id: "conclusion", label: "Conclusion" },
   { id: "the-hub", label: "The Hub" },
   { id: "ai-ends-pub", label: "The Pub" },
   { id: "takedowns", label: "Takedowns" },
+  { id: "youtube", label: "YouTube" },
+  { id: "concerned", label: "Concerned" },
+  { id: "conclusion", label: "Conclusion" },
 ];
 
 export default function SectionNav() {

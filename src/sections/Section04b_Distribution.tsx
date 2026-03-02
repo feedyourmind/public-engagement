@@ -133,6 +133,20 @@ function ShieldIcon({ color }: { color: string }) {
   );
 }
 
+/* ── Reddit icon (inline) ── */
+
+function RedditIcon({ size = 18 }: { size?: number }) {
+  return (
+    <img
+      src="/reddit-logo.svg"
+      alt="Reddit"
+      width={size}
+      height={size}
+      className="inline-block align-middle rounded-full relative -top-[2px]"
+    />
+  );
+}
+
 /* ── Metric card ── */
 
 function MetricCard({
@@ -157,11 +171,11 @@ function MetricCard({
     >
       <div className="flex items-center gap-3 mb-3">
         {icon}
-        <h4 className="text-sm font-semibold" style={{ color: accent }}>
+        <h4 className="text-lg font-semibold" style={{ color: accent }}>
           {title}
         </h4>
       </div>
-      <p className="text-xs text-text-dim leading-relaxed m-0">{description}</p>
+      <p className="text-sm text-text-dim leading-relaxed m-0">{description}</p>
     </motion.div>
   );
 }
@@ -191,8 +205,8 @@ function PipelineStage({
         borderLeftWidth: 3,
       }}
     >
-      <p className="text-xs font-mono font-semibold text-text mb-1">{title}</p>
-      <p className="text-[10px] text-text-dim leading-relaxed m-0">
+      <p className="text-base font-mono font-semibold text-text mb-1">{title}</p>
+      <p className="text-xs text-text-dim leading-relaxed m-0">
         {description}
       </p>
     </motion.div>
@@ -212,66 +226,124 @@ export default function Section04b_Distribution() {
   /* ── Section envelope ── */
   const sectionOpacity = useTransform(
     scrollYProgress,
-    [0.0, 0.04, 0.92, 0.98],
+    [0.0, 0.03, 0.94, 0.98],
     [0, 1, 1, 0]
   );
 
-  /* ── Phase A: Hero ── */
+  /* ── Phase A: Hero (extended for 3-stage counter) ── */
   const heroOpacity = useTransform(
     scrollYProgress,
-    [0.02, 0.06, 0.22, 0.28],
+    [0.02, 0.05, 0.34, 0.38],
     [0, 1, 1, 0]
   );
-  const heroY = useTransform(scrollYProgress, [0.02, 0.06], [40, 0]);
-  const iconScale = useTransform(scrollYProgress, [0.02, 0.08], [0.6, 1], {
+  const heroY = useTransform(scrollYProgress, [0.02, 0.05], [40, 0]);
+  const iconScale = useTransform(scrollYProgress, [0.02, 0.07], [0.6, 1], {
     clamp: true,
   });
   const iconGlowOpacity = useTransform(
     scrollYProgress,
-    [0.04, 0.1],
+    [0.04, 0.08],
     [0, 0.6],
     { clamp: true }
   );
-  const statCounter = useTransform(scrollYProgress, [0.1, 0.16], [0, 9], {
+
+  /* Stats 3-stage progression */
+  const statsContainerOpacity = useTransform(
+    scrollYProgress,
+    [0.08, 0.10, 0.34, 0.38],
+    [0, 1, 1, 0],
+    { clamp: true }
+  );
+
+  // Counter 1: views per month
+  const counter1 = useTransform(scrollYProgress, [0.09, 0.15], [0, 9], {
     clamp: true,
   });
-  const statOpacity = useTransform(scrollYProgress, [0.1, 0.14], [0, 1], {
+  const counter1Opacity = useTransform(
+    scrollYProgress,
+    [0.08, 0.10],
+    [0, 1],
+    { clamp: true }
+  );
+
+  // Arrow 1 + "aiming for"
+  const arrow1Opacity = useTransform(
+    scrollYProgress,
+    [0.16, 0.19],
+    [0, 1],
+    { clamp: true }
+  );
+
+  // Counter 2: views per week
+  const counter2 = useTransform(scrollYProgress, [0.19, 0.25], [0, 9], {
     clamp: true,
   });
+  const counter2Opacity = useTransform(
+    scrollYProgress,
+    [0.19, 0.21],
+    [0, 1],
+    { clamp: true }
+  );
+
+  // Arrow 2 + "soon, eventually"
+  const arrow2Opacity = useTransform(
+    scrollYProgress,
+    [0.26, 0.29],
+    [0, 1],
+    { clamp: true }
+  );
+
+  // Counter 3: views per day
+  const counter3 = useTransform(scrollYProgress, [0.29, 0.35], [0, 9], {
+    clamp: true,
+  });
+  const counter3Opacity = useTransform(
+    scrollYProgress,
+    [0.29, 0.31],
+    [0, 1],
+    { clamp: true }
+  );
+
+  // Horizontal shift: center stat1 → shift left so stat2 is centered, stat3 appears to its right
+  const statsShift = useTransform(
+    scrollYProgress,
+    [0.09, 0.15, 0.18, 0.25, 0.28, 0.35],
+    [300, 300, 0, 0, 0, 0]
+  );
 
   /* ── Phase B: Resonance Intelligence ── */
   const intelligenceOpacity = useTransform(
     scrollYProgress,
-    [0.24, 0.3, 0.46, 0.52],
+    [0.36, 0.40, 0.54, 0.58],
     [0, 1, 1, 0]
   );
   const intelligenceTitleY = useTransform(
     scrollYProgress,
-    [0.24, 0.3],
+    [0.36, 0.40],
     [30, 0]
   );
 
-  const card1Opacity = useTransform(scrollYProgress, [0.28, 0.32], [0, 1], {
+  const card1Opacity = useTransform(scrollYProgress, [0.39, 0.42], [0, 1], {
     clamp: true,
   });
-  const card1Y = useTransform(scrollYProgress, [0.28, 0.32], [20, 0], {
+  const card1Y = useTransform(scrollYProgress, [0.39, 0.42], [20, 0], {
     clamp: true,
   });
-  const card2Opacity = useTransform(scrollYProgress, [0.3, 0.34], [0, 1], {
+  const card2Opacity = useTransform(scrollYProgress, [0.41, 0.44], [0, 1], {
     clamp: true,
   });
-  const card2Y = useTransform(scrollYProgress, [0.3, 0.34], [20, 0], {
+  const card2Y = useTransform(scrollYProgress, [0.41, 0.44], [20, 0], {
     clamp: true,
   });
-  const card3Opacity = useTransform(scrollYProgress, [0.32, 0.36], [0, 1], {
+  const card3Opacity = useTransform(scrollYProgress, [0.43, 0.46], [0, 1], {
     clamp: true,
   });
-  const card3Y = useTransform(scrollYProgress, [0.32, 0.36], [20, 0], {
+  const card3Y = useTransform(scrollYProgress, [0.43, 0.46], [20, 0], {
     clamp: true,
   });
   const resonanceTextOpacity = useTransform(
     scrollYProgress,
-    [0.36, 0.4],
+    [0.46, 0.50],
     [0, 1],
     { clamp: true }
   );
@@ -279,89 +351,89 @@ export default function Section04b_Distribution() {
   /* ── Phase C: Production Pipeline ── */
   const pipelineOpacity = useTransform(
     scrollYProgress,
-    [0.48, 0.54, 0.7, 0.76],
+    [0.54, 0.58, 0.90, 0.95],
     [0, 1, 1, 0]
   );
   const pipelineTitleY = useTransform(
     scrollYProgress,
-    [0.48, 0.54],
+    [0.54, 0.58],
     [30, 0]
   );
 
-  const stage1Opacity = useTransform(scrollYProgress, [0.52, 0.55], [0, 1], {
+  const stage1Opacity = useTransform(scrollYProgress, [0.57, 0.60], [0, 1], {
     clamp: true,
   });
-  const stage1Y = useTransform(scrollYProgress, [0.52, 0.55], [20, 0], {
+  const stage1Y = useTransform(scrollYProgress, [0.57, 0.60], [20, 0], {
     clamp: true,
   });
-  const stage2Opacity = useTransform(scrollYProgress, [0.54, 0.57], [0, 1], {
+  const stage2Opacity = useTransform(scrollYProgress, [0.59, 0.62], [0, 1], {
     clamp: true,
   });
-  const stage2Y = useTransform(scrollYProgress, [0.54, 0.57], [20, 0], {
+  const stage2Y = useTransform(scrollYProgress, [0.59, 0.62], [20, 0], {
     clamp: true,
   });
-  const stage3Opacity = useTransform(scrollYProgress, [0.56, 0.59], [0, 1], {
+  const stage3Opacity = useTransform(scrollYProgress, [0.61, 0.64], [0, 1], {
     clamp: true,
   });
-  const stage3Y = useTransform(scrollYProgress, [0.56, 0.59], [20, 0], {
+  const stage3Y = useTransform(scrollYProgress, [0.61, 0.64], [20, 0], {
     clamp: true,
   });
-  const stage4Opacity = useTransform(scrollYProgress, [0.58, 0.61], [0, 1], {
+  const stage4Opacity = useTransform(scrollYProgress, [0.63, 0.66], [0, 1], {
     clamp: true,
   });
-  const stage4Y = useTransform(scrollYProgress, [0.58, 0.61], [20, 0], {
+  const stage4Y = useTransform(scrollYProgress, [0.63, 0.66], [20, 0], {
     clamp: true,
   });
-  const rolesOpacity = useTransform(scrollYProgress, [0.6, 0.64], [0, 1], {
+  const rolesOpacity = useTransform(scrollYProgress, [0.65, 0.68], [0, 1], {
     clamp: true,
   });
-  const badgeOpacity = useTransform(scrollYProgress, [0.62, 0.66], [0, 1], {
+  const badgeOpacity = useTransform(scrollYProgress, [0.67, 0.70], [0, 1], {
     clamp: true,
   });
 
-  /* ── Phase D: Platform Ownership ── */
-  const ownershipOpacity = useTransform(
-    scrollYProgress,
-    [0.72, 0.78, 0.92, 0.98],
-    [0, 1, 1, 0]
-  );
-  const ownershipTitleY = useTransform(
-    scrollYProgress,
-    [0.72, 0.78],
-    [40, 0]
-  );
-  const growthBarWidth = useTransform(scrollYProgress, [0.78, 0.84], [0, 100], {
-    clamp: true,
+  /* ── Phase D: r/AIDangers (own scroll area below) ── */
+  const aidangersRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: adScrollY } = useScroll({
+    target: aidangersRef,
+    offset: ["start end", "end start"],
   });
-  const growthBarFill = useTransform(growthBarWidth, (v) => `${v * 0.3}%`);
-  const memberCounter = useTransform(
-    scrollYProgress,
-    [0.78, 0.84],
-    [0, 30000],
-    { clamp: true }
-  );
-  const goalOpacity = useTransform(scrollYProgress, [0.82, 0.86], [0, 1], {
-    clamp: true,
-  });
-  const benefit1Opacity = useTransform(scrollYProgress, [0.84, 0.88], [0, 1], {
-    clamp: true,
-  });
-  const benefit1Y = useTransform(scrollYProgress, [0.84, 0.88], [20, 0], {
-    clamp: true,
-  });
-  const benefit2Opacity = useTransform(scrollYProgress, [0.86, 0.9], [0, 1], {
-    clamp: true,
-  });
-  const benefit2Y = useTransform(scrollYProgress, [0.86, 0.9], [20, 0], {
-    clamp: true,
-  });
+
+  /* Green bar fills fast to 30K */
+  const greenBarWidth = useTransform(adScrollY, [0.25, 0.40], [0, 30], { clamp: true });
+  const greenBarFill = useTransform(greenBarWidth, (v) => `${v}%`);
+
+  /* Golden bar continues from 30K to 1M */
+  const goldenBarWidth = useTransform(adScrollY, [0.45, 0.60], [0, 70], { clamp: true });
+  const goldenBarFill = useTransform(goldenBarWidth, (v) => `${v}%`);
+
+  /* Fixed counter: 0 → 30K */
+  const fixedCounter = useTransform(adScrollY, [0.25, 0.40], [0, 30000], { clamp: true });
+
+  /* Trailing counter: 30K → 1M */
+  const trailingCounter = useTransform(adScrollY, [0.45, 0.60], [30000, 1000000], { clamp: true });
+
+  /* Trailing counter position */
+  const trailingLeft = useTransform(goldenBarWidth, (w) => `${30 + w}%`);
+
+  /* Trailing counter opacity */
+  const trailingOpacity = useTransform(adScrollY, [0.45, 0.47], [0, 1], { clamp: true });
+
+  /* Counter color for trailing label */
+  const trailingColor = useTransform(adScrollY, [0.45, 0.60], [ACCENT, "#f4a261"]);
+
+  const goalOpacity = useTransform(adScrollY, [0.38, 0.43], [0, 1], { clamp: true });
+  const benefit1Opacity = useTransform(adScrollY, [0.55, 0.60], [0, 1], { clamp: true });
+  const benefit1Y = useTransform(adScrollY, [0.55, 0.60], [20, 0], { clamp: true });
+  const benefit2Opacity = useTransform(adScrollY, [0.58, 0.63], [0, 1], { clamp: true });
+  const benefit2Y = useTransform(adScrollY, [0.58, 0.63], [20, 0], { clamp: true });
 
   return (
+    <>
     <section
       ref={sectionRef}
       id="distribution"
       className="relative"
-      style={{ height: "400vh" }}
+      style={{ height: "180vh" }}
     >
       <motion.div
         className="sticky top-12 h-[calc(100vh-3rem)] flex items-center justify-center overflow-hidden"
@@ -373,7 +445,7 @@ export default function Section04b_Distribution() {
           style={{ opacity: heroOpacity, y: heroY }}
         >
           {/* Icon with glow */}
-          <div className="relative mb-8">
+          <div className="relative mb-6">
             <motion.div
               className="absolute inset-0 rounded-full blur-3xl"
               style={{
@@ -383,38 +455,148 @@ export default function Section04b_Distribution() {
               }}
             />
             <motion.img
-              src="/distribution-icon.png"
+              src="/banger-logo1.webp"
               alt="Distribution Engine"
               className="w-28 h-28 sm:w-36 sm:h-36 relative z-10 drop-shadow-2xl"
               style={{ scale: iconScale }}
             />
           </div>
 
-          <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text text-center leading-tight tracking-tight mb-4">
+          <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text text-center leading-tight tracking-tight mb-3">
             The Distribution Engine
           </h2>
-          <p className="text-lg sm:text-xl text-text-muted text-center max-w-2xl leading-relaxed mb-8">
-            Reddit-native infrastructure for AI safety content at scale
+          <p className="text-lg sm:text-xl text-text-muted text-center max-w-2xl leading-relaxed mb-6">
+            A scientific, data-driven infrastructure that applies
+            gradient-descent-like optimization dynamics to content distribution
+            &mdash; a recursively improving feedback loop that increases
+            throughput, resonance, and virality every single day
           </p>
 
-          {/* Animated stat */}
-          <motion.div className="text-center" style={{ opacity: statOpacity }}>
-            <div className="flex items-baseline justify-center gap-1">
-              <span
-                className="text-5xl sm:text-6xl font-extrabold font-mono"
-                style={{ color: ACCENT }}
-              >
-                ~
-                <AnimatedNumber
-                  value={statCounter}
-                  format={(n) => n.toFixed(1)}
-                />
-                M
-              </span>
+          {/* Stats 3-stage progression */}
+          <motion.div
+            className="w-full overflow-hidden"
+            style={{ opacity: statsContainerOpacity }}
+          >
+            {/* "Cross Platform" header above stats */}
+            <div className="text-center mb-4">
+              <p className="text-sm sm:text-base uppercase tracking-widest font-bold mb-1 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Cross Platform
+              </p>
+              <p className="text-xs text-text-muted mb-2">
+                Soon to be applied to X, Instagram, TikTok &amp; all major platforms
+              </p>
+              <p className="text-base sm:text-lg text-text-muted">
+                Started with{" "}
+                <RedditIcon size={50} />
+                <span style={{ color: REDDIT }} className="font-semibold -ml-2">
+                  Reddit
+                </span>:
+              </p>
             </div>
-            <p className="text-sm text-text-muted mt-2">
-              views per month &mdash; and growing
-            </p>
+
+            {/* Sliding stats row */}
+            <div className="flex justify-center">
+              <motion.div
+                className="flex items-center gap-4 sm:gap-6 w-max"
+                style={{ x: statsShift }}
+              >
+                {/* Stat 1: per month */}
+                <motion.div
+                  className="text-center flex-shrink-0"
+                  style={{ opacity: counter1Opacity }}
+                >
+                  <span
+                    className="text-4xl sm:text-5xl font-extrabold font-mono"
+                    style={{ color: ACCENT }}
+                  >
+                    ~
+                    <AnimatedNumber
+                      value={counter1}
+                      format={(n) => n.toFixed(1)}
+                    />
+                    M
+                  </span>
+                  <p className="text-base sm:text-lg font-bold text-text mt-1">
+                    views per month
+                  </p>
+                </motion.div>
+
+                {/* Arrow 1: aiming for */}
+                <motion.div
+                  className="flex flex-col items-center justify-end flex-shrink-0 self-stretch pb-1"
+                  style={{ opacity: arrow1Opacity }}
+                >
+                  <span className="text-xs sm:text-sm font-semibold text-text-muted whitespace-nowrap leading-tight">
+                    aiming for
+                  </span>
+                  <span
+                    className="text-2xl sm:text-3xl leading-none"
+                    style={{ color: ACCENT }}
+                  >
+                    &rarr;
+                  </span>
+                </motion.div>
+
+                {/* Stat 2: per week */}
+                <motion.div
+                  className="text-center flex-shrink-0"
+                  style={{ opacity: counter2Opacity }}
+                >
+                  <span
+                    className="text-4xl sm:text-5xl font-extrabold font-mono"
+                    style={{ color: ACCENT }}
+                  >
+                    ~
+                    <AnimatedNumber
+                      value={counter2}
+                      format={(n) => n.toFixed(1)}
+                    />
+                    M
+                  </span>
+                  <p className="text-base sm:text-lg font-bold text-text mt-1">
+                    views per week
+                  </p>
+                </motion.div>
+
+                {/* Arrow 2: no hard ceiling */}
+                <motion.div
+                  className="flex flex-col items-center justify-end flex-shrink-0 self-stretch pb-1"
+                  style={{ opacity: arrow2Opacity }}
+                >
+                  <span className="text-xs sm:text-sm font-semibold text-text-muted whitespace-nowrap leading-tight">
+                    no hard ceiling
+                  </span>
+                  <span
+                    className="text-2xl sm:text-3xl leading-none"
+                    style={{ color: ACCENT }}
+                  >
+                    &rarr;
+                  </span>
+                  <span className="text-xs sm:text-sm font-semibold text-text-muted whitespace-nowrap leading-tight">
+                    could eventually reach
+                  </span>
+                </motion.div>
+
+                {/* Stat 3: per day */}
+                <motion.div
+                  className="text-center flex-shrink-0"
+                  style={{ opacity: counter3Opacity }}
+                >
+                  <span
+                    className="text-4xl sm:text-5xl font-extrabold font-mono"
+                    style={{ color: ACCENT }}
+                  >
+                    ~
+                    <AnimatedNumber
+                      value={counter3}
+                      format={(n) => n.toFixed(1)}
+                    />
+                    M
+                  </span>
+                  <p className="text-base sm:text-lg font-bold text-text mt-1">views per day</p>
+                </motion.div>
+              </motion.div>
+            </div>
           </motion.div>
         </motion.div>
 
@@ -464,7 +646,7 @@ export default function Section04b_Distribution() {
           </div>
 
           <motion.p
-            className="text-sm text-text-muted text-center max-w-xl leading-relaxed"
+            className="text-base text-text-muted text-center max-w-xl leading-relaxed"
             style={{ opacity: resonanceTextOpacity }}
           >
             Take viral content that has proven performance &mdash; either on
@@ -472,10 +654,10 @@ export default function Section04b_Distribution() {
             <span className="text-text font-medium">variations</span>, and
             distribute to the{" "}
             <span className="text-text font-medium">targeted audiences</span>{" "}
-            where we know it will perform best. The cluster intelligence
-            allows someone completely unfamiliar to use these connections the
-            same way an expert would &mdash; because the knowledge is now in
-            the system, not just in someone&rsquo;s head.
+            where we know it will perform best. The cluster intelligence allows
+            someone completely unfamiliar to use these connections the same way
+            an expert would &mdash; because the knowledge is now in the system,
+            not just in someone&rsquo;s head.
           </motion.p>
         </motion.div>
 
@@ -544,19 +726,19 @@ export default function Section04b_Distribution() {
             style={{ opacity: rolesOpacity }}
           >
             <div className="flex-1 text-center py-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-              <p className="text-[9px] uppercase tracking-widest text-text-dim mb-0.5">
+              <p className="text-sm uppercase tracking-widest text-text-dim mb-0.5">
                 Creators
               </p>
-              <p className="text-[10px] text-text-muted">
+              <p className="text-sm text-text-muted">
                 Taste &amp; content craft
               </p>
             </div>
             <div className="w-px h-8 border-l border-dashed border-white/20" />
             <div className="flex-1 text-center py-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-              <p className="text-[9px] uppercase tracking-widest text-text-dim mb-0.5">
+              <p className="text-sm uppercase tracking-widest text-text-dim mb-0.5">
                 Distributors
               </p>
-              <p className="text-[10px] text-text-muted">
+              <p className="text-sm text-text-muted">
                 System-guided placement
               </p>
             </div>
@@ -567,7 +749,7 @@ export default function Section04b_Distribution() {
             className="mt-6 px-5 py-2 rounded-full border border-white/10"
             style={{ opacity: badgeOpacity }}
           >
-            <p className="text-xs text-text-muted">
+            <p className="text-sm text-text-muted">
               <span style={{ color: GROWTH }} className="font-semibold">
                 &bull;
               </span>{" "}
@@ -577,134 +759,176 @@ export default function Section04b_Distribution() {
           </motion.div>
         </motion.div>
 
-        {/* ── Phase D: Platform Ownership ── */}
-        <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16"
-          style={{ opacity: ownershipOpacity }}
-        >
-          <motion.div
-            className="text-center mb-8"
-            style={{ y: ownershipTitleY }}
-          >
-            {/* Reddit-style title */}
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <svg width={28} height={28} viewBox="0 0 24 24">
-                <circle cx={12} cy={12} r={10} fill={REDDIT} />
-                <circle cx={8.5} cy={11} r={1.5} fill="white" />
-                <circle cx={15.5} cy={11} r={1.5} fill="white" />
-                <path
-                  d="M8.5 15.5 Q12 18 15.5 15.5"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth={1.2}
-                  strokeLinecap="round"
+      </motion.div>
+    </section>
+
+    {/* ── r/AIDangers — normal scroll, sticky title + animated bar ── */}
+    <section
+      ref={aidangersRef}
+      className="relative"
+      style={{ height: "250vh" }}
+    >
+      <div className="sticky top-12 h-[calc(100vh-3rem)] flex flex-col items-center justify-center px-4 sm:px-8 lg:px-16">
+        {/* Reddit-style title */}
+        <div className="flex items-center justify-center -gap-1 mb-3">
+          <img
+            src="/reddit-logo.svg"
+            alt="Reddit"
+            width={90}
+            height={90}
+            style={{ marginRight: '-10px' }}
+            className="rounded-full"
+          />
+          <h3 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-text">
+            r/AIDangers
+          </h3>
+        </div>
+        <p className="text-base sm:text-lg text-text-muted text-center">
+          Our own platform. Zero to{" "}
+          <span className="font-semibold" style={{ color: GROWTH }}>
+            30,000 members
+          </span>{" "}
+          in six months.
+        </p>
+        <p className="text-sm text-text-dim mt-3 max-w-xl mx-auto leading-relaxed text-center">
+          Roughly <span className="font-semibold text-text">~2,700 posts</span> of
+          serious video clips sourced from AI-safety interviews and
+          documentaries, plus news and article links &mdash; and roughly{" "}
+          <span className="font-semibold text-text">~2,000 posts</span> of
+          mainly memetic content like original memes and less serious video
+          clips, aimed at younger audiences receptive to memes and viral content.
+        </p>
+        <p className="text-sm text-text-dim mt-2 max-w-md mx-auto leading-relaxed text-center">
+          Once the workflow, team, and distribution pipeline are fully in
+          place, growth should become exponential.
+        </p>
+
+        {/* Growth bar */}
+        <div className="w-full max-w-2xl mb-6 mt-8">
+          <div className="relative text-xs text-text-dim mb-2">
+            <span className="absolute left-0">0</span>
+            {/* Fixed 30K label at the 30% mark */}
+            <motion.span
+              style={{ opacity: goalOpacity, left: "30%", transform: "translateX(-50%)" }}
+              className="absolute font-semibold"
+            >
+              <span style={{ color: GROWTH }}>
+                <AnimatedNumber
+                  value={fixedCounter}
+                  format={(n) => {
+                    if (n >= 10000)
+                      return `${Math.round(n / 1000)}K`;
+                    if (n >= 1000)
+                      return `${(n / 1000).toFixed(1)}K`;
+                    return Math.round(n).toString();
+                  }}
                 />
-              </svg>
-              <h3 className="font-heading text-3xl sm:text-4xl font-bold text-text">
-                r/AIDangers
-              </h3>
-            </div>
-            <p className="text-sm text-text-muted">
-              Our own platform. Zero to{" "}
-              <span className="font-semibold" style={{ color: GROWTH }}>
-                30,000 members
               </span>{" "}
-              in six months.
+              members
+            </motion.span>
+            {/* Trailing counter follows the golden bar edge */}
+            <motion.span
+              style={{ opacity: trailingOpacity, left: trailingLeft, transform: "translateX(-50%)" }}
+              className="absolute font-semibold"
+            >
+              <motion.span style={{ color: trailingColor }}>
+                <AnimatedNumber
+                  value={trailingCounter}
+                  format={(n) => {
+                    if (n >= 999000) return "1M";
+                    if (n >= 10000)
+                      return `${Math.round(n / 1000)}K`;
+                    if (n >= 1000)
+                      return `${(n / 1000).toFixed(1)}K`;
+                    return Math.round(n).toString();
+                  }}
+                />
+              </motion.span>
+            </motion.span>
+            <motion.span
+              style={{ opacity: goalOpacity, color: "#f4a261" }}
+              className="absolute right-0 font-semibold"
+            >
+              1M goal
+            </motion.span>
+            {/* Spacer to maintain row height */}
+            <span className="invisible">0</span>
+          </div>
+          <div className="relative h-3 rounded-full bg-white/[0.06] overflow-hidden">
+            {/* Green bar: 0 → 30K */}
+            <motion.div
+              className="absolute inset-y-0 left-0 rounded-full"
+              style={{
+                width: greenBarFill,
+                background: `linear-gradient(90deg, ${GROWTH}, ${ACCENT})`,
+              }}
+            />
+            {/* Golden bar: 30K → 1M */}
+            <motion.div
+              className="absolute inset-y-0 rounded-r-full"
+              style={{
+                left: "30%",
+                width: goldenBarFill,
+                background: `linear-gradient(90deg, ${ACCENT}, #f4a261)`,
+              }}
+            />
+            {/* Goal marker at right edge */}
+            <motion.div
+              className="absolute right-0 inset-y-0 w-0.5 bg-white/20"
+              style={{ opacity: goalOpacity }}
+            />
+          </div>
+          <motion.div
+            className="flex justify-between text-[10px] text-text-dim mt-1.5"
+            style={{ opacity: goalOpacity }}
+          >
+            <span>6 months of growth</span>
+            <span>End of 2026</span>
+          </motion.div>
+        </div>
+
+        {/* Ownership benefit cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl w-full">
+          <motion.div
+            className="p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]"
+            style={{ opacity: benefit1Opacity, y: benefit1Y }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <MegaphoneIcon color="#f4a261" />
+              <h4
+                className="text-sm font-semibold"
+                style={{ color: "#f4a261" }}
+              >
+                Own the Platform
+              </h4>
+            </div>
+            <p className="text-xs text-text-dim leading-relaxed m-0">
+              A platform we own and control. Broadcast any content we deem
+              important without dependency on other community owners.
             </p>
           </motion.div>
 
-          {/* Growth bar */}
-          <div className="w-full max-w-2xl mb-6">
-            <div className="flex justify-between text-xs text-text-dim mb-2">
-              <span>0</span>
-              <motion.span
-                style={{ opacity: goalOpacity }}
-                className="font-semibold"
+          <motion.div
+            className="p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]"
+            style={{ opacity: benefit2Opacity, y: benefit2Y }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <ShieldIcon color={GROWTH} />
+              <h4
+                className="text-sm font-semibold"
+                style={{ color: GROWTH }}
               >
-                <span style={{ color: GROWTH }}>
-                  <AnimatedNumber
-                    value={memberCounter}
-                    format={(n) => {
-                      if (n >= 1000)
-                        return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}K`;
-                      return Math.round(n).toString();
-                    }}
-                  />
-                </span>{" "}
-                members
-              </motion.span>
-              <motion.span
-                style={{ opacity: goalOpacity, color: "#f4a261" }}
-                className="font-semibold"
-              >
-                1M goal
-              </motion.span>
+                Full Control / No Risk
+              </h4>
             </div>
-            <div className="relative h-3 rounded-full bg-white/[0.06] overflow-hidden">
-              <motion.div
-                className="absolute inset-y-0 left-0 rounded-full"
-                style={{
-                  width: growthBarFill,
-                  background: `linear-gradient(90deg, ${GROWTH}, ${ACCENT})`,
-                }}
-              />
-              {/* Goal marker at right edge */}
-              <motion.div
-                className="absolute right-0 inset-y-0 w-0.5 bg-white/20"
-                style={{ opacity: goalOpacity }}
-              />
-            </div>
-            <motion.div
-              className="flex justify-between text-[10px] text-text-dim mt-1.5"
-              style={{ opacity: goalOpacity }}
-            >
-              <span>6 months of growth</span>
-              <span>End of 2026</span>
-            </motion.div>
-          </div>
-
-          {/* Ownership benefit cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl w-full">
-            <motion.div
-              className="p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]"
-              style={{ opacity: benefit1Opacity, y: benefit1Y }}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <MegaphoneIcon color="#f4a261" />
-                <h4
-                  className="text-sm font-semibold"
-                  style={{ color: "#f4a261" }}
-                >
-                  Own the Platform
-                </h4>
-              </div>
-              <p className="text-xs text-text-dim leading-relaxed m-0">
-                A platform we own and control. Broadcast any content we deem
-                important without dependency on other community owners.
-              </p>
-            </motion.div>
-
-            <motion.div
-              className="p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]"
-              style={{ opacity: benefit2Opacity, y: benefit2Y }}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <ShieldIcon color={GROWTH} />
-                <h4
-                  className="text-sm font-semibold"
-                  style={{ color: GROWTH }}
-                >
-                  No Ban Risk
-                </h4>
-              </div>
-              <p className="text-xs text-text-dim leading-relaxed m-0">
-                No risk of being taken down or banned by other community owners.
-                Permanent infrastructure for the movement.
-              </p>
-            </motion.div>
-          </div>
-        </motion.div>
-      </motion.div>
+            <p className="text-xs text-text-dim leading-relaxed m-0">
+              No risk of being taken down or banned by other community owners.
+              Permanent infrastructure for the movement.
+            </p>
+          </motion.div>
+        </div>
+      </div>
     </section>
+    </>
   );
 }

@@ -28,7 +28,7 @@ export default function SegmentLegend() {
               style={{ background: seg.color }}
             />
             <span
-              className="text-[11px] font-bold uppercase tracking-wider"
+              className="text-xs font-bold uppercase tracking-wider"
               style={{ color: seg.color }}
             >
               {seg.label}
@@ -37,7 +37,7 @@ export default function SegmentLegend() {
           <div className="font-mono text-2xl font-medium text-text mb-1.5">
             {segmentAreas[i].toFixed(1)}%
           </div>
-          <p className="text-[11px] text-text-dim leading-relaxed m-0">
+          <p className="text-xs text-text-dim leading-relaxed m-0">
             {seg.description}
           </p>
         </div>

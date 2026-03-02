@@ -24,16 +24,16 @@ export default function Section04_Comparisons() {
     <div id="comparisons">
       {/* Intro heading and TPOT explanatory text — normal flow */}
       <div className="relative z-10 px-4 sm:px-8 lg:px-16 pt-0 pb-0 max-w-5xl mx-auto">
-        <div className="mb-2">
+        <div className="mb-6">
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-text mb-1">
             Perceptions Disconnect
           </h2>
           <p className="text-sm text-text-muted leading-relaxed">
             Comparing perspectives: the same distribution looks different through
-            different lenses. Overlay alternative curves to see how perceptions
-            might vary across groups and over time.
+            different lenses.
           </p>
         </div>
+
 
         <div>
           <h3 className="font-heading text-xl sm:text-2xl font-bold text-text mb-1">
@@ -51,7 +51,7 @@ export default function Section04_Comparisons() {
           </p>
           <p className="text-sm text-text-muted leading-relaxed mb-6">
             In reality, the vast majority of people{" "}
-            <span className="font-bold underline text-text">have no idea</span>.
+            <span className="font-bold text-text">have no idea</span>.
             They know something is happening with AI, but they think
             it&apos;s a glorified search engine and a fun trick for generating
             fake videos.
@@ -91,10 +91,7 @@ export default function Section04_Comparisons() {
           </p>
           <p className="text-sm text-text-muted leading-relaxed mb-6">
             The problem? To the average person on the street, they look like{" "}
-            <span className="font-bold underline text-text">
-              conspiracy theorists
-            </span>
-            . Tinfoil-hat types warning about a robot apocalypse.
+conspiracy theorists. <span className="font-bold text-text">Tinfoil-hat</span> types warning about a robot apocalypse.
             The disconnect between how safety advocates see themselves — as
             informed, rational people sounding a necessary alarm — and how
             the public sees them is{" "}

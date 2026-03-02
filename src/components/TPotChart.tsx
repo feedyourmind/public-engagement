@@ -82,7 +82,7 @@ export default function ComparisonChart({
   // --- Scroll-driven motion values ---
 
   // Overall section opacity (fade in on enter, fade out before unstick)
-  const sectionOpacity = useTransform(scrollYProgress, [0.0, 0.06, 0.70, 0.80], [0, 1, 1, 0]);
+  const sectionOpacity = useTransform(scrollYProgress, [0.0, 0.06, 0.82, 0.92], [0, 1, 1, 0]);
 
   // Phase 1: Reality draws in as chart enters viewport (before sticky)
   const bubbleCurveLength = useTransform(scrollYProgress, [0.04, 0.16], [0, 1]);
