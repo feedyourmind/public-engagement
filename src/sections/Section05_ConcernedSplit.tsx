@@ -104,10 +104,15 @@ export default function Section05_ConcernedSplit() {
       className="px-4 sm:px-8 lg:px-16 py-20 max-w-6xl mx-auto"
     >
       <div className="mb-12">
-        <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-text mb-4">
+        <h2 className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold text-text mb-4">
           The Concerned Split
         </h2>
-        <p className="text-base sm:text-lg text-text-muted leading-relaxed max-w-2xl">
+        <p className="text-base sm:text-lg text-text-muted leading-relaxed max-w-3xl mb-4">
+          What makes this challenge even harder is that even among people who
+          are genuinely worried about AI risk, there is a very wide spectrum of
+          understanding of how serious the situation actually is.
+        </p>
+        <p className="text-base sm:text-lg text-text-muted leading-relaxed max-w-3xl">
           Not all concern is the same. Some worry about harms happening right
           now; others focus on catastrophic futures that haven&apos;t arrived
           yet. The boundary between them defines a critical fault line in AI

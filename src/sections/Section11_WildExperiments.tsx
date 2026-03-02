@@ -15,9 +15,8 @@ const DARK_VIOLET = "#8b5cf6";
 interface Experiment {
   name: string;
   tagline: string;
-  description: string;
+  description: React.ReactNode;
   safetyAngle: string;
-  link: { url: string; label: string; platform: string };
   accent: string;
   accentBg: string;
   accentBorder: string;
@@ -31,11 +30,6 @@ const EXPERIMENTS: Experiment[] = [
       "Popular culture scenes reimagined without plot armor. The Terminator dies in scene 1. The Smurfs get caught immediately. Iconic moments replayed with realistic outcomes \u2014 AI-generated, brutally honest, darkly hilarious.",
     safetyAngle:
       "There is no plot armor for AI safety. Get it wrong and there is no epic battle, no last-minute save \u2014 just dystopia or worse. The entertainment makes the message unforgettable.",
-    link: {
-      url: "https://drive.google.com/file/d/1kbYf9M0eZgZjmwgjUJS16QI3gI0lWvBd/view?usp=sharing",
-      label: "T800 \u2014 trending now",
-      platform: "Google Drive",
-    },
     accent: NEON_RED,
     accentBg: "rgba(255,45,85,0.08)",
     accentBorder: "rgba(255,45,85,0.22)",
@@ -44,14 +38,9 @@ const EXPERIMENTS: Experiment[] = [
     name: "2030",
     tagline: "Five years from now. A family. UBI. Robots.",
     description:
-      "A family living with Universal Basic Income in the near future \u2014 Black Mirror style. Robots like Tesla Optimus handle daily life. Everything looks fine on the surface. Nothing is fine underneath.",
+      <>A family living with Universal Basic Income in the near future &mdash; <span className="text-text font-semibold italic">Black Mirror</span> style. Robots like Tesla Optimus handle daily life. Everything looks fine on the surface. Nothing is fine underneath.</>,
     safetyAngle:
       "The normalization of AI-run society makes complacency the default. By the time people notice the loss of agency, it\u2019s already too late.",
-    link: {
-      url: "https://www.instagram.com/oliviavlogsinspace/",
-      label: "@oliviavlogsinspace",
-      platform: "Instagram",
-    },
     accent: DYSTOPIA_BLUE,
     accentBg: "rgba(26,140,255,0.08)",
     accentBorder: "rgba(26,140,255,0.22)",
@@ -63,11 +52,6 @@ const EXPERIMENTS: Experiment[] = [
       "Popular viral videos \u2014 fails, memes, heartwarming moments \u2014 that towards the end reveal themselves as entirely AI-generated. You cannot trust what you see anymore. Subliminal AI safety messages woven throughout.",
     safetyAngle:
       "If you cannot distinguish reality from AI-generated content, how will society make informed decisions about AI governance? The medium IS the message.",
-    link: {
-      url: "https://www.instagram.com/lovetrends.ai/",
-      label: "@lovetrends.ai",
-      platform: "Instagram",
-    },
     accent: GLITCH_GREEN,
     accentBg: "rgba(57,255,20,0.06)",
     accentBorder: "rgba(57,255,20,0.18)",
@@ -79,11 +63,6 @@ const EXPERIMENTS: Experiment[] = [
       "The dark version of the future, visualized with AI-generated video. Full movies depicting futures no one wants to live in. Some channels already doing this are pulling millions of views \u2014 there\u2019s still a huge gap to fill.",
     safetyAngle:
       "When millions consume vivid AI-rendered dystopias, the abstract threat becomes visceral. Entertainment creates the emotional foundation that rational arguments alone cannot.",
-    link: {
-      url: "https://www.instagram.com/gossipgoblin/",
-      label: "@gossipgoblin",
-      platform: "Instagram",
-    },
     accent: DARK_VIOLET,
     accentBg: "rgba(139,92,246,0.08)",
     accentBorder: "rgba(139,92,246,0.22)",
@@ -188,25 +167,6 @@ function DarkGlobeIcon({ color }: { color: string }) {
   );
 }
 
-function ExternalLinkIcon({ color }: { color: string }) {
-  return (
-    <svg
-      width={16}
-      height={16}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-      <polyline points="15 3 21 3 21 9" />
-      <line x1="10" y1="14" x2="21" y2="3" />
-    </svg>
-  );
-}
-
 const ICONS = [ShieldOffIcon, CityIcon, GlitchEyeIcon, DarkGlobeIcon];
 
 /* ── Main Section ── */
@@ -247,8 +207,6 @@ export default function Section11_WildExperiments() {
   const exp1DescY = useTransform(scrollYProgress, [0.23, 0.26], [20, 0], { clamp: true });
   const exp1SafetyOpacity = useTransform(scrollYProgress, [0.26, 0.29], [0, 1], { clamp: true });
   const exp1SafetyY = useTransform(scrollYProgress, [0.26, 0.29], [20, 0], { clamp: true });
-  const exp1LinkOpacity = useTransform(scrollYProgress, [0.29, 0.32], [0, 1], { clamp: true });
-  const exp1LinkY = useTransform(scrollYProgress, [0.29, 0.32], [20, 0], { clamp: true });
 
   /* ── Phase C: 2030 ── */
   const exp2Opacity = useTransform(scrollYProgress, [0.34, 0.38, 0.48, 0.52], [0, 1, 1, 0]);
@@ -257,8 +215,6 @@ export default function Section11_WildExperiments() {
   const exp2DescY = useTransform(scrollYProgress, [0.39, 0.42], [20, 0], { clamp: true });
   const exp2SafetyOpacity = useTransform(scrollYProgress, [0.42, 0.45], [0, 1], { clamp: true });
   const exp2SafetyY = useTransform(scrollYProgress, [0.42, 0.45], [20, 0], { clamp: true });
-  const exp2LinkOpacity = useTransform(scrollYProgress, [0.45, 0.48], [0, 1], { clamp: true });
-  const exp2LinkY = useTransform(scrollYProgress, [0.45, 0.48], [20, 0], { clamp: true });
 
   /* ── Phase D: Reality is Broken ── */
   const exp3Opacity = useTransform(scrollYProgress, [0.50, 0.54, 0.64, 0.68], [0, 1, 1, 0]);
@@ -267,8 +223,6 @@ export default function Section11_WildExperiments() {
   const exp3DescY = useTransform(scrollYProgress, [0.55, 0.58], [20, 0], { clamp: true });
   const exp3SafetyOpacity = useTransform(scrollYProgress, [0.58, 0.61], [0, 1], { clamp: true });
   const exp3SafetyY = useTransform(scrollYProgress, [0.58, 0.61], [20, 0], { clamp: true });
-  const exp3LinkOpacity = useTransform(scrollYProgress, [0.61, 0.64], [0, 1], { clamp: true });
-  const exp3LinkY = useTransform(scrollYProgress, [0.61, 0.64], [20, 0], { clamp: true });
 
   /* ── Phase E: Dystopian Intelligence ── */
   const exp4Opacity = useTransform(scrollYProgress, [0.66, 0.70, 0.80, 0.84], [0, 1, 1, 0]);
@@ -277,8 +231,6 @@ export default function Section11_WildExperiments() {
   const exp4DescY = useTransform(scrollYProgress, [0.71, 0.74], [20, 0], { clamp: true });
   const exp4SafetyOpacity = useTransform(scrollYProgress, [0.74, 0.77], [0, 1], { clamp: true });
   const exp4SafetyY = useTransform(scrollYProgress, [0.74, 0.77], [20, 0], { clamp: true });
-  const exp4LinkOpacity = useTransform(scrollYProgress, [0.77, 0.80], [0, 1], { clamp: true });
-  const exp4LinkY = useTransform(scrollYProgress, [0.77, 0.80], [20, 0], { clamp: true });
 
   /* ── Phase F: Summary ── */
   const summaryOpacity = useTransform(scrollYProgress, [0.82, 0.86, 0.92, 0.96], [0, 1, 1, 0]);
@@ -286,10 +238,10 @@ export default function Section11_WildExperiments() {
 
   /* Collect per-experiment animation values */
   const expAnimations = [
-    { opacity: exp1Opacity, titleY: exp1TitleY, descOpacity: exp1DescOpacity, descY: exp1DescY, safetyOpacity: exp1SafetyOpacity, safetyY: exp1SafetyY, linkOpacity: exp1LinkOpacity, linkY: exp1LinkY },
-    { opacity: exp2Opacity, titleY: exp2TitleY, descOpacity: exp2DescOpacity, descY: exp2DescY, safetyOpacity: exp2SafetyOpacity, safetyY: exp2SafetyY, linkOpacity: exp2LinkOpacity, linkY: exp2LinkY },
-    { opacity: exp3Opacity, titleY: exp3TitleY, descOpacity: exp3DescOpacity, descY: exp3DescY, safetyOpacity: exp3SafetyOpacity, safetyY: exp3SafetyY, linkOpacity: exp3LinkOpacity, linkY: exp3LinkY },
-    { opacity: exp4Opacity, titleY: exp4TitleY, descOpacity: exp4DescOpacity, descY: exp4DescY, safetyOpacity: exp4SafetyOpacity, safetyY: exp4SafetyY, linkOpacity: exp4LinkOpacity, linkY: exp4LinkY },
+    { opacity: exp1Opacity, titleY: exp1TitleY, descOpacity: exp1DescOpacity, descY: exp1DescY, safetyOpacity: exp1SafetyOpacity, safetyY: exp1SafetyY },
+    { opacity: exp2Opacity, titleY: exp2TitleY, descOpacity: exp2DescOpacity, descY: exp2DescY, safetyOpacity: exp2SafetyOpacity, safetyY: exp2SafetyY },
+    { opacity: exp3Opacity, titleY: exp3TitleY, descOpacity: exp3DescOpacity, descY: exp3DescY, safetyOpacity: exp3SafetyOpacity, safetyY: exp3SafetyY },
+    { opacity: exp4Opacity, titleY: exp4TitleY, descOpacity: exp4DescOpacity, descY: exp4DescY, safetyOpacity: exp4SafetyOpacity, safetyY: exp4SafetyY },
   ];
 
   return (
@@ -351,7 +303,7 @@ export default function Section11_WildExperiments() {
               }}
             >
               <p className="text-base sm:text-lg font-semibold text-text mb-1">
-                Grow Platforms of Millions
+                Grow Experimental Platforms
               </p>
               <p className="text-sm text-text-dim leading-relaxed m-0">
                 Build massive audiences through entertainment first. When the time is right,
@@ -444,27 +396,6 @@ export default function Section11_WildExperiments() {
                   </p>
                 </motion.div>
 
-                {/* Link */}
-                <motion.div
-                  className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] inline-flex items-center gap-3 self-start"
-                  style={{ opacity: anim.linkOpacity, y: anim.linkY }}
-                >
-                  <ExternalLinkIcon color={exp.accent} />
-                  <div>
-                    <p className="text-[10px] text-text-dim uppercase tracking-widest m-0">
-                      {exp.link.platform}
-                    </p>
-                    <a
-                      href={exp.link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-medium hover:underline"
-                      style={{ color: exp.accent }}
-                    >
-                      {exp.link.label}
-                    </a>
-                  </div>
-                </motion.div>
               </div>
             </motion.div>
           );
@@ -505,6 +436,36 @@ export default function Section11_WildExperiments() {
               </div>
             ))}
           </div>
+
+          {/* More ideas placeholder tiles */}
+          <div className="grid grid-cols-2 gap-3 max-w-md w-full mt-3">
+            {[
+              { bg: "rgba(244,162,97,0.08)", border: "rgba(244,162,97,0.22)", color: "#f4a261" },
+              { bg: "rgba(82,183,136,0.08)", border: "rgba(82,183,136,0.22)", color: "#52b788" },
+              { bg: "rgba(103,212,232,0.08)", border: "rgba(103,212,232,0.22)", color: "#67d4e8" },
+              { bg: "rgba(224,122,95,0.08)", border: "rgba(224,122,95,0.22)", color: "#e07a5f" },
+            ].map((tile, i) => (
+              <div
+                key={i}
+                className="p-4 rounded-lg text-center"
+                style={{
+                  background: tile.bg,
+                  border: `1px solid ${tile.border}`,
+                }}
+              >
+                <p
+                  className="text-lg font-semibold m-0 tracking-widest"
+                  style={{ color: tile.color }}
+                >
+                  &hellip;
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-sm text-text-dim mt-4">
+            Many more ideas in the works.
+          </p>
         </motion.div>
       </motion.div>
     </section>

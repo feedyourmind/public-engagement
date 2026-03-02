@@ -78,9 +78,9 @@ export default function MainPageClient({
           <SectionDivider />
           <Section10_YouTube />
           <SectionDivider />
-          <Section10b_InfluencerDeals />
-          <SectionDivider />
           <Section11_WildExperiments />
+          <SectionDivider />
+          <Section10b_InfluencerDeals />
           <SectionDivider />
           <Section05_ConcernedSplit />
           <SectionDivider />

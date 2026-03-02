@@ -729,6 +729,31 @@ export default function Section09_Takedowns() {
       {/* ── Part 0: Title + GIF hero ── */}
       <TakedownsHero />
 
+      {/* ── Tagline block ── */}
+      <div className="text-center px-4 sm:px-8 pt-10 pb-16 max-w-3xl mx-auto">
+        <p className="text-2xl sm:text-4xl lg:text-5xl text-text leading-snug font-heading font-extrabold mb-4">
+          Every Dismissal Has an Answer
+        </p>
+        <p className="text-base sm:text-lg lg:text-xl text-text-muted leading-relaxed max-w-2xl mx-auto">
+          100+ targeted video rebuttal collections / playlists.
+          <br />
+          Created by thought leaders, AI experts, and AI safety advocates.
+        </p>
+        <div className="w-16 h-px bg-white/10 mx-auto my-5" />
+        <p className="text-base sm:text-lg lg:text-xl text-text-muted leading-relaxed max-w-2xl mx-auto">
+          Deployed everywhere.
+          <br />
+          The audience decides, surfaces the best to the top.
+        </p>
+        <div className="w-16 h-px bg-white/10 mx-auto my-5" />
+        <p className="text-lg sm:text-xl lg:text-2xl font-heading font-bold leading-snug max-w-2xl mx-auto" style={{ color: "#f4a261" }}>
+          The end of plausible denial.
+        </p>
+        <p className="text-lg sm:text-xl lg:text-2xl font-heading font-bold leading-snug max-w-2xl mx-auto mt-2" style={{ color: "rgb(110, 173, 255)" }}>
+          + infinite organic growth glitch.
+        </p>
+      </div>
+
       {/* ── Part 1: Scroll-driven animated area ── */}
       <div
         ref={sectionRef}
@@ -932,26 +957,6 @@ export default function Section09_Takedowns() {
           ))}
         </div>
 
-        <div className="text-center mt-20">
-          <p className="text-2xl sm:text-4xl lg:text-5xl text-text leading-snug font-heading font-extrabold mb-4">
-            Every Dismissal Has an Answer
-          </p>
-          <p className="text-base sm:text-lg lg:text-xl text-text-muted leading-relaxed max-w-2xl mx-auto">
-            100+ targeted video rebuttal collections / playlists.
-            <br />
-            Created by thought leaders, AI experts, and AI safety advocates.
-          </p>
-          <div className="w-16 h-px bg-white/10 mx-auto my-5" />
-          <p className="text-base sm:text-lg lg:text-xl text-text-muted leading-relaxed max-w-2xl mx-auto">
-            Deployed everywhere.
-            <br />
-            The audience decides, surfaces the best to the top.
-          </p>
-          <div className="w-16 h-px bg-white/10 mx-auto my-5" />
-          <p className="text-lg sm:text-xl lg:text-2xl font-heading font-bold leading-snug max-w-2xl mx-auto" style={{ color: "#f4a261" }}>
-            The end of plausible denial.
-          </p>
-        </div>
       </div>
     </section>
   );

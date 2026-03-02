@@ -18,6 +18,7 @@ const SECTIONS = [
   { id: "takedowns", label: "Takedowns" },
   { id: "youtube", label: "YouTube" },
   { id: "wild-experiments", label: "Experiments" },
+  { id: "influencer-deals", label: "Influencers" },
   { id: "concerned", label: "Concerned" },
   { id: "conclusion", label: "Conclusion" },
 ];
