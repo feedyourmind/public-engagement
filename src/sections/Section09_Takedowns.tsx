@@ -444,9 +444,32 @@ function OrganicGrowthHook() {
           </div>
         </div>
 
-        {/* Scaling the engine */}
+      </motion.div>
+    </div>
+  );
+}
+
+/* ── Scaling the engine (continuation after AI Thread Scanner) */
+
+function OrganicScaling() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <div
+      ref={ref}
+      className="relative z-10 px-4 sm:px-8 lg:px-16 pb-20 max-w-3xl mx-auto"
+    >
+      <motion.div
+        className="flex flex-col items-center text-center"
+        style={{
+          opacity: isInView ? 1 : 0,
+          y: isInView ? 0 : 50,
+          transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
+        }}
+      >
         <div
-          className="rounded-xl p-5 sm:p-6 text-left max-w-2xl w-full mt-8"
+          className="rounded-xl p-5 sm:p-6 text-left max-w-2xl w-full"
           style={{
             background: "rgba(82,183,136,0.08)",
             border: "1px solid rgba(82,183,136,0.2)",
@@ -469,6 +492,226 @@ function OrganicGrowthHook() {
           </p>
         </div>
       </motion.div>
+    </div>
+  );
+}
+
+/* ── AI-Powered Thread Scanner — the key innovation ──────── */
+
+function AIThreadScanner() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+
+  const FLOW_STEPS = [
+    {
+      icon: (
+        <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#67d4e8" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      ),
+      label: "Scan",
+      detail: "AI continuously monitors threads across Reddit, X, YouTube, Bluesky, and more",
+    },
+    {
+      icon: (
+        <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#c084fc" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" />
+          <path d="M9.5 14.5L3 21" /><path d="M14.5 14.5L21 21" />
+          <circle cx="12" cy="14" r="3" />
+        </svg>
+      ),
+      label: "Analyze",
+      detail: "Identifies dismissive comments and maps them to specific denial arguments",
+    },
+    {
+      icon: (
+        <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#f4a261" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2.5" fill="#f4a261" />
+        </svg>
+      ),
+      label: "Match",
+      detail: "Pairs each thread with the most relevant takedown rebuttal playlist",
+    },
+    {
+      icon: (
+        <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#52b788" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      ),
+      label: "Queue",
+      detail: "Pre-matched threads appear in each broadcaster's inbound queue, ready to deploy",
+    },
+  ];
+
+  return (
+    <div
+      ref={ref}
+      className="relative z-10 px-4 sm:px-8 lg:px-16 py-16 max-w-4xl mx-auto"
+    >
+      {/* Outer glow wrapper */}
+      <motion.div
+        className="relative rounded-2xl overflow-hidden"
+        style={{
+          opacity: isInView ? 1 : 0,
+          y: isInView ? 0 : 60,
+          transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+        }}
+      >
+        {/* Animated gradient border */}
+        <div
+          className="absolute -inset-px rounded-2xl"
+          style={{
+            background: "linear-gradient(135deg, #67d4e8 0%, #c084fc 25%, #f4a261 50%, #52b788 75%, #67d4e8 100%)",
+            backgroundSize: "300% 300%",
+            animation: "borderGlow 6s ease infinite",
+          }}
+        />
+
+        {/* Inner content */}
+        <div
+          className="relative rounded-2xl p-6 sm:p-8 lg:p-10"
+          style={{
+            background: "linear-gradient(135deg, rgba(15,15,20,0.97) 0%, rgba(20,18,30,0.97) 50%, rgba(15,20,18,0.97) 100%)",
+          }}
+        >
+          {/* Badge */}
+          <div className="flex items-center justify-center mb-6">
+            <span
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] px-4 py-2 rounded-full"
+              style={{
+                background: "linear-gradient(135deg, rgba(103,212,232,0.15), rgba(192,132,252,0.15))",
+                border: "1px solid rgba(103,212,232,0.3)",
+                color: "#67d4e8",
+              }}
+            >
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+              AI-Powered
+            </span>
+          </div>
+
+          {/* Headline */}
+          <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-extrabold text-center leading-tight tracking-tight mb-3">
+            <span style={{ color: "#67d4e8" }}>The AI Thread Scanner</span>
+          </h3>
+          <p className="text-base sm:text-lg text-text-muted text-center max-w-2xl mx-auto leading-relaxed mb-8">
+            The highest-leverage component of the entire system. Instead of waiting for promoters to find threads manually, <span className="text-text font-semibold">AI does the hunting</span>.
+          </p>
+
+          {/* Flow diagram */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {FLOW_STEPS.map((step, i) => (
+              <motion.div
+                key={step.label}
+                className="relative flex flex-col items-center text-center p-4 rounded-xl"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  opacity: isInView ? 1 : 0,
+                  y: isInView ? 0 : 30,
+                  transition: `all 0.6s cubic-bezier(0.16,1,0.3,1) ${0.2 + i * 0.15}s`,
+                }}
+              >
+                {/* Step number */}
+                <span className="absolute top-2 left-3 text-[10px] font-mono text-text-dim opacity-50">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="mb-3 mt-1">{step.icon}</div>
+                <p className="text-sm font-bold text-text mb-1">{step.label}</p>
+                <p className="text-xs text-text-dim leading-relaxed">{step.detail}</p>
+                {/* Arrow connector (hidden on last + mobile) */}
+                {i < FLOW_STEPS.length - 1 && (
+                  <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 text-white/20">
+                    <svg width={12} height={12} viewBox="0 0 12 12" fill="currentColor">
+                      <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth={1.5} fill="none" />
+                    </svg>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* The key insight */}
+          <div
+            className="rounded-xl p-5 sm:p-6 mb-6"
+            style={{
+              background: "linear-gradient(135deg, rgba(103,212,232,0.08), rgba(192,132,252,0.06))",
+              border: "1px solid rgba(103,212,232,0.2)",
+            }}
+          >
+            <p className="text-sm sm:text-base text-text leading-relaxed mb-3">
+              The Distribution Engine already has <span className="font-semibold text-text">Creator Rooms</span> where broadcasters manage and distribute content. Now imagine a new <span className="font-semibold" style={{ color: "#67d4e8" }}>AI-curated inbound queue</span> that automatically surfaces live threads where someone just expressed a dismissive AI risk argument.
+            </p>
+            <p className="text-sm sm:text-base text-text leading-relaxed">
+              Each thread arrives pre-matched with the <span className="font-semibold" style={{ color: "#f4a261" }}>exact rebuttal playlist</span> that addresses that specific argument. The broadcaster simply reviews, clicks, and deploys&mdash;responding with a perfectly targeted link that brings the entire thread&rsquo;s audience back as organic inbound traffic.
+            </p>
+          </div>
+
+          {/* Why this changes everything */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div
+              className="rounded-lg p-4 text-center"
+              style={{
+                background: "rgba(103,212,232,0.08)",
+                border: "1px solid rgba(103,212,232,0.15)",
+              }}
+            >
+              <p className="text-xs text-text-dim uppercase tracking-widest mb-1.5">Scale</p>
+              <p className="text-sm text-text font-medium">
+                AI scans thousands of threads per day across every platform. No thread goes unnoticed.
+              </p>
+            </div>
+            <div
+              className="rounded-lg p-4 text-center"
+              style={{
+                background: "rgba(192,132,252,0.08)",
+                border: "1px solid rgba(192,132,252,0.15)",
+              }}
+            >
+              <p className="text-xs text-text-dim uppercase tracking-widest mb-1.5">Precision</p>
+              <p className="text-sm text-text font-medium">
+                Every match is surgical. The right playlist for the right argument, every time.
+              </p>
+            </div>
+            <div
+              className="rounded-lg p-4 text-center"
+              style={{
+                background: "rgba(82,183,136,0.08)",
+                border: "1px solid rgba(82,183,136,0.15)",
+              }}
+            >
+              <p className="text-xs text-text-dim uppercase tracking-widest mb-1.5">Effortless</p>
+              <p className="text-sm text-text font-medium">
+                Broadcasters don&rsquo;t hunt for threads. Threads find them&mdash;pre-loaded with the perfect response.
+              </p>
+            </div>
+          </div>
+
+          {/* Closing punch */}
+          <div
+            className="rounded-xl p-5 sm:p-6 text-center"
+            style={{
+              background: "linear-gradient(135deg, rgba(244,162,97,0.1), rgba(224,122,95,0.06))",
+              border: "1px solid rgba(244,162,97,0.25)",
+            }}
+          >
+            <p className="text-base sm:text-lg text-text leading-relaxed font-medium mb-2">
+              This is the <span style={{ color: "#f4a261" }}>force multiplier</span> that turns a grassroots movement into an <span style={{ color: "#67d4e8" }}>unstoppable engine</span>.
+            </p>
+            <p className="text-sm text-text-muted leading-relaxed">
+              Every dismissive comment on the internet becomes a conversion opportunity. AI finds them. Broadcasters convert them. The movement grows exponentially.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
     </div>
   );
 }
@@ -897,6 +1140,12 @@ export default function Section09_Takedowns() {
 
       {/* ── Part 1.5: Organic Growth Engine ── */}
       <OrganicGrowthHook />
+
+      {/* ── Part 1.6: AI Thread Scanner — the key innovation ── */}
+      <AIThreadScanner />
+
+      {/* ── Part 1.7: Scaling the engine (continuation) ── */}
+      <OrganicScaling />
 
       {/* ── Part 2: Flowing story cards ── */}
       <div className="relative z-10 px-4 sm:px-8 lg:px-16 pt-6 pb-20 max-w-3xl mx-auto">

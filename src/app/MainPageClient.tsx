@@ -68,7 +68,7 @@ function PageSections() {
         <SectionDivider />
         <Section07_TheHub />
         <Section07b_ConversionJourney />
-        <div className="h-[3vh]" />
+        <div className="h-0" />
         <Section07c_HubVision />
         <SectionDivider />
         <Section08_AIEndsPub />

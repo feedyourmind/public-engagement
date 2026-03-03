@@ -75,7 +75,7 @@ export default function Section07c_HubVision() {
         variants={fadeUp}
         transition={{ duration: 0.6 }}
       >
-        <p className="text-sm uppercase tracking-[0.2em] text-[#c084fc]/70 mb-3 font-body font-bold">
+        <p className="text-sm uppercase tracking-[0.2em] text-[#e07a5f]/70 mb-3 font-body font-bold">
           What&rsquo;s Next
         </p>
         <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text text-center leading-tight tracking-tight mb-4">
@@ -100,10 +100,10 @@ export default function Section07c_HubVision() {
         variants={fadeUp}
         transition={{ duration: 0.6 }}
       >
-        <div className="w-full p-6 sm:p-8 rounded-xl bg-[#c084fc]/[0.06] border border-[#c084fc]/20">
+        <div className="w-full p-6 sm:p-8 rounded-xl bg-[#e07a5f]/[0.06] border border-[#e07a5f]/20">
           <div className="flex items-center gap-3 mb-4">
-            <RocketIcon color="#c084fc" />
-            <h3 className="text-lg sm:text-xl font-bold text-[#c084fc]">
+            <RocketIcon color="#e07a5f" />
+            <h3 className="text-lg sm:text-xl font-bold text-[#e07a5f]">
               The Technical Leap
             </h3>
           </div>
@@ -151,8 +151,8 @@ export default function Section07c_HubVision() {
           {/* Card 2: Content Quality */}
           <div className="p-6 sm:p-7 rounded-xl bg-white/[0.03] border border-white/[0.06]">
             <div className="flex items-center gap-3 mb-4">
-              <GearIcon color="#67d4e8" />
-              <h4 className="text-base sm:text-lg font-semibold text-[#67d4e8]">
+              <GearIcon color="#e07a5f" />
+              <h4 className="text-base sm:text-lg font-semibold text-[#e07a5f]">
                 Not Just Reposted &mdash; Refined
               </h4>
             </div>
@@ -251,16 +251,21 @@ export default function Section07c_HubVision() {
         </h3>
         <div className="space-y-4 text-center">
           <p className="text-base sm:text-lg text-text-muted leading-relaxed">
-            The Hub crystallizes and adds lasting value to everything the Distribution Engine
-            does. Content that gets buried fast in social media feeds stays fresh and
-            &ldquo;alive&rdquo; here &mdash; always accessible, structured, organized, and
-            up to date, thanks to the automated content pipeline.
+            The Hub{" "}
+            <span className="text-text font-medium">crystallizes and adds lasting value</span>{" "}
+            to everything the Distribution Engine does.
+          </p>
+          <p className="text-base sm:text-lg text-text-muted leading-relaxed">
+            Content that gets buried fast in social media feeds stays{" "}
+            <span className="text-text font-medium">fresh and &ldquo;alive&rdquo;</span>{" "}
+            here &mdash; always accessible, structured, organized, and up to date,
+            thanks to the automated content pipeline.
           </p>
           <div className="grid grid-cols-3 gap-3 pt-2">
             {[
               { label: "Time on Site", sub: "Seconds to minutes", color: "#f4a261" },
               { label: "Always Fresh", sub: "Automated content funnel", color: "#52b788" },
-              { label: "Growing Reach", sub: "Newsletter + App installs", color: "#c084fc" },
+              { label: "Growing Reach", sub: "Newsletter + App installs", color: "#e07a5f" },
             ].map((metric) => (
               <div
                 key={metric.label}
@@ -279,11 +284,11 @@ export default function Section07c_HubVision() {
         </div>
 
         {/* Closing statement */}
-        <div className="mt-10 px-6 py-6 rounded-xl bg-white/[0.04] border border-[#c084fc]/20 max-w-xl">
+        <div className="mt-10 px-6 py-6 rounded-xl bg-white/[0.04] border border-[#e07a5f]/20 max-w-xl">
           <p className="text-base sm:text-lg text-text leading-relaxed text-center font-medium m-0 mb-3">
             The goal: a professional, polished, and technically superior destination that
             makes AI safety content{" "}
-            <span style={{ color: "#c084fc" }}>exciting to consume</span>.
+            <span style={{ color: "#e07a5f" }}>exciting to consume</span>.
           </p>
           <p className="text-lg sm:text-xl text-text-muted leading-relaxed text-center italic m-0">
             The &ldquo;Digital Newspaper of AI Risk Awareness.&rdquo;

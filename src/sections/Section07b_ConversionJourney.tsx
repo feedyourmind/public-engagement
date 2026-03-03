@@ -415,7 +415,7 @@ function NewMemberReveal({
   // Appear at funnel exit, stay visible until section end
   const figOpacity = useTransform(
     scrollYProgress,
-    [0.70, 0.72, 0.92, 0.96],
+    [0.70, 0.72, 0.94, 0.97],
     [0, 1, 1, 0]
   );
 
@@ -433,7 +433,7 @@ function NewMemberReveal({
   // Badge title fades in after arrival
   const titleOpacity = useTransform(
     scrollYProgress,
-    [0.81, 0.85, 0.92, 0.96],
+    [0.81, 0.85, 0.94, 0.97],
     [0, 1, 1, 0]
   );
 
@@ -538,7 +538,7 @@ function TheKeyStage({
 }) {
   const opacity = useTransform(
     scrollYProgress,
-    [0.82, 0.86, 0.92, 0.96],
+    [0.82, 0.86, 0.94, 0.97],
     [0, 1, 1, 0]
   );
   const y = useTransform(scrollYProgress, [0.82, 0.86], [25, 0]);
@@ -616,14 +616,14 @@ export default function Section07b_ConversionJourney() {
   /* Section envelope */
   const sectionOpacity = useTransform(
     scrollYProgress,
-    [0.0, 0.04, 0.94, 0.98],
+    [0.0, 0.04, 0.96, 0.99],
     [0, 1, 1, 0]
   );
 
   /* Title */
   const titleOpacity = useTransform(
     scrollYProgress,
-    [0.04, 0.09, 0.92, 0.96],
+    [0.04, 0.09, 0.94, 0.97],
     [0, 1, 1, 0]
   );
   const titleY = useTransform(scrollYProgress, [0.04, 0.09], [30, 0]);
@@ -631,7 +631,7 @@ export default function Section07b_ConversionJourney() {
   /* Funnel stays visible throughout */
   const funnelOpacity = useTransform(
     scrollYProgress,
-    [0.06, 0.10, 0.92, 0.96],
+    [0.06, 0.10, 0.94, 0.97],
     [0, 1, 1, 0]
   );
 
@@ -654,7 +654,7 @@ export default function Section07b_ConversionJourney() {
       ref={sectionRef}
       id="conversion-journey"
       className="relative"
-      style={{ height: "900vh" }}
+      style={{ height: "1000vh" }}
     >
       <motion.div
         className="sticky top-12 h-[calc(100vh-3rem)] flex flex-col items-center justify-start overflow-hidden bg-bg"
