@@ -617,6 +617,9 @@ export default function Section04a_Strategies() {
         className="relative"
         style={{ height: "400vh" }}
       >
+        {/* Scroll-position marker for hash navigation */}
+        <div id="engagement-tradeoff" className="absolute left-0 w-0 h-0" style={{ top: "2%" }} />
+
         <motion.div
           className="sticky top-12 z-20 h-[calc(100vh-3rem)] flex flex-col items-center justify-start pt-8 px-4 sm:px-8 lg:px-16 overflow-hidden bg-bg"
           style={{ opacity: sectionOpacity }}

@@ -98,7 +98,10 @@ export default function TopNav() {
       ) : (
         <div className="flex items-center gap-6">
           <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              history.replaceState(null, "", "#top");
+            }}
             className="p-1.5 -ml-1.5 rounded-lg text-text-muted hover:text-text transition-colors cursor-pointer bg-transparent border-none"
             aria-label="Scroll to top"
           >

@@ -26,6 +26,7 @@ const NAV_SECTIONS = [
 
 /* ── Every section on the page, in scroll order — drives URL hash ── */
 const ALL_SECTIONS = [
+  "top",
   "spectrum",
   "segments",
   "funnel",
@@ -36,6 +37,7 @@ const ALL_SECTIONS = [
   "comparisons-tpot",
   "comparisons-aisafety",
   "strategies",
+  "engagement-tradeoff",
   "meet-people",
   "distribution",
   "resonance-intelligence",
@@ -49,6 +51,7 @@ const ALL_SECTIONS = [
   "hub-gap",
   "hub-content",
   "conversion-journey",
+  "hub-vision",
   "ai-ends-pub",
   "pub-value",
   "pub-activities",
@@ -101,14 +104,14 @@ function toNavId(id: string): string {
 
 export default function SectionNav() {
   const { scrollYProgress } = useScroll();
-  const [activeId, setActiveId] = useState<string>(ALL_SECTIONS[0]);
+  const [activeId, setActiveId] = useState<string>("top");
 
   useEffect(() => {
     let ticking = false;
 
     const updateActive = () => {
       const threshold = window.scrollY + window.innerHeight * 0.4;
-      let current = ALL_SECTIONS[0];
+      let current = "top";
 
       for (const id of ALL_SECTIONS) {
         const el = document.getElementById(id);
@@ -132,11 +135,13 @@ export default function SectionNav() {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    updateActive();
 
-    // On initial load, scroll to the section indicated by the URL hash
+    // On initial load: if no hash or #top, set #top and stay put.
+    // Otherwise scroll to the requested section.
     const hash = window.location.hash.slice(1);
-    if (hash) {
+    if (!hash || hash === "top") {
+      history.replaceState(null, "", "#top");
+    } else if (ALL_SECTIONS.includes(hash)) {
       const target = document.getElementById(hash);
       if (target) {
         requestAnimationFrame(() => {
@@ -144,6 +149,7 @@ export default function SectionNav() {
           window.scrollTo({ top: y, behavior: "smooth" });
         });
       }
+      setActiveId(hash);
     }
 
     return () => window.removeEventListener("scroll", onScroll);

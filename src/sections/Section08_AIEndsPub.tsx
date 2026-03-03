@@ -165,9 +165,12 @@ export default function Section08_AIEndsPub() {
           />
         </div>
 
-        <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text text-center leading-tight tracking-tight mb-3">
+        <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-text text-center leading-tight tracking-tight mb-1">
           AI Ends Pub
         </h2>
+        <p className="text-lg sm:text-xl lg:text-2xl font-medium text-center max-w-xl leading-relaxed mb-3 tracking-wide whitespace-nowrap" style={{ color: '#f4a261' }}>
+          Where the AI Risk Awareness Force finds its people.
+        </p>
         <p className="text-base sm:text-lg text-text-muted text-center max-w-xl leading-relaxed mb-0">
           Join the debates, currently on Discord.<br />The lowest-effort, highest-impact thing you can do.
         </p>

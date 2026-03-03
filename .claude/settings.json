@@ -44,10 +44,11 @@
       "WebFetch(domain:www.typewolf.com)",
       "WebFetch(domain:maxibestof.one)",
       "Bash(curl -s \"http://localhost:3333/_next/static/chunks/%5Broot-of-the-server%5D__0878783b._.css\")",
-      "Bash(grep -n \"window.location.hash\\\\|useRouter\\\\|usePathname\" src/**/*.tsx src/components/*.tsx)"
+      "Bash(grep -n \"window.location.hash\\\\|useRouter\\\\|usePathname\" src/**/*.tsx src/components/*.tsx)",
+      "Bash(python3 -c \"import docx; print\\(''python-docx available''\\)\")",
+      "Bash(pip3 install python-docx)",
+      "Bash(python3 -c \"from docx.shared import RGBColor; c = RGBColor\\(0x1a,0x73,0xe8\\); print\\(dir\\(c\\)\\); print\\(str\\(c\\)\\)\")"
     ],
-    "additionalDirectories": [
-      "/Users/bitlitup1/dev/vibe-coding/public-engagement/src/app/api/variations/[slug]"
-    ]
+    "additionalDirectories": ["/tmp"]
   }
 }

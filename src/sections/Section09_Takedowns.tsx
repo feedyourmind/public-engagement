@@ -747,7 +747,7 @@ export default function Section09_Takedowns() {
         <p className="text-base sm:text-lg lg:text-xl text-text-muted leading-relaxed max-w-2xl mx-auto">
           Deployed everywhere.
           <br />
-          The audience decides, surfaces the best to the top.
+          Each collection is dynamic. The audience decides, surfaces the best Takedowns for each skepticism to the top.
         </p>
         <div className="w-16 h-px bg-white/10 mx-auto my-5" />
         <p className="text-lg sm:text-xl lg:text-2xl font-heading font-bold leading-snug max-w-2xl mx-auto" style={{ color: "#f4a261" }}>

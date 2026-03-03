@@ -20,6 +20,7 @@ import Section05_ConcernedSplit from "@/sections/Section05_ConcernedSplit";
 import Section06_Conclusion from "@/sections/Section06_Conclusion";
 import Section07_TheHub from "@/sections/Section07_TheHub";
 import Section07b_ConversionJourney from "@/sections/Section07b_ConversionJourney";
+import Section07c_HubVision from "@/sections/Section07c_HubVision";
 import Section08_AIEndsPub from "@/sections/Section08_AIEndsPub";
 import Section09_Takedowns from "@/sections/Section09_Takedowns";
 import Section10_YouTube from "@/sections/Section10_YouTube";
@@ -39,7 +40,7 @@ function PageSections() {
     <>
       <SectionNav />
       <main className="overflow-x-clip">
-        <div className="flex flex-col items-center px-4 pt-24 sm:pt-32 pb-8">
+        <div id="top" className="flex flex-col items-center px-4 pt-24 sm:pt-32 pb-8">
           <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text text-center leading-tight tracking-tight mb-3">
             A Vision for Public Engagement
           </h1>
@@ -67,7 +68,8 @@ function PageSections() {
         <SectionDivider />
         <Section07_TheHub />
         <Section07b_ConversionJourney />
-        <div className="h-[20vh]" />
+        <div className="h-[3vh]" />
+        <Section07c_HubVision />
         <SectionDivider />
         <Section08_AIEndsPub />
         <SectionDivider />
