@@ -181,7 +181,7 @@ export function VariationProvider({
         basePresetId: null,
       }));
     }
-    if (isDefaultVariation) {
+    if (isDefaultVariation && !isPlayground) {
       // Michael: base presets ARE the effective presets
       return basePresetsState.map((p) => ({
         ...p,

@@ -32,12 +32,13 @@ export default function TopNav() {
 
   const backHref = variationSlug ? `/${variationSlug}` : "/";
 
-  const { variationDisplayName } = useVariationDisplay();
+  const { variationDisplayName, isPlaygroundView } = useVariationDisplay();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   // Only apply variation styling after hydration to avoid mismatch
   const showVariationBadge = mounted && !!variationDisplayName;
+  const showPlaygroundNav = mounted && isPlaygroundView;
 
   // Variation dropdown state
   const [showDropdown, setShowDropdown] = useState(false);
@@ -71,9 +72,11 @@ export default function TopNav() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 h-12 flex items-center justify-between px-4 sm:px-8 backdrop-blur-md border-b transition-colors ${
-      showVariationBadge
-        ? "bg-[#1a1520]/85 border-cautious/15"
-        : "bg-bg/80 border-white/6"
+      showPlaygroundNav
+        ? "bg-[#7f1d1d]/90 border-red-500/30"
+        : showVariationBadge
+          ? "bg-[#1a1520]/85 border-cautious/15"
+          : "bg-bg/80 border-white/6"
     }`}>
       {/* Left: title or back link */}
       {isSettings ? (
@@ -145,9 +148,25 @@ export default function TopNav() {
         <div className="flex items-center gap-1">
           {/* Variation name badge */}
           {showVariationBadge && (
-            <span className="text-xs text-cautious/80 font-body mr-2 px-2.5 py-1 rounded-lg border border-cautious/20 bg-cautious/5">
-              {variationDisplayName}&apos;s View
-            </span>
+            showPlaygroundNav ? (
+              <span className="text-xs text-white font-body font-semibold mr-2 px-2.5 py-1 rounded-lg border border-white/40 bg-white/15">
+                Playground Mode
+              </span>
+            ) : (
+              <span className="text-xs text-cautious/80 font-body mr-2 px-2.5 py-1 rounded-lg border border-cautious/20 bg-cautious/5">
+                {variationDisplayName}&apos;s View
+              </span>
+            )
+          )}
+
+          {/* Exit playground button */}
+          {showPlaygroundNav && (
+            <Link
+              href="/"
+              className="text-xs text-white font-body font-semibold mr-2 px-3 py-1 rounded-lg bg-white/20 border border-white/30 hover:bg-white/30 transition-colors"
+            >
+              Exit
+            </Link>
           )}
 
           {/* User / Variations dropdown */}

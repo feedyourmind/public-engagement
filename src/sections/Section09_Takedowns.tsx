@@ -1148,17 +1148,16 @@ export default function Section09_Takedowns() {
       <OrganicScaling />
 
       {/* ── Part 2: Flowing story cards ── */}
-      <div className="relative z-10 px-4 sm:px-8 lg:px-16 pt-6 pb-20 max-w-3xl mx-auto">
-        {/* Section heading */}
-        <div id="persona-stories" className="text-center mb-10">
-          <h3 className="font-heading text-3xl sm:text-4xl font-bold text-text mb-3">
-            Short Stories Featuring Personas
-          </h3>
-          <p className="text-base text-text-muted leading-relaxed max-w-xl mx-auto">
-            Each story shows how targeted takedowns convert skeptics into
-            advocates.
-          </p>
-        </div>
+      <div id="persona-stories" className="text-center pt-6 mb-10">
+        <h3 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-text text-center whitespace-nowrap mb-3">
+          Short Stories Featuring Personas
+        </h3>
+        <p className="text-base text-text-muted leading-relaxed max-w-xl mx-auto">
+          Each story shows how targeted takedowns convert skeptics into
+          advocates.
+        </p>
+      </div>
+      <div className="relative z-10 px-4 sm:px-8 lg:px-16 pb-20 max-w-3xl mx-auto">
 
         {/* Characters intro */}
         <div

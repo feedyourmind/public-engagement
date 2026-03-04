@@ -116,18 +116,24 @@ export default function MainPageClient({
   basePresets,
 }: MainPageClientProps) {
   const firstPreset = variation?.presets?.[0] ?? null;
-  const { setVariationDisplayName } = useVariationDisplay();
+  const { setVariationDisplayName, setIsPlaygroundView } = useVariationDisplay();
 
   useEffect(() => {
     if (playgroundMode) {
       setVariationDisplayName("Playground");
+      setIsPlaygroundView(true);
     } else if (variation && !variation.isDefault) {
       setVariationDisplayName(variation.name);
+      setIsPlaygroundView(false);
     } else {
       setVariationDisplayName(null);
+      setIsPlaygroundView(false);
     }
-    return () => setVariationDisplayName(null);
-  }, [variation, playgroundMode, setVariationDisplayName]);
+    return () => {
+      setVariationDisplayName(null);
+      setIsPlaygroundView(false);
+    };
+  }, [variation, playgroundMode, setVariationDisplayName, setIsPlaygroundView]);
 
   // No-op for main page — debounced saves only happen on settings page
   const handleParamsChange = useCallback(() => {}, []);
