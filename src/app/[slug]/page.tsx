@@ -1,8 +1,10 @@
+import { headers } from "next/headers";
 import { db } from "@/db";
 import { variations, presets } from "@/db/schema";
 import { eq, asc, and, isNull } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { computeEffectivePresets } from "@/utils/presetMerge";
+import { getViewBySlug } from "@/config/views";
 import MainPageClient from "../MainPageClient";
 
 interface Props {
@@ -24,6 +26,10 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function VariationPage({ params }: Props) {
   const { slug } = await params;
+
+  const headersList = await headers();
+  const viewSlug = headersList.get("x-view-slug");
+  const viewConfig = viewSlug ? getViewBySlug(viewSlug) ?? null : null;
 
   const variation = await db.query.variations.findFirst({
     where: eq(variations.slug, slug),
@@ -75,6 +81,10 @@ export default async function VariationPage({ params }: Props) {
   const allSerialized = JSON.parse(JSON.stringify(allVariations));
 
   return (
-    <MainPageClient variation={serialized} allVariations={allSerialized} />
+    <MainPageClient
+      variation={serialized}
+      allVariations={allSerialized}
+      viewConfig={viewConfig}
+    />
   );
 }

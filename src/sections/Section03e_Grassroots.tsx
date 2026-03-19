@@ -177,7 +177,7 @@ export default function Section03e_Grassroots() {
   });
 
   /* ── Section opacity ── */
-  const sectionOpacity = useTransform(scrollYProgress, [0.0, 0.04, 0.93, 0.98], [0, 1, 1, 0]);
+  const sectionOpacity = useTransform(scrollYProgress, [0.0, 0.04, 0.95, 0.99], [0, 1, 1, 0]);
 
   /* ── Text phase (waits for sticky to engage ~0.18, then holds) ── */
   const textOpacity = useTransform(scrollYProgress, [0.15, 0.19, 0.30, 0.35], [0, 1, 1, 0]);
@@ -218,8 +218,8 @@ export default function Section03e_Grassroots() {
   const xriskRotate = useTransform(scrollYProgress, [0.71, 0.76], [0, 18], { clamp: true });
 
   /* ── Closing text ── */
-  const closingOpacity = useTransform(scrollYProgress, [0.80, 0.84, 0.89, 0.93], [0, 1, 1, 0]);
-  const closingY = useTransform(scrollYProgress, [0.80, 0.84], [30, 0]);
+  const closingOpacity = useTransform(scrollYProgress, [0.84, 0.88, 0.94, 0.97], [0, 1, 1, 0]);
+  const closingY = useTransform(scrollYProgress, [0.84, 0.88], [30, 0]);
 
   return (
     <section
@@ -418,19 +418,20 @@ export default function Section03e_Grassroots() {
           </svg>
         </motion.div>
 
-        {/* ── Closing text ── */}
-        <motion.div
-          className="absolute inset-0 flex flex-col items-center justify-center px-4"
-          style={{ opacity: closingOpacity, y: closingY }}
-        >
-          <p className="text-xl sm:text-3xl text-text leading-snug max-w-3xl text-center font-heading font-bold">
-            Without public demand, the leaders we need won&apos;t exist.
-          </p>
-          <p className="text-base sm:text-lg text-text-muted mt-6 max-w-2xl text-center">
-            This is why grassroots change matters — and why Lethal Intelligence
-            works to build the awareness that creates the demand.
-          </p>
-        </motion.div>
+      </motion.div>
+
+      {/* ── Closing text — in the gap below sticky area ── */}
+      <motion.div
+        className="absolute bottom-[5vh] left-0 right-0 flex flex-col items-center px-4"
+        style={{ opacity: closingOpacity, y: closingY }}
+      >
+        <p className="text-xl sm:text-3xl text-text leading-snug max-w-3xl text-center font-heading font-bold">
+          Without public demand, the leaders we need won&apos;t exist.
+        </p>
+        <p className="text-base sm:text-lg text-text-muted mt-6 max-w-2xl text-center">
+          This is why grassroots change matters — and why Lethal Intelligence
+          works to build the awareness that creates the demand.
+        </p>
       </motion.div>
     </section>
   );

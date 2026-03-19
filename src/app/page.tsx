@@ -1,11 +1,17 @@
+import { headers } from "next/headers";
 import { db } from "@/db";
 import { variations, presets } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
+import { getViewBySlug } from "@/config/views";
 import MainPageClient from "./MainPageClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  const headersList = await headers();
+  const viewSlug = headersList.get("x-view-slug");
+  const viewConfig = viewSlug ? getViewBySlug(viewSlug) ?? null : null;
+
   let defaultVariation = null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let allVariations: any[] = [];
@@ -40,6 +46,10 @@ export default async function Home() {
   const allSerialized = JSON.parse(JSON.stringify(allVariations));
 
   return (
-    <MainPageClient variation={serialized} allVariations={allSerialized} />
+    <MainPageClient
+      variation={serialized}
+      allVariations={allSerialized}
+      viewConfig={viewConfig}
+    />
   );
 }

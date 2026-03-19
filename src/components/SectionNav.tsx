@@ -1,110 +1,40 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, useScroll } from "framer-motion";
+import type { SectionEntry } from "@/config/sections";
 
-/* ── Nav dots (left rail + progress bar active state) ── */
-const NAV_SECTIONS = [
-  { id: "spectrum", label: "Spectrum" },
-  { id: "segments", label: "Segments" },
-  { id: "funnel", label: "Funnel" },
-  { id: "goals", label: "Goals" },
-  { id: "grassroots", label: "Grassroots" },
-  { id: "comparisons", label: "Perceptions" },
-  { id: "strategies", label: "Strategies" },
-  { id: "distribution", label: "Distribution" },
-  { id: "the-hub", label: "The Hub" },
-  { id: "conversion-journey", label: "Conversion" },
-  { id: "ai-ends-pub", label: "The Community" },
-  { id: "takedowns", label: "Takedowns" },
-  { id: "youtube", label: "YouTube" },
-  { id: "wild-experiments", label: "Experiments" },
-  { id: "influencer-deals", label: "Influencers" },
-  { id: "concerned", label: "Concerned" },
-  { id: "conclusion", label: "Conclusion" },
-];
-
-/* ── Every section on the page, in scroll order — drives URL hash ── */
-const ALL_SECTIONS = [
-  "top",
-  "spectrum",
-  "segments",
-  "funnel",
-  "goals",
-  "goal2",
-  "grassroots",
-  "comparisons",
-  "comparisons-tpot",
-  "comparisons-aisafety",
-  "strategies",
-  "engagement-tradeoff",
-  "meet-people",
-  "distribution",
-  "resonance-intelligence",
-  "production-pipeline",
-  "aidangers",
-  "platforms",
-  "twitter",
-  "instagram",
-  "all-platforms",
-  "the-hub",
-  "hub-gap",
-  "hub-content",
-  "conversion-journey",
-  "hub-vision",
-  "ai-ends-pub",
-  "pub-value",
-  "pub-activities",
-  "pub-color-coding",
-  "pub-tables",
-  "pub-name",
-  "pub-grab-a-chair",
-  "takedowns",
-  "targeted-skepticisms",
-  "100-sticking-points",
-  "organic-engine",
-  "persona-stories",
-  "story-paul",
-  "story-peter",
-  "story-organizations",
-  "story-the-movement",
-  "story-elon-musk",
-  "story-emmanuel-macron",
-  "youtube",
-  "animated-content",
-  "xrisk-paradox",
-  "podcasting",
-  "content-engine",
-  "wild-experiments",
-  "no-plot-armor",
-  "exp-2030",
-  "reality-is-broken",
-  "dystopian-intelligence",
-  "experiments-summary",
-  "influencer-deals",
-  "niche-truck",
-  "niche-school",
-  "niche-code",
-  "endless-opportunities",
-  "concerned",
-  "conclusion",
-];
-
-/* Map granular-only IDs to the nearest nav dot */
-const NAV_IDS = new Set(NAV_SECTIONS.map((s) => s.id));
-function toNavId(id: string): string {
-  if (NAV_IDS.has(id)) return id;
-  // Walk backwards through ALL_SECTIONS to find the closest nav-level parent
-  const idx = ALL_SECTIONS.indexOf(id);
-  for (let i = idx - 1; i >= 0; i--) {
-    if (NAV_IDS.has(ALL_SECTIONS[i])) return ALL_SECTIONS[i];
-  }
-  return ALL_SECTIONS[0];
+interface SectionNavProps {
+  sections: SectionEntry[];
 }
 
-export default function SectionNav() {
+export default function SectionNav({ sections }: SectionNavProps) {
   const { scrollYProgress } = useScroll();
   const [activeId, setActiveId] = useState<string>("top");
+
+  const navSections = useMemo(
+    () =>
+      sections
+        .filter((s) => s.navLabel)
+        .map((s) => ({ id: s.navId, label: s.navLabel })),
+    [sections],
+  );
+
+  const allSections = useMemo(
+    () => ["top", ...sections.flatMap((s) => s.subIds)],
+    [sections],
+  );
+
+  const navIds = useMemo(() => new Set(navSections.map((s) => s.id)), [navSections]);
+
+  const toNavId = (id: string): string => {
+    if (navIds.has(id)) return id;
+    const idx = allSections.indexOf(id);
+    for (let i = idx - 1; i >= 0; i--) {
+      if (navIds.has(allSections[i])) return allSections[i];
+    }
+    return allSections[0];
+  };
 
   useEffect(() => {
     let ticking = false;
@@ -113,7 +43,7 @@ export default function SectionNav() {
       const threshold = window.scrollY + window.innerHeight * 0.4;
       let current = "top";
 
-      for (const id of ALL_SECTIONS) {
+      for (const id of allSections) {
         const el = document.getElementById(id);
         if (el && el.getBoundingClientRect().top + window.scrollY <= threshold) {
           current = id;
@@ -141,7 +71,7 @@ export default function SectionNav() {
     const hash = window.location.hash.slice(1);
     if (!hash || hash === "top") {
       history.replaceState(null, "", "#top");
-    } else if (ALL_SECTIONS.includes(hash)) {
+    } else if (allSections.includes(hash)) {
       const target = document.getElementById(hash);
       if (target) {
         requestAnimationFrame(() => {
@@ -153,6 +83,7 @@ export default function SectionNav() {
     }
 
     return () => window.removeEventListener("scroll", onScroll);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const scrollTo = (id: string) => {
@@ -172,7 +103,7 @@ export default function SectionNav() {
 
       {/* Side nav — desktop only */}
       <nav className="fixed left-0 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col">
-        {NAV_SECTIONS.map((s) => {
+        {navSections.map((s) => {
           const isActive = toNavId(activeId) === s.id;
           return (
             <button
